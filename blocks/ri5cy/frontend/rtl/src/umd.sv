@@ -8,7 +8,7 @@ module umd_tb();
     .operand_a_i(a),
     .operand_b_i(b),
     .result_o(out),
-    .operator_i(2)
+    .operator_i(6)
   );
  
   initial begin
@@ -32,33 +32,66 @@ module umd_tb();
  
 endmodule
 
-
-
 module umd
-	(
-		input  logic	[4-1:0]		operand_a_i,
-		input  logic	[4-1:0]		operand_b_i,
-		output logic	[3:0]		result_o,
+	#(
+		parameter WORD_SIZE = 32
+	)
 
-		input  logic	[1:0]	operator_i
+	(
+		input  logic	[WORD_SIZE-1:0]		operand_a_i,
+		input  logic	[WORD_SIZE-1:0]		operand_b_i,
+		output logic	[WORD_SIZE:0]		result_o,
+
+		input  logic	[WORD_SIZE:0]	operator_i
 	);
 
-	logic	[4-1:0]	operand_a;
-	logic	[4-1:0]	operand_b;
+	logic	[WORD_SIZE-1:0]	operand_a;
+	logic	[WORD_SIZE-1:0]	operand_b;
 
 	/*
-	---------------Multiply and return lower bits---------------
+	---------------Multiply ---------------
 	*/
 
-	logic [4*2-1:0]	mul_result;
+	logic [WORD_SIZE*2-1:0]	mul_result;
 
 	assign mul_result = operand_a_i * operand_b_i;
 
 	/*
-	---------------Multiply unsigned and return upper bits---------------
+	---------------Multiply signed---------------
 	*/
-	logic [4*2-1:0]	mul_unsigned_result;
-	assign mul_unsigned_result = operand_a_i * operand_b_i;
+	logic signed [WORD_SIZE*2-1:0] mul_signed_result;
+	assign mul_signed_result = $signed(operand_a_i) * $signed(operand_b_i);
+
+
+	/*
+	---------------Unsigned division--------------
+	*/
+
+	logic [WORD_SIZE*2-1:0]	div_result;
+
+	assign div_result = operand_a_i / operand_b_i;
+
+	/*
+	---------------signed division--------------
+	*/
+	
+	logic [WORD_SIZE*2-1:0]	div_signed_result;
+
+	assign div_signed_result = $signed(operand_a_i) / $signed(operand_b_i);
+
+	/*
+	---------------Unsigned remainder--------------
+	*/
+	logic [WORD_SIZE*2-1:0]	remainder_result;
+
+	assign remainder_result = operand_a_i % operand_b_i;
+
+	/*
+	---------------signed remainder--------------
+	*/
+	logic [WORD_SIZE*2-1:0]	remainder_signed_result;
+
+	assign remainder_signed_result = $signed(operand_a_i) / $signed(operand_b_i);
 
 
 	/*
@@ -66,9 +99,14 @@ module umd
 	*/
 	always_comb begin
 		case(operator_i)
-			1: result_o = mul_result;
-			2: result_o = mul_unsigned_result >> 4;
-
+			MUL: result_o = mul_result;
+			MULH: result_o = mul_result >> 4;
+			MULHU: result_o = mul_signed_result >> 4;
+			MULHSU: result_o = mul_signed_result;
+			DIV: result_o = div_result;
+			DIVU: result_o = div_signed_result;
+			REM: result_o = remainder_result;
+			REMU: result_o = remainder_signed_result;
 			default: 	result_o = 'habc;
 		endcase
 	end
