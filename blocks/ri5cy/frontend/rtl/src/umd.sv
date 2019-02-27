@@ -35,6 +35,7 @@ endmodule
 module umd
 	#(
 		parameter WORD_SIZE = 32
+
 	)
 
 	(
@@ -44,6 +45,14 @@ module umd
 
 		input  logic	[WORD_SIZE:0]	operator_i
 	);
+	parameter MUL			= 3'b000;
+	parameter MULH			= 3'b001;	
+	parameter MULHU		    = 3'b010;
+	parameter MULHSU		= 3'b011;
+	parameter DIV			= 3'b100;
+	parameter DIVU			= 3'b110;
+	parameter REM			= 3'b111;
+	parameter REMU			= 3'b101;
 
 	logic	[WORD_SIZE-1:0]	operand_a;
 	logic	[WORD_SIZE-1:0]	operand_b;
