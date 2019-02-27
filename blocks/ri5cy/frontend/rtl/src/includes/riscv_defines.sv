@@ -12,8 +12,8 @@ parameter OPCODE_WIDTH		= 7;
 
 parameter OPCODE_SYSTEM   = 7'h73;
 parameter OPCODE_FENCE    = 7'h0f;
-parameter OPCODE_OP       = 7'h33;
-parameter OPCODE_OPIMM    = 7'h13;
+parameter OPCODE_COMP     = 7'h33;
+parameter OPCODE_COMPIMM  = 7'h13;
 parameter OPCODE_STORE    = 7'h23;
 parameter OPCODE_LOAD     = 7'h03;
 parameter OPCODE_BRANCH   = 7'h63;
