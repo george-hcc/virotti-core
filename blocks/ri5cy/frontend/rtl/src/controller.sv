@@ -2,93 +2,129 @@
 
 module controller
 	(
-		input  logic [WORD_WIDTH-1:0]		instr_i,
+		input  logic [DCODE_WIDTH-1:0]	decoded_op_i,
 
-		// Sinais ULA
-		output logic										neg_mux_ctrl_o,
+		// Saídas de Controle
 		output logic [ALU_OP_WIDTH-1:0] alu_op_ctrl_o,
-
-		output logic										regwrite_en_o
+		output logic										write_en_ctrl_o,
+		output logic										imm_ctrl_o,
+		output logic										stype_ctrl_o,
+		output logic										upper_ctrl_o,
+		output logic										lui_shift_ctrl_o,
+		output logic										pc_ula_ctrl_o,
+		output logic										load_ctrl_o,
+		output logic										store_ctrl_o,
+		output logic										branch_ctrl_o,
+		output logic										brn_inv_ctrl_o,
+		output logic										jal_ctrl_o,
+		output logic										jalr_ctrl_o
 	);
 
-// SERÁ REFEITO NO FUTURO
-/*
-	logic negation_op;
-	logic regwrite_en;
-
-	// True para operações SUB, SRA e SRAI
-	assign negation_op = instr_i[30];
-
-	assign regwrite_en_o = regwrite_en;
-
-	enum logic [0:0]
+	enum logic
 		{
-			OPERATION 	= 'b0,
-			BAD_TYPE		=	'bx
-		} op_type;
+			// Computacionais R
+			ADD,
+			SUB,
+			SLL,
+			SRL,
+			SRA,
+			AND,
+			OR,
+			XOR,
+			SLT,
+			SLTU,
+			// Computacionais I
+			ADDI,
+			SLLI,
+			SRLI,
+			SRAI,
+			ANDI,
+			ORI,
+			XORI,
+			SLTI,
+			SLTIU,
+			// Computacionais U
+			LUI,
+			AUIPC,
+			// Loads
+			LB,
+			LBU,
+			LH,
+			LHU,
+			LW,
+			// Stores
+			SB,
+			SH,
+			SW,
+			// Branches
+			BEQ,
+			BNE,
+			BLT,
+			BLTU,
+			BGE,
+			BGEU,
+			// Jumps
+			JAL,
+			JALR
+		} operation;
 
-	enum logic [1:0]
-		{
-			FUNCT_ADDER	= 'b00,
-			FUNCT_AND		=	'b01,
-			FUNCT_OR		= 'b10,
-			FUNCT_XOR		=	'b11,
-			BAD_FUNCT		=	'bx
-		} op_function;
-
-	// Estado de Operação
-	always_comb begin
-		case(instr_i[7:0])
-			OPCODE_OP: 
-				op_type = OPERATION;
-			default:
-				op_type = BAD_TYPE;
-		endcase 
-	end
-
-	assign regwrite_en = (op_type == OPERATION) ? (1'b1) : (1'b0);
-
-	// Estado de funct3 (Tipo R)
-	always_comb begin
-		if(op_type == OPERATION) begin
-			case(instr_i[14:12])
-				3'b000:
-					op_function = FUNCT_ADDER;
-				3'b100:
-					op_function = FUNCT_XOR;
-				3'b110:
-					op_function = FUNCT_OR;
-				3'b111:
-					op_function	= FUNCT_AND;
+		always_comb begin
+			case(decoded_op_i)
+				DCODED_ADD:			operation = ADD;
+				DCODED_SUB:			operation = SUB;
+				DCODED_SLL:			operation = SLL;
+				DCODED_SRL:			operation = SRL;
+				DCODED_SRA:			operation = SRA;
+				DCODED_AND:			operation = AND;
+				DCODED_OR:			operation = OR;
+				DCODED_XOR:			operation = XOR;
+				DCODED_SLT:			operation = SLT;
+				DCODED_SLTU:		operation = SLTU;
+				DCODED_ADDI:		operation = ADDI;
+				DCODED_SLLI:		operation = SLLI;
+				DCODED_SRLI:		operation = SRLI;
+				DCODED_SRAI:		operation = SRAI;
+				DCODED_ANDI:		operation = ANDI;
+				DCODED_ORI:			operation = ORI;
+				DCODED_XORI:		operation = XORI;
+				DCODED_SLTI:		operation = SLTI;
+				DCODED_SLTIU:		operation = SLTIU;
+				DCODED_LUI:			operation = LUI;
+				DCODED_AUIPC:		operation = AUIPC;
+				DCODED_LB:			operation = LB;
+				DCODED_LBU:			operation = LBU;
+				DCODED_LH:			operation = LH;
+				DCODED_LHU:			operation = LHU;
+				DCODED_LW:			operation = LW;
+				DCODED_SB:			operation = SB;
+				DCODED_SH:			operation = SH;
+				DCODED_SW:			operation = SW;
+				DCODED_BEQ:			operation = BEQ;
+				DCODED_BNE:			operation = BNE;
+				DCODED_BLT:			operation = BLT;
+				DCODED_BLTU:		operation = BLTU;	
+				DCODED_BGE:			operation = BGE;
+				DCODED_BGEU:		operation = BGEU;
+				DCODED_JAL:			operation = JAL;
+				DCODED_JALR:		operation = JALR;
 				default:
-					op_function = BAD_FUNCT;
 			endcase
 		end
-		else begin
-			op_function = BAD_FUNCT;
+
+		always_comb begin
+			case(operation)
+				ADD:
+				SUB:
+				SLL:
+				SRL:
+				SRA:
+				AND:
+				OR:
+				XOR:
+				SLT:
+				SLTU:
+
+			endcase
 		end
-	end
 
-	// Saídas
-	assign neg_mux_ctrl_o = negation_op;
-
-	always_comb begin
-		case(op_function)
-			FUNCT_ADDER: begin
-				if(negation_op)
-					alu_op_ctrl_o = ALU_SUB;
-				else
-					alu_op_ctrl_o = ALU_ADD;
-			end
-			FUNCT_XOR:
-				alu_op_ctrl_o = ALU_XOR;
-			FUNCT_OR:
-				alu_op_ctrl_o = ALU_OR;
-			FUNCT_AND:
-				alu_op_ctrl_o = ALU_AND;
-			default: // ERRO FEDERAL - NA DUVIDA SOME
-				alu_op_ctrl_o = ALU_ADD;
-		endcase
-	end
-*/
 endmodule
