@@ -26,14 +26,7 @@ module alu_testbench();
 			entrada2 = $urandom();
 			mul_test();
 			div_test();
-			rem_test();
-			or_test();
-			xor_test();
-			sll_test();
-			srl_test();
-			sra_test();
-			slt_test();
-			sltu_test();
+			
 		end
 		$display("\n");
 		$display("*********************************************************");
@@ -48,12 +41,12 @@ module alu_testbench();
 	end
 
 	task mul_test();
-		operador = ALU_ADD;
-		ideal = entrada1 + entrada2;
+		operador = 3'b000;
+		ideal = entrada1 * entrada2;
 		#10;
 		if(saida !== ideal) begin
 			$display("####################ERRO####################");
-			$display("TESTE #%3d - OPERAÇÃO ADD", i);
+			$display("TESTE #%3d - OPERAÇÃO MUL", i);
 			$display("a = %h\tb = %h", entrada1, entrada2);
 			$display("saida = %h", saida);
 			$display("ideal = %h", ideal);
@@ -63,12 +56,12 @@ module alu_testbench();
 	endtask
 
 	task div_test();
-		operador = ALU_SUB;
-		ideal = entrada1 - entrada2;
+		operador = 3'b100;
+		ideal = entrada1 % entrada2;
 		#10;
 		if(saida !== ideal) begin
 			$display("####################ERRO####################");
-			$display("TESTE #%3d - OPERAÇÃO SUB", i);
+			$display("TESTE #%3d - OPERAÇÃO DIV", i);
 			$display("a = %h\tb = %h", entrada1, entrada2);
 			$display("saida = %h", saida);
 			$display("ideal = %h", ideal);
@@ -77,124 +70,6 @@ module alu_testbench();
 		#10;
 	endtask
 
-	task rem_test();
-		operador = ALU_AND;
-		ideal = entrada1 & entrada2;
-		#10;
-		if(saida !== ideal) begin
-			$display("####################ERRO####################");
-			$display("TESTE #%3d - OPERAÇÃO AND", i);
-			$display("a = %h\tb = %h", entrada1, entrada2);
-			$display("saida = %h", saida);
-			$display("ideal = %h", ideal);
-			n_de_erros = n_de_erros + 1;
-		end
-		#10;
-	endtask
-
-	task or_test();
-		operador = ALU_OR;
-		ideal = entrada1 | entrada2;
-		#10;
-		if(saida !== ideal) begin
-			$display("####################ERRO####################");
-			$display("TESTE #%3d - OPERAÇÃO OR", i);
-			$display("a = %h\tb = %h", entrada1, entrada2);
-			$display("saida = %h", saida);
-			$display("ideal = %h", ideal);
-			n_de_erros = n_de_erros + 1;
-		end
-		#10;
-	endtask
-
-	task xor_test();
-		operador = ALU_XOR;
-		ideal = entrada1 ^ entrada2;
-		#10;
-		if(saida !== ideal) begin
-			$display("####################ERRO####################");
-			$display("TESTE #%3d - OPERAÇÃO XOR", i);
-			$display("a = %h\tb = %h", entrada1, entrada2);
-			$display("saida = %h", saida);
-			$display("ideal = %h", ideal);
-			n_de_erros = n_de_erros + 1;
-		end
-		#10;
-	endtask
-
-	task sll_test();
-		operador = ALU_SLL;
-		ideal = entrada1 << entrada2[4:0];
-		#10;
-		if(saida !== ideal) begin
-			$display("####################ERRO####################");
-			$display("TESTE #%3d - OPERAÇÃO SLL", i);
-			$display("a = %h\tb = %h", entrada1, entrada2);
-			$display("saida = %b", saida);
-			$display("ideal = %b", ideal);
-			n_de_erros = n_de_erros + 1;
-		end
-		#10;
-	endtask
-
-	task srl_test();
-		operador = ALU_SRL;
-		ideal = entrada1 >> entrada2[4:0];
-		#10;
-		if(saida !== ideal) begin
-			$display("####################ERRO####################");
-			$display("TESTE #%3d - OPERAÇÃO SRL", i);
-			$display("a = %h\tb = %h", entrada1, entrada2);
-			$display("saida = %b", saida);
-			$display("ideal = %b", ideal);
-			n_de_erros = n_de_erros + 1;
-		end
-		#10;
-	endtask
-
-	task sra_test();
-		operador = ALU_SRA;
-		ideal = $signed(entrada1) >>> entrada2[4:0];
-		#10;
-		if(saida !== ideal) begin
-			$display("####################ERRO####################");
-			$display("TESTE #%3d - OPERAÇÃO SRA", i);
-			$display("a = %h\tb = %h", entrada1, entrada2);
-			$display("saida = %b", saida);
-			$display("ideal = %b", ideal);
-			n_de_erros = n_de_erros + 1;
-		end
-		#10;
-	endtask
-
-	task slt_test();
-		operador = ALU_SLT;
-		ideal = $signed(entrada1) < $signed(entrada2);
-		#10;
-		if(saida !== ideal) begin
-			$display("####################ERRO####################");
-			$display("TESTE #%3d - OPERAÇÃO SLT", i);
-			$display("a = %h\tb = %h", entrada1, entrada2);
-			$display("saida = %b", saida);
-			$display("ideal = %b", ideal);
-			n_de_erros = n_de_erros + 1;
-		end
-		#10;
-	endtask
-
-	task sltu_test();
-		operador = ALU_SLTU;
-		ideal = $unsigned(entrada1) < $unsigned(entrada2);
-		#10;
-		if(saida !== ideal) begin
-			$display("####################ERRO####################");
-			$display("TESTE #%3d - OPERAÇÃO SLTU", i);
-			$display("a = %h\tb = %h", entrada1, entrada2);
-			$display("saida = %b", saida);
-			$display("ideal = %b", ideal);
-			n_de_erros = n_de_erros + 1;
-		end
-		#10;
-	endtask
+	
 
 endmodule

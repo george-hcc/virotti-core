@@ -8,7 +8,7 @@ module umd_tb();
     .operand_a_i(a),
     .operand_b_i(b),
     .result_o(out),
-    .operator_i(6)
+    .operator_i(4)
   );
  
   initial begin
