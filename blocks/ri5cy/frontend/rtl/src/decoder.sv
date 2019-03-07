@@ -83,23 +83,67 @@ module decoder
 		endcase 
 	end
 
-	// Mux de decodificação de operações
-	always_comb begin
-		case(opcode)
-			// OPCODE_SYSTEM:   = 7'h73;
-			// OPCODE_FENCE:    = 7'h0f;
-			OPCODE_COMP:		decoded_op = comp_op;
-			OPCODE_COMPIMM: decoded_op = compimm_op;
-			OPCODE_STORE:   decoded_op = store_op;
-			OPCODE_LOAD:    decoded_op = load_op;
-			OPCODE_BRANCH:  decoded_op = branch_op;
-			OPCODE_JALR:    decoded_op = DCODED_JALR;
-			OPCODE_JAL:     decoded_op = DCODED_JAL;
-			OPCODE_AUIPC:   decoded_op = DCODED_AUIPC;
-			OPCODE_LUI:     decoded_op = DCODED_LUI;
-			default:				decoded_op = 'bx;
-		endcase	
-	end
+	// Mux de seleção de operação
+	generate
+
+		// BLOCO RISCV (IM)
+		if(RISCV_M_CORE) begin
+
+			logic [DCODE_WIDTH-1:0] multdiv_op;
+
+			// Operações MultDiv
+			always_comb begin
+				case(funct3)
+					3'b000: 	multdiv_op = DCODED_MUL;
+					3'b001: 	multdiv_op = DCODED_MULH;
+					3'b010: 	multdiv_op = DCODED_MULHSU;
+					3'b011: 	multdiv_op = DCODED_MULHU;
+					3'b100: 	multdiv_op = DCODED_DIV;
+					3'b101: 	multdiv_op = DCODED_DIVU;
+					3'b110: 	multdiv_op = DCODED_REM;
+					3'b111: 	multdiv_op = DCODED_REMU;
+					default:	multdiv_op = DCODED_MUL;
+				endcase
+			end
+
+			always_comb begin
+				case(opcode)
+					OPCODE_COMP:		decoded_op = comp_op;
+					OPCODE_COMPIMM: decoded_op = compimm_op;
+					OPCODE_STORE:   decoded_op = store_op;
+					OPCODE_LOAD:    decoded_op = load_op;
+					OPCODE_BRANCH:  decoded_op = branch_op;
+					OPCODE_JALR:    decoded_op = DCODED_JALR;
+					OPCODE_JAL:     decoded_op = DCODED_JAL;
+					OPCODE_AUIPC:   decoded_op = DCODED_AUIPC;
+					OPCODE_LUI:     decoded_op = DCODED_LUI;
+					default:				decoded_op = 'bx;
+				endcase	
+			end
+
+		end
+
+		// BLOCO RISCV (I)
+		else begin
+
+			always_comb begin
+				case(opcode)
+					OPCODE_COMP:		decoded_op = comp_op;
+					OPCODE_COMPIMM: decoded_op = compimm_op;
+					OPCODE_STORE:   decoded_op = store_op;
+					OPCODE_LOAD:    decoded_op = load_op;
+					OPCODE_BRANCH:  decoded_op = branch_op;
+					OPCODE_JALR:    decoded_op = DCODED_JALR;
+					OPCODE_JAL:     decoded_op = DCODED_JAL;
+					OPCODE_AUIPC:   decoded_op = DCODED_AUIPC;
+					OPCODE_LUI:     decoded_op = DCODED_LUI;
+					default:				decoded_op = 'bx;
+				endcase	
+			end
+
+		end
+
+	endgenerate
 
 	assign decoded_op_o = decoded_op;
 

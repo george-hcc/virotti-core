@@ -25,6 +25,7 @@ parameter OPCODE_JALR     = 7'h67;
 parameter OPCODE_JAL      = 7'h6f;
 parameter OPCODE_AUIPC    = 7'h17;
 parameter OPCODE_LUI      = 7'h37;
+parameter OPCODE_MULTDIV  = 7'h33;
 
 // Parametros do decodificador (Necessário otimizar)
 
@@ -69,6 +70,14 @@ parameter DCODED_BGE			= 6'h23;
 parameter DCODED_BGEU			= 6'h24;
 parameter DCODED_JAL			= 6'h25;
 parameter DCODED_JALR			= 6'h26;
+parameter DCODED_MUL      = 6'h27;
+parameter DCODED_MULH     = 6'h28;
+parameter DCODED_MULHSU   = 6'h29;
+parameter DCODED_MULHU    = 6'h2a;
+parameter DCODED_DIV      = 6'h2b;
+parameter DCODED_DIVU     = 6'h2c;
+parameter DCODED_REM      = 6'h2d;
+parameter DCODED_REMU     = 6'h2e;
 
 // Controle da ULA
 
