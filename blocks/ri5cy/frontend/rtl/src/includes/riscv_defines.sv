@@ -1,5 +1,9 @@
 //package riscv_defines;
 
+// Se parametro for 1, insere unidade de multiplicação ao core
+
+parameter RISCV_M_CORE    = 1;
+
 // Parametros globais
 
 parameter WORD_WIDTH 			= 32;
@@ -21,33 +25,6 @@ parameter OPCODE_JALR     = 7'h67;
 parameter OPCODE_JAL      = 7'h6f;
 parameter OPCODE_AUIPC    = 7'h17;
 parameter OPCODE_LUI      = 7'h37;
-
-// Parametros de funct7 (TIPO R)
-
-parameter FUNCT7_DEFAULT	= 7'b0000000;
-parameter FUNCT7_SUBSRA		= 7'b0100000; // Somente para SUB, SRA, SRAI
-
-// Parametros de funct3 (TIPO R)
-
-parameter FUNCT3_ADDER		=	3'b000;
-parameter FUNCT3_SLL			=	3'b001;
-parameter FUNCT3_SLT			=	3'b010;
-parameter FUNCT3_SLTU			=	3'b011;
-parameter FUNCT3_XOR			=	3'b100;
-parameter FUNCT3_SR				=	3'b101;
-parameter FUNCT3_OR				=	3'b110;
-parameter FUNCT3_AND			=	3'b111;
-
-// Parametros de funct4 (TIPO I)
-
-parameter FUNCT4_ADDI			= 3'b000;
-parameter FUNCT4_SLTI			= 3'b010;
-parameter FUNCT4_SLTIU		= 3'b011;
-parameter FUNCT4_XORI			= 3'b100;
-parameter FUNCT4_ORI			= 3'b110;
-parameter FUNCT4_ANDI			= 3'b111;
-
-// Parametros de 
 
 // Parametros do decodificador (Necessário otimizar)
 
@@ -107,5 +84,18 @@ parameter ALU_XOR					=	4'b0110;
 parameter ALU_SLL					= 4'b1000;
 parameter ALU_SRL					= 4'b1001;
 parameter ALU_SRA					=	4'b1010;
+
+// Controle da UMD
+
+parameter MDU_OP_WIDTH    = 3;
+
+parameter MDU_MUL         = 3'b000;
+parameter MDU_MULH        = 3'b001;
+parameter MDU_MULHSU      = 3'b010;
+parameter MDU_MULHU       = 3'b011;
+parameter MDU_DIV         = 3'b100;
+parameter MDU_DIVU        = 3'b101;
+parameter MDU_REM         = 3'b110;
+parameter MDU_REMU        = 3'b111;
 
 //endpackage
