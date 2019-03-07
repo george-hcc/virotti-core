@@ -86,7 +86,9 @@ module decoder
 	// Mux de seleção de operação
 	generate
 
-		// BLOCO RISCV (IM)
+		/********************/
+		/**BLOCO RISCV (IM)**/
+		/********************/
 		if(RISCV_M_CORE) begin
 
 			logic [DCODE_WIDTH-1:0] multdiv_op;
@@ -108,7 +110,7 @@ module decoder
 
 			always_comb begin
 				case(opcode)
-					OPCODE_COMP:		decoded_op = comp_op;
+					OPCODE_COMP:		decoded_op = (funct7[0]) ? (multdiv_op) : (comp_op);
 					OPCODE_COMPIMM: decoded_op = compimm_op;
 					OPCODE_STORE:   decoded_op = store_op;
 					OPCODE_LOAD:    decoded_op = load_op;
@@ -123,7 +125,9 @@ module decoder
 
 		end
 
-		// BLOCO RISCV (I)
+		/********************/
+		/***BLOCO RISCV (I)**/
+		/********************/
 		else begin
 
 			always_comb begin

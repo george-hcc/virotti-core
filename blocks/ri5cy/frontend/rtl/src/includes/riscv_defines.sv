@@ -25,7 +25,6 @@ parameter OPCODE_JALR     = 7'h67;
 parameter OPCODE_JAL      = 7'h6f;
 parameter OPCODE_AUIPC    = 7'h17;
 parameter OPCODE_LUI      = 7'h37;
-parameter OPCODE_MULTDIV  = 7'h33;
 
 // Parametros do decodificador (Necessário otimizar)
 
