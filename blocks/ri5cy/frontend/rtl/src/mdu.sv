@@ -4,8 +4,8 @@ module mdu
 		parameter WORD_SIZE = 32
 
 	)(
-		input  logic	[WORD_SIZE-1:0]		operand_a_i,
-		input  logic	[WORD_SIZE-1:0]		operand_b_i,
+		input  logic	[WORD_SIZE-1:0]	operand_a_i,
+		input  logic	[WORD_SIZE-1:0]	operand_b_i,
 		output logic	[WORD_SIZE:0]		result_o,
 
 		input  logic	[WORD_SIZE:0]	operator_i

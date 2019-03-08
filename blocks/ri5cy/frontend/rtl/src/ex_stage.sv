@@ -1,4 +1,5 @@
 `include "alu.sv"
+`include "mdu.sv"
 
 //import riscv_defines::*;
 
@@ -18,12 +19,16 @@ module ex_stage
 		input  logic										bypass_alu_mux_i,
 		input  logic										pc_alu_mux_i,
 		input  logic [ALU_OP_WIDTH-1:0]	alu_op_ctrl_i,
-		output logic										zero_flag_o
+		output logic										zero_flag_o,
+
+		// Sinal de controle ULA/UMD - Só é usado caso UMD exista
+		input  logic										alu_mdu_mux_i
 	);
 
 	logic [WORD_WIDTH-1:0] 	operand_a;
 	logic [WORD_WIDTH-1:0] 	operand_b;
 	logic	[WORD_WIDTH-1:0] 	alu_result;
+	logic [WORD_WIDTH-1:0]	ex_data;
 
 	logic [11:0]					 	itype_imm;
 	logic [11:0]					 	stype_imm;
@@ -64,8 +69,42 @@ module ex_stage
 			.operator_i(alu_op_ctrl_i)
 		);
 
+	generate
+
+		/********************/
+		/**BLOCO RISCV (IM)**/
+		/********************/
+		if(RISCV_M_CORE) begin
+
+			logic [WORD_WIDTH-1:0] mdu_result;
+
+			mdu MDU
+				(
+					.operand_a_i(operand_a),
+					.operand_b_i(operand_b),
+					.result_o(mdu_result),
+
+					.operator_i(alu_op_ctrl_i)
+				);
+
+			assign ex_data = (alu_mdu_mux_i) ? (mdu_result) : (alu_result);
+
+		end
+
+		/********************/
+		/***BLOCO RISCV (I)**/
+		/********************/
+		else begin
+
+			assign ex_data = alu_result;
+			
+		end
+
+	endgenerate
+	
+
 	// Operação LUI ignorando a ULA no momento (possivel utilizar SLL ao invéz disto)
-	assign ex_data_o = (bypass_alu_mux_i) ? (full_immediate) : alu_result;
+	assign ex_data_o = (bypass_alu_mux_i) ? (full_immediate) : ex_data;
 
 	// Saída de rs2 para operações de Store
 	assign rdata2_store_o = reg_rdata2_i;
