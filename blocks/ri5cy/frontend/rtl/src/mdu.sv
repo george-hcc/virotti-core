@@ -66,13 +66,13 @@ module mdu
 	always_comb begin
 		case(operator_i)
 			MDU_MUL:     result_o = mul_result;
-			MDU_MULH:    result_o = mul_result >> 4;
-			MDU_MULHU:   result_o = mul_signed_result >> 4;
-			MDU_MULHSU:  result_o = mul_signed_result;
-			MDU_DIV:     result_o = div_result;
-			MDU_DIVU:    result_o = div_signed_result;
-			MDU_REM:     result_o = remainder_result;
-			MDU_REMU:    result_o = remainder_signed_result;
+			MDU_MULH:    result_o = mul_signed_result >> 4;
+			MDU_MULHU:   result_o = mul_result >> 4;
+			MDU_MULHSU:  result_o = mul_result;
+			MDU_DIV:     result_o = div_signed_result;
+			MDU_DIVU:    result_o = div_result;
+			MDU_REM:     result_o = remainder_signed_result;
+			MDU_REMU:    result_o = remainder_result;
 			default: 	   result_o = 'habc;
 		endcase
 	end
