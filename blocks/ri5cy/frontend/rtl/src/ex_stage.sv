@@ -84,7 +84,7 @@ module ex_stage
 					.operand_b_i(operand_b),
 					.result_o(mdu_result),
 
-					.operator_i(alu_op_ctrl_i)
+					.operator_i(alu_op_ctrl_i[2:0])
 				);
 
 			assign ex_data = (alu_mdu_mux_i) ? (mdu_result) : (alu_result);

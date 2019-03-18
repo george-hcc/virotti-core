@@ -41,60 +41,113 @@ module core
 	// Saídas do WB_STAGE
 	logic [WORD_WIDTH-1:0]		reg_wb_data_WB_ALL;
 
+	pipeline_control pcu 
+		(
+
+		);
+
 	if_stage IF
 		(
-			.clk(clk),
-			.rst_n(rst_n),
+			.clk							(clk								),
+			.rst_n						(rst_n							),
 
-			.instruction_i(imem_data_i),
-			.instr_wb_i(reg_wb_data_WB_ALL),
-			.pc_o(pc_IF_EX),
-			.pc_plus4_o(pc_plus4_IF_ID)
-			.instruction_o(instr_IF_ID),
+			.instruction_i		(imem_data_i				),
+			.instr_wb_i				(reg_wb_data_WB_ALL	),
+			.pc_o 						(pc_IF_EX						),
+			.pc_plus4_o 			(pc_plus4_IF_ID			),
+			.instruction_o 		(instr_IF_ID				),
 
-			.branch_mux_i(branch_ctrl_ID_IF)
+			.branch_pc_ctrl_i	(branch_ctrl_ID_IF	),
+			.jtype_mux_i     	(										),
+			.jarl_mux_i      	(										),
+			.zeroflag_i      	(						 				),
+			.zeroflag_inv_i  	(										)
+		);
+
+	IF_to_ID if_id 
+		(
+			.clk							(clk								),
+			.rst_n						(rst_n							),
+			.en 							(										),
 		);
 
 	id_stage ID 
 		(
-			.clk(clk),
-			.rst_n(rst_n),
+			.clk							(clk								),
+			.rst_n						(rst_n							),
 
-			.instr_i(instr_IF_ID),
-			.rdata1_o(rd1_ID_EX),
-			.rdata2_o(rd2_ID_EX),
-			.wdata_wb_i(reg_wb_data_WB_ALL),
-			.neg_mux_ctrl_o(neg_ctrl_ID_EX),
-			.alu_ctrl_o(alu_ctrl_ID_EX)
+			.instr_i 					(instr_IF_ID				),
+			.pc_plus4_i      	(										),
+
+			.rdata1_o 				(rd1_ID_EX					),
+			.rdata2_o 				(rd2_ID_EX					),
+
+			.waddr_wb_i      	(										),
+			.wdata_wb_i 			(reg_wb_data_WB_ALL	),
+
+			.jal_mux_i 				(										),
+			.write_en_i      	(										),
+			.alu_ctrl_o 			(alu_ctrl_ID_EX			),
+			.write_en_ctrl_o 	(										),
+			.imm_ctrl_o      	(										),
+			.stype_ctrl_o    	(										),
+			.upper_ctrl_o    	(										),
+			.lui_shift_ctrl_o	(										),
+			.pc_ula_ctrl_o   	(										),
+			.load_ctrl_o     	(										),
+			.store_ctrl_o    	(										),
+			.branch_ctrl_o   	(										),
+			.brn_inv_ctrl_o  	(										),
+			.jal_ctrl_o      	(										),
+			.jalr_ctrl_o     	(										),
+
+			.md_op_ctrl_o			(										)
+		);
+
+	ID_to_EX id_ex
+		(
+			.clk							(clk								),
+			.rst_n						(rst_n							),
+			.en 							(										),
 		);
 
 	ex_stage EX 
 		(
-			.reg_rdata1_i(rd1_ID_EX),
-			.reg_rdata2_i(rd2_ID_EX),
-			.itype_imm_i(instr_IF_ID[31:20]),
-			.stype_imm_i({instr_IF_ID[31:25], instr_IF_ID[11:7]}),
-			.upper_imm_i(instr_IF_ID[31:12]),
-			.program_count_i(pc_IF_EX),
-			.ex_data_o(alu_result_EX_WB),
-			.rdata2_store_o(data_store_EX_WB),
+			.reg_rdata1_i			(rd1_ID_EX					),
+			.reg_rdata2_i			(rd2_ID_EX					),
+			.instruction_i   	(instruction_i			),
+			.program_count_i	(										),
+			.ex_data_o 				(alu_result_EX_WB		),
+			.rdata2_store_o		(										),
 
-			.imm_mux_i(imm_ctrl_ID_EX),
-			.stype_mux_i(stype_ctrl_ID_EX),
-			.utype_mux_i(utype_ctrl_ID_EX),
-			.bypass_alu_mux_i(bypass_ctrl_ID_EX),
-			.pc_alu_mux_i(pcalu_ctrl_ID_EX),
-			.alu_op_ctrl_i(alu_ctrl_ID_EX)
+			.imm_mux_i				(imm_ctrl_ID_EX			),
+			.stype_mux_i			(stype_ctrl_ID_EX		),
+			.utype_mux_i			(utype_ctrl_ID_EX		),
+			.bypass_alu_mux_i	(bypass_ctrl_ID_EX	),
+			.pc_alu_mux_i			(pcalu_ctrl_ID_EX		),
+			.alu_op_ctrl_i		(alu_ctrl_ID_EX			),
+			.zero_flag_o     	(zero_flag_o				),
+
+			.alu_mdu_mux_i   	(										)
 		);
+
+	EX_to_WB ex_wb
+		(
+			.clk							(clk								),
+			.rst_n						(rst_n							),
+			.en 							(										),
+		);	
 
 	wb_stage WB 
 		(
-			.alu_result_i(alu_result_EX_WB),
-			.data_store_i(data_store_EX_WB),
-			.reg_wb_o(reg_wb_data_WB_ALL),
-			.dmem_data_i(dmem_data_i),
-			.dmem_addr_o(dmem_addr_o),
-			.read_dmem(read_dmem_ID_WB)
-		);		
+			.alu_result_i			(alu_result_EX_WB		),
+			.data_store_i			(data_store_EX_WB		),
+			
+			.reg_wb_o					(reg_wb_data_WB_ALL	),
+			.dmem_data_i			(										),
+			.dmem_addr_o			(										),
+			
+			.loadmem_mux_i		(										)
+		);
 
 endmodule
