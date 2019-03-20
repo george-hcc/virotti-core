@@ -87,90 +87,79 @@ module LSU_Lite #(
 		else begin
 
 
-			unique case (address_in) inside
+			unique case (Add_Read) inside
+				[32'h0000_0000 : (32'h0000_7FFF)]: begin
+					//NADA, pois é inst_Mem
+				end
+				[32'h0000_8000 : (32'h0000_8FFF)]: begin
+					Data_Read = MemData[Add_Read - h0000_8000];
+				end
+				[32'h0001_0000 : (32'h0001_01FF)]: begin
+					//ROM
+				end
+				[32'h0001_0200 : (32'hFFFF_FFFF)]: begin
+					case (Estado_leitura)
+						IDLE :
+							begin 
+								if(Para_ler_reg) begin
+									Axi_full.ARVALID 	<= '1;
+									Axi_full.ARADDR 	<= Add_Read;
+									Estado_escrita		<= MANDANDO_ADD;
+									Para_ler_reg 		<= '0;
+								end
+								else begin 
+									Para_ler_reg		<= Para_ler_i;
+								end
+							end
 
-            [32'h1A100000 : (32'h1A106000-1'b1)]: begin
-              select = 4'h7;
-              address_out = address_in;
-            end
-            [32'h1A107000 : (32'h1A108000-1'b1)]: begin
-              select = 4'h7;
-              address_out = address_in;
-            end
-            [32'h19100000 : (32'h19101000-1'b1)]: begin
-              select = 4'h0;
-              address_out = address_in[11:0];
-            end
-            [32'h19101000 : (32'h19102000-1'b1)]: begin
-              select = 4'h1;
-              address_out = address_in[11:0];
-            end
-            [32'h19102000 : (32'h19103000-1'b1)]: begin
-              select = 4'h2;
-              address_out = address_in[11:0];
-            end
-            [32'h19103000 : (32'h19104000-1'b1)]: begin
-              select = 4'h3;
-              address_out = address_in[11:0];
-            end
-            [32'h19104000 : (32'h19105000-1'b1)]: begin
-              select = 4'h4;
-              address_out = address_in[11:0];
-            end
-            [32'h00008000 : (32'h00010000-1'b1)]: begin
-              select = 4'h5;
-              address_out = address_in - 32'h8000;
-            end
-            [32'h00000000 : (32'h00008000-1'b1)]: begin
-              select = 4'h6;
-              address_out = address_in;
-            end
+						MANDANDO_ADD :
+							begin 
+								if(Axi_full.ARVALID && Axi_full.ARREADY) begin
+									Axi_full.ARVALID 	<= '0;
+									Axi_full.RREADY		<= '1;
+									Estado_escrita		<= RECEBENDO_DATA_E_RRESP; 
+								end
+							end
 
-            default : begin
-              select = 4'h8;
-              address_out = address_in;
-            end
-          endcase
-			
-			case (Estado_leitura)
-
-				IDLE :
-					begin 
-						if(Para_ler_reg) begin
-							Axi_full.ARVALID 	<= '1;
-							Axi_full.ARADDR 	<= Add_Read;
-							Estado_escrita		<= MANDANDO_ADD;
-							Para_ler_reg 		<= '0;
-						end
-						else begin 
-							Para_ler_reg		<= Para_ler_i;
-						end
-					end
-
-				MANDANDO_ADD :
-					begin 
-						if(Axi_full.ARVALID && Axi_full.ARREADY) begin
-							Axi_full.ARVALID 	<= '0;
-							Axi_full.RREADY		<= '1;
-							Estado_escrita		<= RECEBENDO_DATA_E_RRESP; 
-						end
-					end
-
-				RECEBENDO_DATA_E_RRESP :
-					begin 
-						
-						if(Axi_full.RVALID && Axi_full.RREADY) begin
-							Data_Read			<= Axi_full.RDATA;
-							Resposta_Leitura	<= Axi_full.RRESP;
-							Estado_leitura		<= IDLE;
-						end
-					end
-			
-				default : Estado_leitura		<= IDLE;
+						RECEBENDO_DATA_E_RRESP :
+							begin 
+								
+								if(Axi_full.RVALID && Axi_full.RREADY) begin
+									Data_Read			<= Axi_full.RDATA;
+									Resposta_Leitura	<= Axi_full.RRESP;
+									Estado_leitura		<= IDLE;
+								end
+							end
+					
+						default : Estado_leitura		<= IDLE;
+					endcase
+				end
+				default : begin
+					//Não sei
+				end
 			endcase
 
-			case (Estado_escrita)
+			unique case (Add_Write) inside
+				[32'h0000_0000 : (32'h0000_7FFF)]: begin
+					//NADA, pois é inst_Mem
+				end
+				[32'h0000_8000 : (32'h0000_8FFF)]: begin
+					//MemData
+				end
+				[32'h0001_0000 : (32'h0001_01FF)]: begin
+					//ROM
+				end
+				[32'h0001_0200 : (32'hFFFF_FFFF)]: begin
+					//Periféricos
+				end
+				default : begin
+					//Não sei
+				end
+			endcase
+			
+			
 
+			case (Estado_escrita)
 				IDLE :
 					begin 
 						if(Para_escrever_reg) begin
@@ -239,10 +228,6 @@ module LSU_Lite #(
 					Axi_full.ARSIZE = 2'b10;
 				end
 		endcase
-
-
-
-
 		case (Quantos_Bytes_Escrita_i)
 			2'b00: 
 				begin //Não manda nada!
@@ -274,6 +259,5 @@ module LSU_Lite #(
 					Axi_full.AWSIZE = 2'b10;
 				end
 		endcase
-
 	end
 endmodule
