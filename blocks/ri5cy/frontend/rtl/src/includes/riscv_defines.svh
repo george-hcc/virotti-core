@@ -1,8 +1,10 @@
 //package riscv_defines;
 
-// Se parametro for 1, insere unidade de multiplicação ao core
+// Parametros de Configuração
 
 parameter RISCV_M_CORE    = 1;
+parameter PC_START_ADDR   = 32'h0000_00ff;
+parameter NOP_INSTR       = 32'h0;
 
 // Parametros globais
 

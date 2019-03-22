@@ -5,17 +5,25 @@ module if_stage
 		input  logic clk,
 		input  logic rst_n,
 
-		input  logic [WORD_WIDTH-1:0]	instruction_i, // Instrução vinda da memória
-		input  logic [WORD_WIDTH-1:0] instr_wb_i, // Writeback de instruções para jalr
-		output logic [WORD_WIDTH-1:0]	pc_o, // Endereço de instrução, igual a PC
-		output logic [WORD_WIDTH-1:0] pc_plus4_o, // PC + 4
-		output logic [WORD_WIDTH-1:0]	instruction_o, // Instrução saindo para ID
+		// Interface da Memória de Instruções
+		output logic 									instr_req_o; 		// Request Ready, precisa estar ativo até gnt_i estiver ativo por um ciclo
+		output logic [WORD_WIDTH-1:0]	instr_addr_o; 	// Recebe PC e manda como endereço para memória
+		input  logic [WORD_WIDTH-1:0]	instr_rdata_i; 	// Instrução vinda da memória
+		input  logic 									instr_rvalid_i; // Quando ativo, rdata_i é valido durante o ciclo
+		input  logic 									instr_gnt_i;		// O cache de instrução aceitou a requisição, addr_o pode mudar no próximo cíclo
 
-		input  logic 									branch_pc_ctrl_i,
-		input  logic									jtype_mux_i,
+		// Interface de Controle do Core
+		input  logic 									fetch_en_i,
+		input  logic [WORD_WIDTH-1:0]	pc_start_address_i,
+
+		// Sinais de outros estágios
+		input  logic [WORD_WIDTH-1:0] instr_wb_i, 		// Writeback de instruções para jalr
+		output logic [WORD_WIDTH-1:0] pc_plus4_o, 		// PC + 4
+		output logic [WORD_WIDTH-1:0]	instruction_o, 	// Instrução saindo para ID
+
+		// Sinais de Controle
+		input  logic 									hazard_ctrl_i,
 		input  logic 									jarl_mux_i,
-		input  logic									zeroflag_i,
-		input  logic									zeroflag_inv_i
 	);
 
 	logic [WORD_WIDTH-1:0] 	pc;
@@ -23,34 +31,15 @@ module if_stage
 	logic	[WORD_WIDTH-1:0]	next_pc;
 	logic	[WORD_WIDTH-1:0]	branch_pc_imm;
 
-	logic [12:0]						btype_imm;
-	logic	[WORD_WIDTH-1:0] 	xtended_branch_imm;
-	logic [20:0]						jtype_imm;
-	logic [WORD_WIDTH-1:0] 	xtended_jal_imm;
-
-	logic										inverted_zeroflag;
-	logic										branch_pc_mux;							
-
-	// Extensão de imediato de branch (Tipo SB)
-	always_comb begin
-		btype_imm = {instruction_i[31], instruction_i[7], instruction_i[30:25], instruction_i[11:8], 1'b0};
-		xtended_branch_imm[12:0]  = btype_imm;
-		xtended_branch_imm[31:13] = (btype_imm[12]) ? (19'b1) : (19'b0);	
-	end
-
-	// Extensão de imediato de jal (Tipo UJ)
-	always_comb begin
-		jtype_imm = {instruction_i[31], instruction_i[19:12], instruction_i[20], instruction_i[30:21], 1'b0};
-		xtended_jal_imm[20:0]  = jtype_imm;
-		xtended_jal_imm[31:21] = (jtype_imm[20]) ? (11'b1) : (11'b0);
-	end
+	logic										zeroflag;
+	logic										branch_pc_mux;
 
 	// Mux para seleção de imediato (Branch ou Jump)
 	assign branch_pc_imm = (jtype_mux_i) ? (xtended_jal_imm) : (xtended_branch_imm);
 
 	// Logica de controle do PC_Mux
-	assign inverted_zeroflag = (zeroflag_inv_i) ? (~zeroflag_i) : (zeroflag_i);
-	assign branch_pc_mux = (branch_pc_ctrl_i) && (inverted_zeroflag);
+	assign zeroflag = (zeroflag_inv_i) ? (~zeroflag_i) : (zeroflag_i);
+	assign branch_pc_mux = (branch_pc_ctrl_i) && (zeroflag);
 	
 	// Mux para soma de PC ou branch
 	assign pc_plus4 = pc + 32'd4;
@@ -60,7 +49,7 @@ module if_stage
 	// Program Counter
 	always_ff @(posedge clk or negedge rst_n) begin
 		if(~rst_n)
-			pc <= 'b0;
+			pc <= pc_start_address_i;
 		else if(jarl_mux_i)
 			pc <= instr_wb_i;
 		else
@@ -70,6 +59,6 @@ module if_stage
 	// Saídas
 	assign pc_o = pc;
 	assign pc_plus4_o = pc_plus4;
-	assign instruction_o = instruction_i;
+	assign instruction_o = (fetch_enable_i) ? (NOP_INSTR) : instr_rdata_i;
 
 endmodule
