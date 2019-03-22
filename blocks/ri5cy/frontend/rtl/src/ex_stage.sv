@@ -5,24 +5,23 @@
 
 module ex_stage
 	(
-		input  logic [WORD_WIDTH-1:0]		reg_rdata1_i,			// Dado vindo de RS1
-		input	 logic [WORD_WIDTH-1:0] 	reg_rdata2_i,			// Dado vindo de RS2
-		input  logic [WORD_WIDTH-1:0]		instruction_i,		// Instrução vinda do Fetch
-		input  logic [WORD_WIDTH-1:0]		program_count_i,	// Endereço da atual instrução
-		output logic [WORD_WIDTH-1:0]		ex_data_o,				// Saída do EX_Stage
-		output logic [WORD_WIDTH-1:0]		rdata2_store_o		// Dado de RS2, usados para operações de Store
+		input  logic [WORD_WIDTH-1:0]		reg_rdata1_i,				// Dado vindo de RS1
+		input	 logic [WORD_WIDTH-1:0] 	reg_rdata2_i,				// Dado vindo de RS2
+		input  logic [WORD_WIDTH-1:0]		instruction_i,			// Instrução vinda do Fetch
+		input  logic [WORD_WIDTH-1:0]		program_count_i,		// Endereço da atual instrução
+		output logic [WORD_WIDTH-1:0]		ex_data_o,					// Saída do EX_Stage
+		output logic [WORD_WIDTH-1:0]		rdata2_store_o			// Dado de RS2, usados para operações de Store
 
 		// Sinais de controle
-		input  logic [ALU_OP_WIDTH-1:0]	alu_op_ctrl_i,
-		input  logic										stype_mux_i,
-		input  logic										utype_mux_i,
-		input  logic 										jtype_mux_i,
-		input  logic										imm_alu_mux_i,
-		input  logic										pc_alu_mux_i,
-		input  logic										bypass_alu_mux_i,
-		input  logic 										branch_alu_mux_i,
+		input  logic [ALU_OP_WIDTH-1:0]	alu_op_ctrl_i,			// Controle de ULA e UMD
+		input  logic										stype_mux_i,				// Sinal de operação tipo S (Store)
+		input  logic										utype_mux_i,				// Sinal de operação tipo U (LUI e AUIPC)
+		input  logic 										jtype_mux_i,				// Sinal de operação tipo J (JAL)
+		input  logic										imm_alu_mux_i,			// Sinal de operações imediatas (I, S e U)
+		input  logic										pc_alu_mux_i,				// Sinal de operação com PC (AUIPC)
+		input  logic 										branch_alu_mux_i,		// Sinal de bypass da ULA (Branches e JAL)
 		input  logic										zeroflag_inv_i, 		// Inversor de zeroflag
-		output logic										branch_comp_flag_o,
+		output logic										branch_comp_flag_o,	// Flag de resultado de comparação para branches
 
 		// Sinal de controle ULA/UMD - Só é usado caso UMD exista
 		input  logic										alu_mdu_mux_i
@@ -33,6 +32,7 @@ module ex_stage
 	logic	[WORD_WIDTH-1:0] 	alu_result;
 	logic [WORD_WIDTH-1:0]	ex_data;
 	logic										zero_flag;
+	logic										bypass_alu_mux;
 
 	// Imediatos I, S e U (Usados para cálculo)
 	logic [11:0]					 	itype_imm;
@@ -131,8 +131,9 @@ module ex_stage
 	endgenerate	
 
 	// Mux de saída do EX_Stage
+	assign bypass_alu_mux = utype_mux_i && ~pc_alu_mux_i;
 	always_comb begin
-		if(bypass_alu_mux_i)									// Usado somente em LUI
+		if(bypass_alu_mux)										// Usado somente em LUI
 			ex_data_o = full_comp_immediate; 
 		else if(branch_alu_mux_i)							// Usando em Branches e JAL
 			ex_data_o = full_branch_immediate; 

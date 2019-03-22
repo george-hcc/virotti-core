@@ -148,7 +148,6 @@ module core
 			.jtype_mux_i      	(										),
 			.imm_alu_mux_i			(imm_ctrl_ID_EX			),
 			.pc_alu_mux_i				(pcalu_ctrl_ID_EX		),
-			.bypass_alu_mux_i		(bypass_ctrl_ID_EX	),
 			.branch_alu_mux_i 	(										),
 			.zeroflag_inv_i   	(										),
 			.branch_comp_flag_o	(										),
