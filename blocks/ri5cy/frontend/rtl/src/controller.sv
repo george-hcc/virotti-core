@@ -2,7 +2,7 @@
 
 module controller
 	(
-		input  logic [DCODE_WIDTH-1:0]	decoded_op_i,
+		input  decoded_op								decoded_op_i,
 
 		// Saídas de Controle
 		output logic [ALU_OP_WIDTH-1:0] alu_op_ctrl_o,
@@ -37,99 +37,8 @@ module controller
 	logic 									jal;
 	logic 									jalr;
 
-	enum logic
-		{
-			// Computacionais R
-			ADD,
-			SUB,
-			SLL,
-			SRL,
-			SRA,
-			AND,
-			OR,
-			XOR,
-			SLT,
-			SLTU,
-			// Computacionais I
-			ADDI,
-			SLLI,
-			SRLI,
-			SRAI,
-			ANDI,
-			ORI,
-			XORI,
-			SLTI,
-			SLTIU,
-			// Computacionais U
-			LUI,
-			AUIPC,
-			// Loads
-			LB,
-			LBU,
-			LH,
-			LHU,
-			LW,
-			// Stores
-			SB,
-			SH,
-			SW,
-			// Branches
-			BEQ,
-			BNE,
-			BLT,
-			BLTU,
-			BGE,
-			BGEU,
-			// Jumps
-			JAL,
-			JALR
-		} operation;
-
 	always_comb begin
 		case(decoded_op_i)
-			DCODED_ADD:			operation = ADD;
-			DCODED_SUB:			operation = SUB;
-			DCODED_SLL:			operation = SLL;
-			DCODED_SRL:			operation = SRL;
-			DCODED_SRA:			operation = SRA;
-			DCODED_AND:			operation = AND;
-			DCODED_OR:			operation = OR;
-			DCODED_XOR:			operation = XOR;
-			DCODED_SLT:			operation = SLT;
-			DCODED_SLTU:		operation = SLTU;
-			DCODED_ADDI:		operation = ADDI;
-			DCODED_SLLI:		operation = SLLI;
-			DCODED_SRLI:		operation = SRLI;
-			DCODED_SRAI:		operation = SRAI;
-			DCODED_ANDI:		operation = ANDI;
-			DCODED_ORI:			operation = ORI;
-			DCODED_XORI:		operation = XORI;
-			DCODED_SLTI:		operation = SLTI;
-			DCODED_SLTIU:		operation = SLTIU;
-			DCODED_LUI:			operation = LUI;
-			DCODED_AUIPC:		operation = AUIPC;
-			DCODED_LB:			operation = LB;
-			DCODED_LBU:			operation = LBU;
-			DCODED_LH:			operation = LH;
-			DCODED_LHU:			operation = LHU;
-			DCODED_LW:			operation = LW;
-			DCODED_SB:			operation = SB;
-			DCODED_SH:			operation = SH;
-			DCODED_SW:			operation = SW;
-			DCODED_BEQ:			operation = BEQ;
-			DCODED_BNE:			operation = BNE;
-			DCODED_BLT:			operation = BLT;
-			DCODED_BLTU:		operation = BLTU;	
-			DCODED_BGE:			operation = BGE;
-			DCODED_BGEU:		operation = BGEU;
-			DCODED_JAL:			operation = JAL;
-			DCODED_JALR:		operation = JALR;
-			default:				operation = ADD;
-		endcase
-	end
-
-	always_comb begin
-		case(operation)
 			ADD, ADDI, AUIPC, LB, LBU, LH, LHU, LW, SB, SH, SW, JAL, JALR:
 				alu_op  = ALU_ADD;
 			SUB, BEQ, BNE:
@@ -156,7 +65,7 @@ module controller
 	end
 
 	always_comb begin
-		case(operation)
+		case(decoded_op_i)
 			ADD, SUB, SLL, SRL, SRA, AND, OR, XOR, SLT, SLTU:
 				write_en 		= 1'b1;
 				imm 				= 1'b0;
@@ -312,34 +221,8 @@ module controller
 
 			logic [MDU_OP_WIDTH-1:0] 	mdu_op;
 
-			enum logic
-				{
-					MUL,
-					MULH,
-					MULHSU,
-					MULHU,
-					DIV,
-					DIVU,
-					REM,
-					REMU
-				} multdiv_operation;
-
 			always_comb begin
 				case(decoded_op_i)
-					DCODED_MUL:			multdiv_operation = MUL;
-					DCODED_MULH:		multdiv_operation = MULH;
-					DCODED_MULHSU:	multdiv_operation = MULHSU;
-					DCODED_MULHU:		multdiv_operation = MULHU;
-					DCODED_DIV:			multdiv_operation = DIV;
-					DCODED_DIVU:		multdiv_operation = DIVU;
-					DCODED_REM:			multdiv_operation = REM;
-					DCODED_REMU:		multdiv_operation = REMU;
-					default:				multdiv_operation = MUL;
-				endcase
-			end
-
-			always_comb begin
-				case(multdiv_operation)
 					MUL:			mdu_op = MDU_MUL;
 					MULH:			mdu_op = MDU_MULH;
 					MULHSU:		mdu_op = MDU_MULHSU;
@@ -354,7 +237,7 @@ module controller
 
 			always_comb begin
 				case(decoded_op_i)
-					DCODED_MUL, DCODED_MULH, DCODED_MULHSU, DCODED_MULHU, DCODED_DIV, DCODED_DIVU, DCODED_REM, DCODED_REMU:
+					MUL, MULH, MULHSU, MULHU, DIV, DIVU, REM, REMU:
 						md_op_ctrl_o = 1'b1;
 					default:
 						md_op_ctrl_o = 1'b0;
