@@ -67,86 +67,93 @@ module core
 
 	if_stage IF
 		(
-			.clk							(clk								),
-			.rst_n						(rst_n							),
+			.clk								(clk								),
+			.rst_n							(rst_n							),
 
-			.instruction_i		(imem_data_i				),
-			.instr_wb_i				(reg_wb_data_WB_ALL	),
-			.pc_o 						(pc_IF_EX						),
-			.pc_plus4_o 			(pc_plus4_IF_ID			),
-			.instruction_o 		(instr_IF_ID				),			
+			.instr_req_o				(										),
+			.instr_addr_o				(										),
+			.instr_rdata_i			(										),
+			.instr_rvalid_i			(										),
+			.instr_gnt_i				(										),
 
-			.fetch_enable_i		(fetch_enable_i			),
-			.branch_pc_ctrl_i	(branch_ctrl_ID_IF	),
-			.jtype_mux_i     	(										),
-			.jarl_mux_i      	(										),
-			.zeroflag_i      	(						 				),
-			.zeroflag_inv_i  	(										)
+			.fetch_en_i        	(fetch_en_i 				),
+			.pc_start_address_i	(pc_start_address_i	),
+
+			.instr_wb_i					(reg_wb_data_WB_ALL	),
+			.pc_plus4_o 				(pc_plus4_IF_ID			),
+			.instruction_o 			(instr_IF_ID				),
+
+			.hazard_ctrl_i     	(										),
+			.branch_pc_ctrl_i		(										),
+			.branch_comp_flag_i (										)
 		);
 
 	IF_to_ID if_id 
 		(
-			.clk							(clk								),
-			.rst_n						(rst_n							),
+			.clk								(clk								),
+			.rst_n							(rst_n							),
 		);
 
 	id_stage ID 
 		(
-			.clk							(clk								),
-			.rst_n						(rst_n							),
+			.clk								(clk								),
+			.rst_n							(rst_n							),
 
-			.instr_i 					(instr_IF_ID				),
-			.pc_plus4_i      	(										),
+			.instr_i 						(instr_IF_ID				),
+			.pc_plus4_i      		(										),
 
-			.rdata1_o 				(rd1_ID_EX					),
-			.rdata2_o 				(rd2_ID_EX					),
+			.rdata1_o 					(rd1_ID_EX					),
+			.rdata2_o 					(rd2_ID_EX					),
 
-			.waddr_wb_i      	(										),
-			.wdata_wb_i 			(reg_wb_data_WB_ALL	),
+			.waddr_wb_i      		(										),
+			.wdata_wb_i 				(reg_wb_data_WB_ALL	),
 
-			.jal_mux_i 				(										),
-			.write_en_i      	(										),
-			.alu_ctrl_o 			(alu_ctrl_ID_EX			),
-			.write_en_ctrl_o 	(										),
-			.imm_ctrl_o      	(										),
-			.stype_ctrl_o    	(										),
-			.upper_ctrl_o    	(										),
-			.lui_shift_ctrl_o	(										),
-			.pc_ula_ctrl_o   	(										),
-			.load_ctrl_o     	(										),
-			.store_ctrl_o    	(										),
-			.branch_ctrl_o   	(										),
-			.brn_inv_ctrl_o  	(										),
-			.jal_ctrl_o      	(										),
-			.jalr_ctrl_o     	(										),
+			.jal_mux_i 					(										),
+			.write_en_i      		(										),
+			.alu_ctrl_o 				(alu_ctrl_ID_EX			),
+			.write_en_ctrl_o 		(										),
+			.imm_ctrl_o      		(										),
+			.stype_ctrl_o    		(										),
+			.upper_ctrl_o    		(										),
+			.lui_shift_ctrl_o		(										),
+			.pc_ula_ctrl_o   		(										),
+			.load_ctrl_o     		(										),
+			.store_ctrl_o    		(										),
+			.branch_ctrl_o   		(										),
+			.brn_inv_ctrl_o  		(										),
+			.jal_ctrl_o      		(										),
+			.jalr_ctrl_o     		(										),
 
-			.md_op_ctrl_o			(										)
+			.md_op_ctrl_o				(										)
 		);
 
 	ID_to_EX id_ex
 		(
-			.clk							(clk								),
-			.rst_n						(rst_n							),
+			.clk								(clk								),
+			.rst_n							(rst_n							),
 		);
 
 	ex_stage EX 
 		(
-			.reg_rdata1_i			(rd1_ID_EX					),
-			.reg_rdata2_i			(rd2_ID_EX					),
-			.instruction_i   	(instruction_i			),
-			.program_count_i	(										),
-			.ex_data_o 				(alu_result_EX_WB		),
-			.rdata2_store_o		(										),
+			.reg_rdata1_i				(rd1_ID_EX					),
+			.reg_rdata2_i				(rd2_ID_EX					),
+			.instruction_i   		(instruction_i			),
+			.program_count_i		(										),
+			.ex_data_o 					(alu_result_EX_WB		),
+			.rdata2_store_o			(										),
 
-			.imm_mux_i				(imm_ctrl_ID_EX			),
-			.stype_mux_i			(stype_ctrl_ID_EX		),
-			.utype_mux_i			(utype_ctrl_ID_EX		),
-			.bypass_alu_mux_i	(bypass_ctrl_ID_EX	),
-			.pc_alu_mux_i			(pcalu_ctrl_ID_EX		),
-			.alu_op_ctrl_i		(alu_ctrl_ID_EX			),
-			.zero_flag_o     	(zero_flag_o				),
+			.alu_op_ctrl_i			(alu_ctrl_ID_EX			),
+			.stype_mux_i				(stype_ctrl_ID_EX		),
+			.utype_mux_i				(utype_ctrl_ID_EX		),
+			.jtype_mux_i      	(										),
+			.imm_alu_mux_i			(imm_ctrl_ID_EX			),
+			.pc_alu_mux_i				(pcalu_ctrl_ID_EX		),
+			.bypass_alu_mux_i		(bypass_ctrl_ID_EX	),
+			.branch_alu_mux_i 	(										),
+			.zeroflag_inv_i   	(										),
+			.branch_comp_flag_o	(										),
 
-			.alu_mdu_mux_i   	(										)
+			.alu_mdu_mux_i   		(										)
 		);
 
 	EX_to_WB ex_wb

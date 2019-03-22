@@ -23,23 +23,18 @@ module if_stage
 
 		// Sinais de Controle
 		input  logic 									hazard_ctrl_i,
-		input  logic 									jarl_mux_i,
+		input  logic 									branch_pc_ctrl_i,
+		input  logic 									branch_comp_flag_i
 	);
 
 	logic [WORD_WIDTH-1:0] 	pc;
 	logic [WORD_WIDTH-1:0]	pc_plus4;
 	logic	[WORD_WIDTH-1:0]	next_pc;
-	logic	[WORD_WIDTH-1:0]	branch_pc_imm;
 
-	logic										zeroflag;
 	logic										branch_pc_mux;
 
-	// Mux para seleção de imediato (Branch ou Jump)
-	assign branch_pc_imm = (jtype_mux_i) ? (xtended_jal_imm) : (xtended_branch_imm);
-
 	// Logica de controle do PC_Mux
-	assign zeroflag = (zeroflag_inv_i) ? (~zeroflag_i) : (zeroflag_i);
-	assign branch_pc_mux = (branch_pc_ctrl_i) && (zeroflag);
+	assign branch_pc_mux = (branch_pc_ctrl_i) && (branch_comp_flag_i);
 	
 	// Mux para soma de PC ou branch
 	assign pc_plus4 = pc + 32'd4;
@@ -50,15 +45,13 @@ module if_stage
 	always_ff @(posedge clk or negedge rst_n) begin
 		if(~rst_n)
 			pc <= pc_start_address_i;
-		else if(jarl_mux_i)
-			pc <= instr_wb_i;
 		else
 			pc <= next_pc;
 	end
 
 	// Saídas
-	assign pc_o = pc;
+	assign instr_addr_o = pc;
 	assign pc_plus4_o = pc_plus4;
-	assign instruction_o = (fetch_enable_i) ? (NOP_INSTR) : instr_rdata_i;
+	assign instruction_o = (fetch_enable_i) ? (NOOP_INSTR) : instr_rdata_i;
 
 endmodule

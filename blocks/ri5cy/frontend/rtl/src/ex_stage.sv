@@ -13,12 +13,12 @@ module ex_stage
 		output logic [WORD_WIDTH-1:0]		rdata2_store_o		// Dado de RS2, usados para operações de Store
 
 		// Sinais de controle
+		input  logic [ALU_OP_WIDTH-1:0]	alu_op_ctrl_i,
 		input  logic										stype_mux_i,
 		input  logic										utype_mux_i,
 		input  logic 										jtype_mux_i,
 		input  logic										imm_alu_mux_i,
 		input  logic										pc_alu_mux_i,
-		input  logic [ALU_OP_WIDTH-1:0]	alu_op_ctrl_i,
 		input  logic										bypass_alu_mux_i,
 		input  logic 										branch_alu_mux_i,
 		input  logic										zeroflag_inv_i, 		// Inversor de zeroflag
