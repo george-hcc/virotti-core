@@ -42,7 +42,7 @@ module if_stage
 	assign next_pc = (branch_pc_mux) ? (writeback_data_i) : (pc_plus4);
 
 	// Program Counter
-	always_ff @(posedge clk or negedge rst_n) begin
+	always_ff @(posedge clk, negedge rst_n) begin
 		if(~rst_n)
 			pc <= pc_start_address_i;
 		else

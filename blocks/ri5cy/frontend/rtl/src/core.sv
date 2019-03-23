@@ -87,20 +87,21 @@ module core
 			.fetch_en_i        	(fetch_en_i 				),
 			.pc_start_address_i	(pc_start_address_i	),
 
-			.writeback_data_i		(										),
+			.writeback_data_i		(					),
 			.program_count_o		(pc_IF_EX_w1				),
 			.pc_plus4_o 				(pc_plus4_IF_ID_w1	),
 			.instruction_o 			(instr_IF_ID_w1			),
 
-			.hazard_ctrl_i     	(										),
-			.branch_pc_ctrl_i		(										),
-			.branch_comp_flag_i (										)
+			.hazard_ctrl_i     	(					),
+			.branch_pc_ctrl_i		(					),
+			.branch_comp_flag_i (					)
 		);
 
 	IF_to_ID if_id 
 		(
 			.clk								(clk								),
 			.rst_n							(rst_n							),
+			.stall_ctrl     		(					),
 
 			.program_count_i		(pc_IF_EX_w1				),
 			.pc_plus4_i 				(pc_plus4_IF_ID_w1	),
