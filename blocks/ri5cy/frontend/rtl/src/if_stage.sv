@@ -18,6 +18,7 @@ module if_stage
 
 		// Sinais de outros estágios
 		input  logic [WORD_WIDTH-1:0] writeback_data_i, // Writeback de instruções para jalr
+		output logic [WORD_WIDTH-1:0] program_count_o,  // PC, levado ao EX_Stage para ser operado
 		output logic [WORD_WIDTH-1:0] pc_plus4_o, 			// PC + 4, armazenado em RD nas instruções JAL e JALR
 		output logic [WORD_WIDTH-1:0]	instruction_o, 		// Instrução saindo para ID
 

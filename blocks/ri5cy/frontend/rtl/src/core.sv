@@ -36,10 +36,18 @@ module core
 		input	 logic									socctrl_mmc_exception_i
 	);
 
-	// Saídas do IF_STAGE
-	logic [WORD_WIDTH-1:0] 		instr_IF_ID;
-	logic [WORD_WIDTH-1:0]		pc_IF_EX;
-	logic [WORD_WIDTH-1:0]		pc_plus4_IF_ID;
+	/*********Saídas do IF_STAGE*********/
+
+	// Entradas do IF_ID
+	logic [WORD_WIDTH-1:0] 		instr_IF_ID_w1;
+	logic [WORD_WIDTH-1:0]		pc_IF_EX_w1;
+	logic [WORD_WIDTH-1:0]		pc_plus4_IF_ID_w1;
+	// Saídas do IF_ID
+	logic [WORD_WIDTH-1:0] 		instr_IF_ID_w2;
+	logic [WORD_WIDTH-1:0]		pc_IF_EX_w2;
+	logic [WORD_WIDTH-1:0]		pc_plus4_IF_ID_w2;
+
+	/*************************************/
 
 	// Saídas do ID_STAGE
 	logic											branch_ctrl_ID_IF;
@@ -70,18 +78,19 @@ module core
 			.clk								(clk								),
 			.rst_n							(rst_n							),
 
-			.instr_req_o				(										),
-			.instr_addr_o				(										),
-			.instr_rdata_i			(										),
-			.instr_rvalid_i			(										),
-			.instr_gnt_i				(										),
+			.instr_req_o				(instr_req_o				),
+			.instr_addr_o				(instr_addr_o				),
+			.instr_rdata_i			(instr_rdata_i			),
+			.instr_rvalid_i			(instr_rvalid_i			),
+			.instr_gnt_i				(instr_gnt_i				),
 
 			.fetch_en_i        	(fetch_en_i 				),
 			.pc_start_address_i	(pc_start_address_i	),
 
-			.instr_wb_i					(reg_wb_data_WB_ALL	),
-			.pc_plus4_o 				(pc_plus4_IF_ID			),
-			.instruction_o 			(instr_IF_ID				),
+			.writeback_data_i		(										),
+			.program_count_o		(pc_IF_EX_w1				),
+			.pc_plus4_o 				(pc_plus4_IF_ID_w1	),
+			.instruction_o 			(instr_IF_ID_w1			),
 
 			.hazard_ctrl_i     	(										),
 			.branch_pc_ctrl_i		(										),
@@ -92,6 +101,14 @@ module core
 		(
 			.clk								(clk								),
 			.rst_n							(rst_n							),
+
+			.program_count_i		(pc_IF_EX_w1				),
+			.pc_plus4_i 				(pc_plus4_IF_ID_w1	),
+			.instruction_i 			(instr_IF_ID_w1			),
+
+			.program_count_o		(pc_IF_EX_w2				),
+			.pc_plus4_o 				(pc_plus4_IF_ID_w2	),
+			.instruction_o 			(instr_IF_ID_w2			)
 		);
 
 	id_stage ID 
