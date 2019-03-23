@@ -23,6 +23,8 @@ module id_stage
 		// Sinais de controle
 		input  logic										write_en_i,
 		output logic [ALU_OP_WIDTH-1:0]	alu_op_ctrl_o,
+		output logic [2:0]							load_type_ctrl_o,
+		output logic [1:0]							store_type_ctrl_o,
 		output logic										write_en_o,
 		output logic										stype_ctrl_o,
 		output logic										utype_ctrl_o,
@@ -32,8 +34,6 @@ module id_stage
 		output logic										branch_alu_ctrl_o,
 		output logic										zeroflag_ctrl_o,
 		output logic										branch_pc_ctrl_o,
-		output logic [2:0]							load_type_ctrl_o,
-		output logic [1:0]							store_type_ctrl_o,
 
 		// Sinal de controle ULA/UMD - Só é usado caso UMD exista
 		output logic										mdu_ctrl_o
@@ -64,20 +64,21 @@ module id_stage
 
 	control_unit ctrl_unit 
 		(
-			.instr_i(instruction_i),
-			.alu_op_ctrl_o(alu_ctrl_o),
-			.write_en_ctrl_o,
-			.imm_ctrl_o,
+			.instruction_i(instruction_i),
+
+			.alu_op_ctrl_o,
+			.load_type_ctrl_o,
+			.store_type_ctrl_o,
+			.write_en_o,
 			.stype_ctrl_o,
-			.upper_ctrl_o,
-			.lui_shift_ctrl_o,
-			.pc_ula_ctrl_o,
-			.load_ctrl_o,
-			.store_ctrl_o,
-			.branch_ctrl_o,
-			.brn_inv_ctrl_o,
-			.jal_ctrl_o,
-			.jalr_ctrl_o,
+			.utype_ctrl_o,
+			.jtype_ctrl_o,
+			.imm_alu_ctrl_o,
+			.auipc_alu_ctrl_o,
+			.branch_alu_ctrl_o,
+			.zeroflag_ctrl_o,
+			.branch_pc_ctrl_o,
+
 			.md_op_ctrl_o
 		);
 
