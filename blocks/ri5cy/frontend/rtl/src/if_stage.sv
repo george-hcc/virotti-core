@@ -23,7 +23,7 @@ module if_stage
 		output logic [WORD_WIDTH-1:0]	instruction_o, 		// Instrução saindo para ID
 
 		// Sinais de Controle
-		input  logic 									hazard_ctrl_i,
+		output logic 									no_op_flag_o,
 		input  logic 									branch_pc_ctrl_i,
 		input  logic 									branch_comp_flag_i
 	);
@@ -31,27 +31,56 @@ module if_stage
 	logic [WORD_WIDTH-1:0] 	pc;
 	logic [WORD_WIDTH-1:0]	pc_plus4;
 	logic	[WORD_WIDTH-1:0]	next_pc;
+	logic [WORD_WIDTH-1:0]	previous_pc;
 
 	logic										branch_pc_mux;
 
-	// Logica de controle do PC_Mux
-	assign branch_pc_mux = (branch_pc_ctrl_i) && (branch_comp_flag_i);
-	
-	// Mux para soma de PC ou branch
+	enum logic
+		{
+			RESET,
+			IDLE,
+			FETCH
+		}	fetch_state, next_fetch_state;
+
+	assign branch_pc_mux = ((branch_pc_ctrl_i) && (branch_comp_flag_i)) || (jump_flag_i);	
 	assign pc_plus4 = pc + 32'd4;
-	assign next_pc = (branch_pc_mux) ? (writeback_data_i) : (pc_plus4);
+
+	// Mudança de estados em cada clock
+	always_ff @(posedge clk)
+		fetch_state <= next_fetch_state;
+
+	// Lógica de transição de estados (O proximo estágio está temporariamente independente do estágio atual)
+	always_comb  begin
+		if(!rst_n)
+			next_fetch_state = RESET;
+		else begin
+			if(fetch_en_i)
+				next_fetch_state = FETCH;
+			else
+				next_fetch_state = IDLE;
+		end
+	end
+
+	always_comb begin
+		case(fetch_state)
+			RESET:
+				next_pc = pc_start_address_i;
+			IDLE:
+				next_pc = pc;
+			FETCH:
+				next_pc = (branch_pc_mux) ? (writeback_data_i) : (pc_plus4);
+		endcase
+	end
 
 	// Program Counter
-	always_ff @(posedge clk, negedge rst_n) begin
-		if(~rst_n)
-			pc <= pc_start_address_i;
-		else
-			pc <= next_pc;
-	end
+	always_ff @(posedge clk)		
+		pc <= next_pc;
 
 	// Saídas
 	assign instr_addr_o = pc;
+	assign program_count_o = previous_pc;
 	assign pc_plus4_o = pc_plus4;
-	assign instruction_o = (fetch_enable_i) ? (NOOP_INSTR) : instr_rdata_i;
+	assign instruction_o = instr_rdata_i;
+	assign no_op_flag_o = ~fetch_enable_i;
 
 endmodule
