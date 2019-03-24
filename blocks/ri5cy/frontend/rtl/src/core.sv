@@ -82,6 +82,7 @@ module core
 	logic 										write_en_ID_WB_w2;
 	logic 										branch_pc_ctrl_ID_WB_w2;
 	// Saídas do EX_WB
+	logic	[WORD_WIDTH-1:0]		rdata2_ID_EX_w3;
 	logic [2:0]								load_type_ID_WB_w3;
 	logic [1:0]								store_type_ID_WB_w3;
 	logic 										write_en_ID_WB_w3;
@@ -97,6 +98,10 @@ module core
 	logic [WORD_WIDTH-1:0]		ex_data_EX_WB_w2;
 	logic [WORD_WIDTH-1:0]		store_data_EX_WB_w2;
 	logic											comp_flag_EX_WB_w2;
+	/************************************/
+
+	/*********Saídas do EX_STAGE*********/
+	logic [WORD_WIDTH-1:0]		writeback_data_WB_w;
 	/************************************/
 
 	pcu pipeline_control_unit 
@@ -118,14 +123,14 @@ module core
 			.fetch_en_i        	(fetch_en_i 							),
 			.pc_start_address_i	(pc_start_address_i				),
 
-			.writeback_data_i		(					),
+			.writeback_data_i		(writeback_data_WB_w			),
 			.program_count_o		(pc_IF_EX_w1							),
 			.pc_plus4_o 				(pc_plus4_IF_ID_w1				),
 			.instruction_o 			(instr_IF_EX_w1						),
 
 			.hazard_ctrl_i     	(					),
-			.branch_pc_ctrl_i		(					),
-			.branch_comp_flag_i (					)
+			.branch_pc_ctrl_i		(branch_pc_ctrl_ID_WB_w3	),
+			.branch_comp_flag_i (comp_flag_EX_WB_w2				)
 		);
 
 	IF_to_ID if_id 
@@ -155,9 +160,9 @@ module core
 			.rdata2_o 					(rdata2_ID_EX_w1					),
 
 			.waddr_wb_i      		(					),
-			.wdata_wb_i 				(					),
+			.wdata_wb_i 				(writeback_data_WB_w			),
 
-			.write_en_i					(					),
+			.write_en_i					(write_en_ID_WB_w3				),
 			.alu_op_ctrl_o			(alu_op_ID_EX_w1					),
 			.load_type_ctrl_o		(load_type_ID_WB_w1				),
 			.store_type_ctrl_o	(store_type_ID_WB_w1			),
@@ -224,8 +229,7 @@ module core
 			.reg_rdata2_i				(rdata2_ID_EX_w2					),
 			.instruction_i   		(instr_IF_EX_w3						),
 			.program_count_i		(pc_IF_EX_w3							),
-			.ex_data_o 					(					),
-			.rdata2_store_o			(					),
+			.ex_data_o 					(ex_data_EX_WB_w1					),
 
 			.alu_op_ctrl_i			(alu_op_ID_EX_w2					),
 			.stype_mux_i				(stype_ctrl_ID_EX_w2			),
@@ -235,7 +239,7 @@ module core
 			.pc_alu_mux_i				(auipc_alu_ctrl_ID_EX_w2	),
 			.branch_alu_mux_i 	(branch_alu_ctrl_ID_EX_w2	),
 			.zeroflag_inv_i   	(zeroflag_ctrl_ID_EX_w2		),
-			.branch_comp_flag_o	(					),
+			.branch_comp_flag_o	(comp_flag_EX_WB_w1				),
 
 			.alu_mdu_mux_i   		(					)
 		);
@@ -246,6 +250,7 @@ module core
 			.rst_n							(rst_n										),
 			.stall_ctrl     		(						),
 
+			.store_data_i				(rdata2_ID_EX_w2					),			
 			.load_type_i				(load_type_ID_WB_w2				),
 			.store_type_i				(store_type_ID_WB_w2			),
 			.write_en_i					(write_en_ID_WB_w2				),
@@ -254,6 +259,7 @@ module core
 			.store_data_i				(store_data_EX_WB_w1			),
 			.comp_flag_i				(comp_flag_EX_WB_w1				),
 
+			.store_data_o				(rdata2_ID_EX_w3					),
 			.load_type_o				(load_type_ID_WB_w3				),
 			.store_type_o				(store_type_ID_WB_w3			),
 			.write_en_o					(write_en_ID_WB_w3				),
@@ -265,14 +271,21 @@ module core
 
 	wb_stage WB 
 		(
-			.alu_result_i			(		),
-			.data_store_i			(		),
-			
-			.reg_wb_o					(	),
-			.dmem_data_i			(										),
-			.dmem_addr_o			(										),
-			
-			.loadmem_mux_i		(										)
+			.ex_data_i    			(ex_data_EX_WB_w2					),
+			.store_data_i 			(rdata2_ID_EX_w3					),
+			.writeback_data_o 	(writeback_data_WB_w			),
+
+			.data_req_o   			(data_req_o								),
+			.data_addr_o  			(data_addr_o							),
+			.data_we_o    			(data_we_o								),
+			.data_be_o    			(data_be_o								),
+			.data_wdata_o 			(data_wdata_o							),
+			.data_rdata_i 			(data_rdata_i							),
+			.data_rvalid_i			(data_rvalid_i						),
+			.data_gnt_i					(data_gnt_i								),
+
+			.load_type_i 				(load_type_ID_WB_w3				),
+			.store_type_i 			(store_type_ID_WB_w3			)
 		);
 
 endmodule

@@ -4,6 +4,7 @@ module EX_to_WB
     input  logic                  rst_n,
     input  logic                  stall_ctrl,
 
+    input  logic [WORD_WIDTH-1:0] store_data_i
     input  logic [2:0]            load_type_i,
     input  logic [1:0]            store_type_i,
     input  logic                  write_en_i,
@@ -12,6 +13,7 @@ module EX_to_WB
     input  logic [WORD_WIDTH-1:0] store_data_i,
     input  logic                  comp_flag_i,
 
+    output logic [WORD_WIDTH-1:0] store_data_i
     output logic [2:0]            load_type_i,
     output logic [1:0]            store_type_i,
     output logic                  write_en_i,
