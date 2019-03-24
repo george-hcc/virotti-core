@@ -21,6 +21,7 @@ module id_stage
 		input  logic [WORD_WIDTH-1:0]		wdata_wb_i,
 
 		// Sinais de controle
+		input	 logic										no_op_flag_i,
 		input  logic										write_en_i,
 		output logic [ALU_OP_WIDTH-1:0]	alu_op_ctrl_o,
 		output logic [2:0]							load_type_ctrl_o,

@@ -39,10 +39,12 @@ module core
 	/*********Saídas do IF_STAGE*********/
 	// Entradas do IF_ID
 	logic [WORD_WIDTH-1:0]		pc_plus4_IF_ID_w1;
+	logic											no_op_IF_ID_w1;
 	logic [WORD_WIDTH-1:0] 		instr_IF_EX_w1;
 	logic [WORD_WIDTH-1:0]		pc_IF_EX_w1;
 	// Saídas do IF_ID
 	logic [WORD_WIDTH-1:0]		pc_plus4_IF_ID_w2;
+	logic											no_op_IF_ID_w2;
 	logic [WORD_WIDTH-1:0] 		instr_IF_EX_w2;
 	logic [WORD_WIDTH-1:0]		pc_IF_EX_w2;
 	// Saídas do ID_EX
@@ -128,7 +130,7 @@ module core
 			.pc_plus4_o 				(pc_plus4_IF_ID_w1				),
 			.instruction_o 			(instr_IF_EX_w1						),
 
-			.hazard_ctrl_i     	(					),
+			.no_op_flag_o     	(no_op_IF_ID_w1						),
 			.branch_pc_ctrl_i		(branch_pc_ctrl_ID_WB_w3	),
 			.branch_comp_flag_i (comp_flag_EX_WB_w2				)
 		);
@@ -142,10 +144,12 @@ module core
 			.program_count_i		(pc_IF_EX_w1							),
 			.pc_plus4_i 				(pc_plus4_IF_ID_w1				),
 			.instruction_i 			(instr_IF_EX_w1						),
+			.no_op_flag_i				(no_op_IF_ID_w1						),
 
 			.program_count_o		(pc_IF_EX_w2							),
 			.pc_plus4_o 				(pc_plus4_IF_ID_w2				),
-			.instruction_o 			(instr_IF_EX_w2						)
+			.instruction_o 			(instr_IF_EX_w2						),
+			.no_op_flag_o				(no_op_IF_ID_w2						)
 		);
 
 	id_stage ID 
@@ -162,6 +166,7 @@ module core
 			.waddr_wb_i      		(					),
 			.wdata_wb_i 				(writeback_data_WB_w			),
 
+			.no_op_flag_i				(no_op_IF_ID_w2						),
 			.write_en_i					(write_en_ID_WB_w3				),
 			.alu_op_ctrl_o			(alu_op_ID_EX_w1					),
 			.load_type_ctrl_o		(load_type_ID_WB_w1				),

@@ -4,7 +4,6 @@
 
 parameter RISCV_M_CORE    = 1;
 parameter PC_START_ADDR   = 32'h0000_00ff;
-parameter NOP_INSTR       = 32'h0;
 
 // Parametros globais
 
