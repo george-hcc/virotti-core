@@ -1,263 +1,154 @@
-module LSU_Lite #(
-		parameter WORD_SIZE = 32
-	)(
-	Axi4_FULL_if.master 				Axi_full,
+module LSU_Lite (
+	input clk,
+	input rst_n,
 
-	input 								Para_escrever_i,
-	input 								Para_ler_i,
+	input [1:0] Controle_Funcao_i,
+	input Escrita1_Leitura0_i,
+	input [31:0] data_addr_i,	
+	input [31:0] data_wdata_i,
+	output logic [31:0] Dado_lido_o,
 
-	input	[1:0]						Quantos_Bytes_Escrita_i,
-	input	[1:0]						Quantos_Bytes_Leitura_i,
+	output logic data_req_o,
+	output logic [3:0] data_be_o,
+	output logic [31:0] data_addr_o,
+	output logic data_we_o,
+	output logic [31:0] data_wdata_o,
 
-	input 								Add_Write,
-	input 	logic [WORD_SIZE -1 : 0] 	Data_Write,
-	output 		axi4_resp_el			Resposta_Escrita,
+	input [31:0] data_rdata_i,
+	input data_rvalid_i,
+	input data_gnd_i
+);
+/* 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Escrita1_Leitura0[Bit 1,Bit 0]<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+Bit 0: Se 1, escrever. Se 0, ler.
+*/
 
-	input 								Add_Read,
-	output	logic [WORD_SIZE -1 : 0] 	Data_Read,
-	output 		axi4_resp_el			Resposta_Leitura
-	);
-	// 	Tamanho do add é [ADD_LENGTH -1 + 2 : 0], pois é por Byte e não por linha.
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Todos os sinais '_i' vão ser enviados juntos. <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+// data_req_o 			// O sinal 'req' serve para requisitar uma transferência.
+// data_be_o [3:0]		// O sinal 'be'(Byte enable) serve para escolher quais Bytes serão lidos ou escritos pelo core.
+// data_addr_o[31:0]	// Manda o endereço que será lido ou escrito.
+// data_we_o			// Se '1', deve-se escrever, se '0', deve-se ler.
+// data_wdata_o[31:0]	// Dado para escrita.
 
-	import axi4_types::*;
-
-	logic Para_escrever_reg;
-	logic Para_ler_reg;
-
-	enum logic [1:0]
-	{
-		IDLE,
-		MANDANDO_ADD,
-		MANDANDO_DATA,
-		RECEBENDO_BRESP
-	}Estado_escrita;
-
-	enum logic [1:0]
-	{
-		IDLE,
-		MANDANDO_ADD,
-		RECEBENDO_DATA_E_RRESP
-	}Estado_leitura;
+// data_rdata_i[31:0]	// Dado lido.
+// data_rvalid_i		// Dado válido para leitura.
+// data_gnd_i			// Quando aceitar a requisição deve-se setar em '1' e baixar no próximo Clk.
 
 
 
-				//******** Função que tá faltando ********\\
-				//Implementar as escritas Byte, HalfWord e Escrita comum.
 
-	always_ff @(posedge Axi_full.ACLK or negedge Axi_full.ARESETn) 
+
+
+// input [3:0] data_be_i, <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  tirei !!!!!!!!!!!!!!!!
+
+parameter 	FAZ_NADA 	= 2'b00, 
+			XB 			= 2'b01, 
+			XH 			= 2'b10, 
+			XW 			= 2'b11;
+
+
+always_ff @(posedge clk or negedge rst_n) 
 	begin
-		if(~Axi_full.ARESETn) begin
-			Axi_full.AWID 		<= '0;
-			Axi_full.AWLEN		<= '0;	//Como vai usar ?
-			Axi_full.AWBURST	<= '0;	//Como vai usar ?
-			Axi_full.AWCACHE	<= '0;
-			Axi_full.AWPROT		<= '0;
-			Axi_full.AWQOS 		<= 2'b01;
-			Axi_full.AWREGION	<= '0;
-			Axi_full.AWUSER		<= '0;
+		if(~rst_n) begin
 
-			Axi_full.WSTRB		<= '0;	//Como vai usar ?
-			Axi_full.WLAST		<= '0;	//Como vai usar ?
-			Axi_full.WUSER		<= '0;
-
-			Axi_full.BID		<= '0;
-			Axi_full.BUSER		<= '0;
-
-			Axi_full.ARID		<= '0;
-			Axi_full.ARLEN		<= '0;	//Como vai usar ?
-			Axi_full.ARBURST	<= '0;	//Como vai usar ?
-			Axi_full.ARCACHE	<= '0;
-			Axi_full.ARPROT		<= '0;
-			Axi_full.ARQOS		<= 2'b01;
-			Axi_full.ARREGION	<= '0;
-			Axi_full.ARUSER		<= '0;
-
-			Axi_full.RID		<= '0;
-			Axi_full.RUSER		<= '0;
-
-
-
-
-			Axi_full.ARQOS 		<= 2'b01;
-
-			Para_escrever_reg 	<= Para_escrever_i;
-			Para_ler_reg		<= Para_ler_i;
-			Estado_escrita		<= IDLE;
+			data_req_o		<= '0;
+			data_be_o		<= '0;
+			data_addr_o		<= '0;
+			data_we_o		<= '0;
+			data_wdata_o	<= '0;
 		end 
 		else begin
+			data_addr_o		<= {2'b00, data_addr_i[31:2]};
 
-
-			unique case (Add_Read) inside
-				[32'h0000_0000 : (32'h0000_7FFF)]: begin
-					//NADA, pois é inst_Mem
-				end
-				[32'h0000_8000 : (32'h0000_8FFF)]: begin
-					Data_Read = MemData[Add_Read - h0000_8000];
-				end
-				[32'h0001_0000 : (32'h0001_01FF)]: begin
-					//ROM
-				end
-				[32'h0001_0200 : (32'hFFFF_FFFF)]: begin
-					case (Estado_leitura)
-						IDLE :
-							begin 
-								if(Para_ler_reg) begin
-									Axi_full.ARVALID 	<= '1;
-									Axi_full.ARADDR 	<= Add_Read;
-									Estado_escrita		<= MANDANDO_ADD;
-									Para_ler_reg 		<= '0;
-								end
-								else begin 
-									Para_ler_reg		<= Para_ler_i;
-								end
-							end
-
-						MANDANDO_ADD :
-							begin 
-								if(Axi_full.ARVALID && Axi_full.ARREADY) begin
-									Axi_full.ARVALID 	<= '0;
-									Axi_full.RREADY		<= '1;
-									Estado_escrita		<= RECEBENDO_DATA_E_RRESP; 
-								end
-							end
-
-						RECEBENDO_DATA_E_RRESP :
-							begin 
-								
-								if(Axi_full.RVALID && Axi_full.RREADY) begin
-									Data_Read			<= Axi_full.RDATA;
-									Resposta_Leitura	<= Axi_full.RRESP;
-									Estado_leitura		<= IDLE;
-								end
-							end
-					
-						default : Estado_leitura		<= IDLE;
-					endcase
-				end
-				default : begin
-					//Não sei
-				end
-			endcase
-
-			unique case (Add_Write) inside
-				[32'h0000_0000 : (32'h0000_7FFF)]: begin
-					//NADA, pois é inst_Mem
-				end
-				[32'h0000_8000 : (32'h0000_8FFF)]: begin
-					//MemData
-				end
-				[32'h0001_0000 : (32'h0001_01FF)]: begin
-					//ROM
-				end
-				[32'h0001_0200 : (32'hFFFF_FFFF)]: begin
-					//Periféricos
-				end
-				default : begin
-					//Não sei
-				end
-			endcase
-			
-			
-
-			case (Estado_escrita)
-				IDLE :
-					begin 
-						if(Para_escrever_reg) begin
-							Axi_full.AWVALID 	<= '1;
-							Axi_full.AWADDR 	<= Add_Write;
-							Estado_escrita		<= MANDANDO_ADD;
-							Para_escrever_reg 	<= '0;
+			if(Controle_Funcao_i != 2'b00) 
+				begin
+					data_req_o 		<= '1;
+					if(Escrita1_Leitura0_i)
+						begin
+							data_we_o		<= '1;
 						end
-						else begin 
-							Para_escrever_reg 	<= Para_escrever_i;
+					else 
+						begin
+							data_we_o		<= '0;
 						end
+				end
+			else
+				begin 
+					data_req_o 		<= '0;
+				end
+
+
+			case (Controle_Funcao_i)
+				FAZ_NADA:
+					begin
+						data_be_o		<= 4'b0000;
 					end
 
-				MANDANDO_ADD :
-					begin 
-						if(Axi_full.AWVALID && Axi_full.AWREADY) begin
-							Axi_full.AWVALID 	<= '0;
-							Axi_full.WVALID		<= '1;
-							Axi_full.WDATA		<= Data_Write;
-							Estado_escrita		<= MANDANDO_DATA;
-						end
+				XB:
+					begin
+						case (data_addr_i[1:0])
+							2'b00:
+								begin 
+									data_be_o			<= 4'b0001;
+									data_wdata_o[7:0]	<= data_wdata_i[7:0];
+								end
+
+							2'b01:
+								begin 
+									data_be_o			<= 4'b0010;
+									data_wdata_o[15:8]	<= data_wdata_i[7:0];
+								end
+
+							2'b10:
+								begin 
+									data_be_o			<= 4'b0100;
+									data_wdata_o[23:16]	<= data_wdata_i[7:0];
+								end
+
+							2'b11:
+								begin 
+									data_be_o			<= 4'b1000;
+									data_wdata_o[31:24]	<= data_wdata_i[7:0];
+								end
+						
+							default:
+								begin 
+									data_be_o			<= 4'b0000;
+								end
+						endcase
 					end
 
-				MANDANDO_DATA :
-					begin 
-						if(Axi_full.WVALID && Axi_full.WREADY) begin
-							Axi_full.WVALID		<= '0;
-							Axi_full.BREADY		<= '1;
-							Estado_escrita		<= RECEBENDO_BRESP;
-						end
+				XH:
+					begin
+						if(data_addr_i[1]) 
+							begin
+								data_be_o			<= 4'b1100;
+								data_wdata_o[31:16]	<= data_wdata_i[15:0];
+							end
+						else 
+							begin 
+								data_be_o			<= 4'b0011;
+								data_wdata_o[15:0]	<= data_wdata_i[15:0];
+							end
 					end
 
-				RECEBENDO_BRESP :
-					begin 
-						if(Axi_full.BVALID && Axi_full.BREADY) begin
-							Axi_full.BREADY		<= '0;
-							Resposta_Escrita	<= Axi_full.BRESP;
-							Estado_escrita		<= IDLE;
-						end
+				XW:
+					begin
+						data_be_o		<= '1;	//Pega tudo !!!!!
+						data_wdata_o	<= data_wdata_i;
 					end
 			
-				default : Estado_escrita		<= IDLE;
+				default 
+					begin
+						data_be_o		<= 4'b0000;
+					end
 			endcase
+
+
+			if(data_rvalid_i) begin
+				Dado_lido_o <= data_rdata_i;
+			end
 		end
 	end
 
-	always_comb begin 
-		case (Quantos_Bytes_Leitura_i)
-			2'b01: 
-				begin 
-					Axi_full.ARSIZE = '0;
-				end
-
-			2'b10: 
-				begin 
-					Axi_full.ARSIZE = 2'b01;
-				end
-
-			2'b11: 
-				begin 
-					Axi_full.ARSIZE = 2'b10;
-				end
-
-			default: 
-				begin 
-					Axi_full.ARSIZE = 2'b10;
-				end
-		endcase
-		case (Quantos_Bytes_Escrita_i)
-			2'b00: 
-				begin //Não manda nada!
-					Axi_full.WSTRB = 4'b0000;
-					Axi_full.AWSIZE = '0;
-				end
-
-			2'b01: 
-				begin 
-					Axi_full.WSTRB = 4'b0001;
-					Axi_full.AWSIZE = '0;
-				end
-
-			2'b10: 
-				begin 
-					Axi_full.WSTRB = 4'b0011;
-					Axi_full.AWSIZE = 2'b01;
-				end
-
-			2'b11: 
-				begin 
-					Axi_full.WSTRB = 4'b1111;
-					Axi_full.AWSIZE = 2'b10;
-				end
-
-			default: 
-				begin 
-					Axi_full.WSTRB = 4'b1111;
-					Axi_full.AWSIZE = 2'b10;
-				end
-		endcase
-	end
 endmodule
