@@ -10,6 +10,7 @@ module ex_stage
 		input  logic [WORD_WIDTH-1:0]		instruction_i,			// Instrução vinda do Fetch
 		input  logic [WORD_WIDTH-1:0]		program_count_i,		// Endereço da atual instrução
 		output logic [WORD_WIDTH-1:0]		ex_data_o,					// Saída do EX_Stage
+		output logic [ADDR_WIDTH-1:0]   reg_waddr_o, // TEMPORARIAMENTE AQUI MUDE DEPOIS
 
 		// Sinais de controle
 		input  logic [ALU_OP_WIDTH-1:0]	alu_op_ctrl_i,			// Controle de ULA e UMD
@@ -143,5 +144,6 @@ module ex_stage
 	// Zeroflag da ULA e geração de flag de resultado de comparação de branch
 	assign zero_flag = (ex_data == 32'b0);
 	assign branch_comp_flag_o = (zeroflag_inv_i) ? (~zero_flag) : (zero_flag);
+	assign reg_waddr_o = instruction_i[11:7];
 
 endmodule
