@@ -88,7 +88,7 @@ module ex_stage
 	assign operand_a = (pc_alu_mux_i) ? (program_count_i) : (reg_rdata1_i);
 	
 	// Operando B recebe valor de registro ou imediato
-	assign operand_b = (imm_alu_mux_i) ? (full_immediate) : (reg_rdata2_i);
+	assign operand_b = (imm_alu_mux_i) ? (full_comp_immediate) : (reg_rdata2_i);
 
 	alu ALU
 		(
@@ -142,6 +142,6 @@ module ex_stage
 
 	// Zeroflag da ULA e geração de flag de resultado de comparação de branch
 	assign zero_flag = (ex_data == 32'b0);
-	assign branch_comp_flag_o = (zeroflag_inv_i) ? (~zeroflag) : (zeroflag);
+	assign branch_comp_flag_o = (zeroflag_inv_i) ? (~zero_flag) : (zero_flag);
 
 endmodule

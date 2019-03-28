@@ -45,10 +45,10 @@ module id_stage
 	logic [ADDR_WIDTH-1:0]  addr_rd;
 	logic [WORD_WIDTH-1:0]	wdata;
 
-	assign addr_rs1 = instr_i[19:15];
-	assign addr_rs2 = instr_i[24:20];
+	assign addr_rs1 = instruction_i[19:15];
+	assign addr_rs2 = instruction_i[24:20];
 	assign addr_rd  = waddr_wb_i;
-	assign wdata 		= (jal_mux_i) ? (pc_plus4_i) : (wdata_wb_i);
+	assign wdata 		= wdata_wb_i;
 
 	reg_bank regbank 
 		(
@@ -67,18 +67,18 @@ module id_stage
 		(
 			.instruction_i(instruction_i),
 
-			.alu_op_ctrl_o,
-			.load_type_ctrl_o,
-			.store_type_ctrl_o,
-			.write_en_o,
-			.stype_ctrl_o,
-			.utype_ctrl_o,
-			.jtype_ctrl_o,
-			.imm_alu_ctrl_o,
-			.auipc_alu_ctrl_o,
-			.branch_alu_ctrl_o,
-			.zeroflag_ctrl_o,
-			.branch_pc_ctrl_o,
+			.alu_op_ctrl_o(),
+			.load_type_ctrl_o(),
+			.store_type_ctrl_o(),
+			.write_en_o(),
+			.stype_ctrl_o(),
+			.utype_ctrl_o(),
+			.jtype_ctrl_o(),
+			.imm_alu_ctrl_o(),
+			.auipc_alu_ctrl_o(),
+			.branch_alu_ctrl_o(),
+			.zeroflag_ctrl_o(),
+			.branch_pc_ctrl_o(),
 
 			.md_op_ctrl_o
 		);
