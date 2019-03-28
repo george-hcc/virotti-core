@@ -2,7 +2,7 @@
 
 // Parametros de Configuração
 
-parameter RISCV_M_CORE    = 1;
+parameter RISCV_M_CORE    = 0;
 parameter PC_START_ADDR   = 32'h0000_00ff;
 
 // Parametros globais

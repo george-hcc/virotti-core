@@ -2,7 +2,7 @@
 
 module controller
 	(
-		input  decoded_op								decoded_op_i,
+		input  decoded_instr						decoded_instr_i,
 
 		// Saídas de Controle
 		output logic [ALU_OP_WIDTH-1:0]	alu_op_ctrl_o,
@@ -22,41 +22,41 @@ module controller
 		output logic										md_op_ctrl_o
 	);
 
-	logic [ALU_OP_WIDTH-1] 	alu_op;
-	logic [2:0]							load_type;
-	logic [1:0]							store_type;
-	logic										write_en;
-	logic										stype;
-	logic										utype;
-	logic										jtype;
-	logic										imm_alu;
-	logic										auipc_alu;
-	logic										branch_alu;
-	logic										zeroflag_inv;
-	logic										branch_pc;
+	logic [ALU_OP_WIDTH-1:0] 	alu_op;
+	logic [2:0]								load_type;
+	logic [1:0]								store_type;
+	logic											write_en;
+	logic											stype;
+	logic											utype;
+	logic											jtype;
+	logic											imm_alu;
+	logic											auipc_alu;
+	logic											branch_alu;
+	logic											zeroflag_inv;
+	logic											branch_pc;
 
 	// Decodificação de controle da ULA
 	always_comb begin
-		unique case(decoded_op_i)
-			ADD, ADDI, AUIPC, LB, LBU, LH, LHU, LW, SB, SH, SW, JAL, JALR, LUI:
+		case(decoded_instr_i)
+			INSTR_ADD, INSTR_ADDI, INSTR_AUIPC, INSTR_LB, INSTR_LBU, INSTR_LH, INSTR_LHU, INSTR_LW, INSTR_SB, INSTR_SH, INSTR_SW, INSTR_JAL, INSTR_JALR, INSTR_LUI:
 				alu_op  = ALU_ADD;
-			SUB, BEQ, BNE:
+			INSTR_SUB, INSTR_BEQ, INSTR_BNE:
 				alu_op  = ALU_SUB;
-			SLT, SLTI, BLT, BGE:
+			INSTR_SLT, INSTR_SLTI, INSTR_BLT, INSTR_BGE:
 				alu_op  = ALU_SLT;
-			SLTU, SLTIU, BLTU, BGEU:
+			INSTR_SLTU, INSTR_SLTIU, INSTR_BLTU, INSTR_BGEU:
 				alu_op  = ALU_SLTU;
-			OR, ORI:
+			INSTR_OR, INSTR_ORI:
 				alu_op  = ALU_OR;
-			AND, ANDI:
+			INSTR_AND, INSTR_ANDI:
 				alu_op  = ALU_AND;
-			XOR, XORI:
+			INSTR_XOR, INSTR_XORI:
 				alu_op  = ALU_XOR;
-			SLL, SLLI:
+			INSTR_SLL, INSTR_SLLI:
 				alu_op  = ALU_SLL;
-			SRL, SRLI:
+			INSTR_SRL, INSTR_SRLI:
 				alu_op  = ALU_SRL;
-			SRA, SRAI:
+			INSTR_SRA, INSTR_SRAI:
 				alu_op  = ALU_SRA;
 			default:
 				alu_op  = ALU_ADD;
@@ -65,30 +65,30 @@ module controller
 
 	// Decodificação de tipo de Load
 	always_comb begin
-		unique case(decoded_op_i) begin
-			LB:				load_type = 3'b001;
-			LBU:			load_type = 3'b101;
-			LH:				load_type = 3'b010;
-			LHU:			load_type = 3'b110;
-			LW:				load_type = 3'b100;
-			default:	load_type = 3'b000;
+		case(decoded_instr_i)
+			INSTR_LB:		load_type = 3'b001;
+			INSTR_LBU:	load_type = 3'b101;
+			INSTR_LH:		load_type = 3'b010;
+			INSTR_LHU:	load_type = 3'b110;
+			INSTR_LW:		load_type = 3'b100;
+			default:		load_type = 3'b000;
 		endcase
 	end
 
 	// Decodificação de tipo de Store
 	always_comb begin
-		unique case(decoded_op_i) begin
-			SB:				store_type = 2'b01;
-			SH:				store_type = 2'b10;
-			SW:				store_type = 2'b11;
+		case(decoded_instr_i)
+			INSTR_SB:	store_type = 2'b01;
+			INSTR_SH:	store_type = 2'b10;
+			INSTR_SW:	store_type = 2'b11;
 			default:	store_type = 2'b00;
 		endcase
 	end
 
 	// Decodificação de bits de controle
 	always_comb begin
-		unique case(decoded_op_i)
-			ADD, SUB, SLL, SRL, SRA, AND, OR, XOR, SLT, SLTU:
+		case(decoded_instr_i)
+			INSTR_ADD, INSTR_SUB, INSTR_SLL, INSTR_SRL, INSTR_SRA, INSTR_AND, INSTR_OR, INSTR_XOR, INSTR_SLT, INSTR_SLTU:
 				write_en			= 1'b1;
 				stype					= 1'b0;
 				utype					= 1'b0;
@@ -98,7 +98,7 @@ module controller
 				branch_alu		= 1'b0;
 				zeroflag_inv	= 1'b0;
 				branch_pc			= 1'b0;
-			ADDI, SLLI, SRLI, SRAI, ANDI, ORI, XORI, SLTI, SLTIU, LB, LBU, LH, LHU, LW:
+			INSTR_ADDI, INSTR_SLLI, INSTR_SRLI, INSTR_SRAI, INSTR_ANDI, INSTR_ORI, INSTR_XORI, INSTR_SLTI, INSTR_SLTIU, INSTR_LB, INSTR_LBU, INSTR_LH, INSTR_LHU, INSTR_LW:
 				write_en			= 1'b1;
 				stype					= 1'b0;
 				utype					= 1'b0;
@@ -108,7 +108,7 @@ module controller
 				branch_alu		= 1'b0;
 				zeroflag_inv	= 1'b0;
 				branch_pc			= 1'b0;
-			LUI:
+			INSTR_LUI:
 				write_en			= 1'b1;
 				stype					= 1'b0;
 				utype					= 1'b1;
@@ -118,7 +118,7 @@ module controller
 				branch_alu		= 1'b0;
 				zeroflag_inv	= 1'b0;
 				branch_pc			= 1'b0;
-			AUIPC:
+			INSTR_AUIPC:
 				write_en			= 1'b1;
 				stype					= 1'b0;
 				utype					= 1'b1;
@@ -128,7 +128,7 @@ module controller
 				branch_alu		= 1'b0;
 				zeroflag_inv	= 1'b0;
 				branch_pc			= 1'b0;
-			SB, SH, SW:
+			INSTR_SB, INSTR_SH, INSTR_SW:
 				write_en			= 1'b0;
 				stype					= 1'b1;
 				utype					= 1'b0;
@@ -138,7 +138,7 @@ module controller
 				branch_alu		= 1'b0;
 				zeroflag_inv	= 1'b0;
 				branch_pc			= 1'b0;
-			BEQ, BLT, BLTU:
+			INSTR_BEQ, INSTR_BLT, INSTR_BLTU:
 				write_en			= 1'b0;
 				stype					= 1'b0;
 				utype					= 1'b0;
@@ -148,7 +148,7 @@ module controller
 				branch_alu		= 1'b1;
 				zeroflag_inv	= 1'b0;
 				branch_pc			= 1'b1;
-			BNE, BGE, BGEU:
+			INSTR_BNE, INSTR_BGE, INSTR_BGEU:
 				write_en			= 1'b0;
 				stype					= 1'b0;
 				utype					= 1'b0;
@@ -158,7 +158,7 @@ module controller
 				branch_alu		= 1'b1;
 				zeroflag_inv	= 1'b1;
 				branch_pc			= 1'b1;
-			JAL:
+			INSTR_JAL:
 				write_en			= 1'b1;
 				stype					= 1'b0;
 				utype					= 1'b0;
@@ -168,7 +168,7 @@ module controller
 				branch_alu		= 1'b1;
 				zeroflag_inv	= 1'b0;
 				branch_pc			= 1'b1;
-			JALR:
+			INSTR_JALR:
 				write_en			= 1'b1;
 				stype					= 1'b0;
 				utype					= 1'b0;
@@ -201,22 +201,22 @@ module controller
 			logic [MDU_OP_WIDTH-1:0] 	mdu_op;
 
 			always_comb begin
-				case(decoded_op_i)
-					MUL:			mdu_op = MDU_MUL;
-					MULH:			mdu_op = MDU_MULH;
-					MULHSU:		mdu_op = MDU_MULHSU;
-					MULHU:		mdu_op = MDU_MULHU;
-					DIV:			mdu_op = MDU_DIV;
-					DIVU:			mdu_op = MDU_DIVU;
-					REM:			mdu_op = MDU_REM;
-					REMU:			mdu_op = MDU_REMU;
+				case(decoded_instr_i)
+					INSTR_MUL:			mdu_op = MDU_MUL;
+					INSTR_MULH:			mdu_op = MDU_MULH;
+					INSTR_MULHSU:		mdu_op = MDU_MULHSU;
+					INSTR_MULHU:		mdu_op = MDU_MULHU;
+					INSTR_DIV:			mdu_op = MDU_DIV;
+					INSTR_DIVU:			mdu_op = MDU_DIVU;
+					INSTR_REM:			mdu_op = MDU_REM;
+					INSTR_REMU:			mdu_op = MDU_REMU;
 					default:	mdu_op = MDU_MUL;
 				endcase
 			end
 
 			always_comb begin
-				case(decoded_op_i)
-					MUL, MULH, MULHSU, MULHU, DIV, DIVU, REM, REMU:
+				case(decoded_instr_i)
+					INSTR_MUL, INSTR_MULH, INSTR_MULHSU, INSTR_MULHU, INSTR_DIV, INSTR_DIVU, INSTR_REM, INSTR_REMU:
 						md_op_ctrl_o = 1'b1;
 					default:
 						md_op_ctrl_o = 1'b0;

@@ -25,12 +25,12 @@ module control_unit
 		output logic										md_op_ctrl_o		
 	);
 
-	decoded_op operation;
+	decoded_instr operation;
 
 	decoder decoder
 		(
 			.instruction_i(instruction_i),
-			.decoded_op_o(operation)
+			.decoded_instr_o(operation)
 		);
 
 	generate
@@ -39,7 +39,7 @@ module control_unit
 
 			controller ctrlr
 				(
-					.decoded_op_i(operation),
+					.decoded_instr_i(operation),
 
 					.alu_op_ctrl_o,
 					.load_type_ctrl_o,
@@ -63,7 +63,7 @@ module control_unit
 
 			controller ctrlr
 				(
-					.decoded_op_i(operation),
+					.decoded_instr_i(operation),
 
 					.alu_op_ctrl_o,
 					.load_type_ctrl_o,
