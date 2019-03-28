@@ -89,6 +89,7 @@ module controller
 	always_comb begin
 		case(decoded_instr_i)
 			INSTR_ADD, INSTR_SUB, INSTR_SLL, INSTR_SRL, INSTR_SRA, INSTR_AND, INSTR_OR, INSTR_XOR, INSTR_SLT, INSTR_SLTU:
+			begin
 				write_en			= 1'b1;
 				stype					= 1'b0;
 				utype					= 1'b0;
@@ -98,7 +99,9 @@ module controller
 				branch_alu		= 1'b0;
 				zeroflag_inv	= 1'b0;
 				branch_pc			= 1'b0;
+			end
 			INSTR_ADDI, INSTR_SLLI, INSTR_SRLI, INSTR_SRAI, INSTR_ANDI, INSTR_ORI, INSTR_XORI, INSTR_SLTI, INSTR_SLTIU, INSTR_LB, INSTR_LBU, INSTR_LH, INSTR_LHU, INSTR_LW:
+			begin
 				write_en			= 1'b1;
 				stype					= 1'b0;
 				utype					= 1'b0;
@@ -108,7 +111,9 @@ module controller
 				branch_alu		= 1'b0;
 				zeroflag_inv	= 1'b0;
 				branch_pc			= 1'b0;
+			end
 			INSTR_LUI:
+			begin
 				write_en			= 1'b1;
 				stype					= 1'b0;
 				utype					= 1'b1;
@@ -118,7 +123,9 @@ module controller
 				branch_alu		= 1'b0;
 				zeroflag_inv	= 1'b0;
 				branch_pc			= 1'b0;
+			end
 			INSTR_AUIPC:
+			begin
 				write_en			= 1'b1;
 				stype					= 1'b0;
 				utype					= 1'b1;
@@ -128,7 +135,9 @@ module controller
 				branch_alu		= 1'b0;
 				zeroflag_inv	= 1'b0;
 				branch_pc			= 1'b0;
+			end
 			INSTR_SB, INSTR_SH, INSTR_SW:
+			begin
 				write_en			= 1'b0;
 				stype					= 1'b1;
 				utype					= 1'b0;
@@ -138,7 +147,9 @@ module controller
 				branch_alu		= 1'b0;
 				zeroflag_inv	= 1'b0;
 				branch_pc			= 1'b0;
+			end
 			INSTR_BEQ, INSTR_BLT, INSTR_BLTU:
+			begin
 				write_en			= 1'b0;
 				stype					= 1'b0;
 				utype					= 1'b0;
@@ -148,7 +159,9 @@ module controller
 				branch_alu		= 1'b1;
 				zeroflag_inv	= 1'b0;
 				branch_pc			= 1'b1;
+			end
 			INSTR_BNE, INSTR_BGE, INSTR_BGEU:
+			begin
 				write_en			= 1'b0;
 				stype					= 1'b0;
 				utype					= 1'b0;
@@ -158,7 +171,9 @@ module controller
 				branch_alu		= 1'b1;
 				zeroflag_inv	= 1'b1;
 				branch_pc			= 1'b1;
+			end
 			INSTR_JAL:
+			begin
 				write_en			= 1'b1;
 				stype					= 1'b0;
 				utype					= 1'b0;
@@ -168,7 +183,9 @@ module controller
 				branch_alu		= 1'b1;
 				zeroflag_inv	= 1'b0;
 				branch_pc			= 1'b1;
+			end
 			INSTR_JALR:
+			begin
 				write_en			= 1'b1;
 				stype					= 1'b0;
 				utype					= 1'b0;
@@ -178,7 +195,9 @@ module controller
 				branch_alu		= 1'b0;
 				zeroflag_inv	= 1'b0;
 				branch_pc			= 1'b1;
+			end
 			default:
+			begin
 				write_en			= 1'b0;
 				stype					= 1'b0;
 				utype					= 1'b0;
@@ -188,6 +207,7 @@ module controller
 				branch_alu		= 1'b0;
 				zeroflag_inv	= 1'b0;
 				branch_pc			= 1'b0;
+			end
 		endcase
 	end
 
