@@ -27,7 +27,21 @@ parameter OPCODE_JAL      = 7'h6f;
 parameter OPCODE_AUIPC    = 7'h17;
 parameter OPCODE_LUI      = 7'h37;
 
-// Parametros do decodificador (Necessário otimizar(OTIMIZEI PRA CARALHO))
+// Tipedefs do decodificador
+
+typedef enum
+  {
+    NO_OP,
+    COMP,
+    COMP_IMM,
+    STORE,
+    LOAD,
+    BRANCH,
+    JALR,
+    JAL,
+    AUIPC,
+    LUI
+  } decoded_opcode;
 
 typedef enum
   {
@@ -78,7 +92,7 @@ typedef enum
     DIVU,
     REM,
     REMU
-  } decoded_op;
+  } decoded_instr;
 
 // Controle da ULA
 
