@@ -22,14 +22,14 @@ module control_unit
 		output logic										branch_pc_ctrl_o,
 
 		// Sinal de controle ULA/UMD - Só é usado caso UMD exista
-		output logic										md_op_ctrl_o		
+		output logic										mdu_op_ctrl_o		
 	);
 
 	decoded_instr operation;
 
 	decoder decoder
 		(
-			.instruction_i(instruction_i),
+			.instr_i(instruction_i),
 			.decoded_instr_o(operation)
 		);
 
@@ -54,7 +54,7 @@ module control_unit
 					.zeroflag_ctrl_o,
 					.branch_pc_ctrl_o,
 
-					.md_op_ctrl_o
+					.mdu_op_ctrl_o
 				);
 
 		end

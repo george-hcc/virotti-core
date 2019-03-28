@@ -37,7 +37,7 @@ module id_stage
 		output logic										branch_pc_ctrl_o,
 
 		// Sinal de controle ULA/UMD - Só é usado caso UMD exista
-		output logic										mdu_ctrl_o
+		output logic										mdu_op_ctrl_o
 	);
 
 	logic [ADDR_WIDTH-1:0]	addr_rs1;
@@ -80,7 +80,7 @@ module id_stage
 			.zeroflag_ctrl_o(),
 			.branch_pc_ctrl_o(),
 
-			.md_op_ctrl_o
+			.mdu_op_ctrl_o
 		);
 
 endmodule

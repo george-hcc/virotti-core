@@ -183,7 +183,7 @@ module core
 			.zeroflag_ctrl_o		(zeroflag_ctrl_ID_EX_w1		),
 			.branch_pc_ctrl_o		(branch_pc_ctrl_ID_WB_w1	),
 
-			.md_op_ctrl_o				(					)
+			.mdu_op_ctrl_o				(					)
 		);
 
 	ID_to_EX id_ex
@@ -226,8 +226,8 @@ module core
 			.utype_ctrl_o				(utype_ctrl_ID_EX_w2			),
 			.branch_pc_ctrl_o		(branch_pc_ctrl_ID_WB_w2	),
 
-			.md_op_ctrl_i				(					),
-			.md_op_ctrl_o				(					)
+			.mdu_op_ctrl_i				(					),
+			.mdu_op_ctrl_o				(					)
 		);
 
 	ex_stage EX 

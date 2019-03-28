@@ -19,7 +19,7 @@ module controller
 		output logic										branch_pc_ctrl_o,
 
 		// Sinal de controle ULA/UMD - Só é usado caso UMD exista
-		output logic										md_op_ctrl_o
+		output logic										mdu_op_ctrl_o
 	);
 
 	logic [ALU_OP_WIDTH-1:0] 	alu_op;
@@ -237,21 +237,21 @@ module controller
 			always_comb begin
 				case(decoded_instr_i)
 					INSTR_MUL, INSTR_MULH, INSTR_MULHSU, INSTR_MULHU, INSTR_DIV, INSTR_DIVU, INSTR_REM, INSTR_REMU:
-						md_op_ctrl_o = 1'b1;
+						mdu_op_ctrl_o = 1'b1;
 					default:
-						md_op_ctrl_o = 1'b0;
+						mdu_op_ctrl_o = 1'b0;
 				endcase
 			end
 
 			always_comb begin
-				if(md_op_ctrl_o) 
+				if(mdu_op_ctrl_o) 
 					alu_op_ctrl_o = {1'b0, mdu_op};
 				else
 					alu_op_ctrl_o = alu_op;
 			end
 
 			always_comb begin
-				if(md_op_ctrl_o) begin
+				if(mdu_op_ctrl_o) begin
 					load_type_ctrl_o 	= 3'b000;
 					store_type_ctrl_o = 2'b00;
 					write_en_o 				= 1'b1;
