@@ -31,7 +31,7 @@ module if_stage
 	logic [WORD_WIDTH-1:0] 	pc;
 	logic [WORD_WIDTH-1:0]	pc_plus4;
 	logic	[WORD_WIDTH-1:0]	next_pc;
-	logic [WORD_WIDTH-1:0]	previous_pc;
+	logic [WORD_WIDTH-1:0]	prev_pc;
 
 	logic										branch_pc_mux;
 
@@ -73,8 +73,10 @@ module if_stage
 	end
 
 	// Program Counter
-	always_ff @(posedge clk)		
+	always_ff @(posedge clk) begin
 		pc <= next_pc;
+		prev_pc <= pc;
+	end
 
 	// Saídas
 	assign instr_addr_o = pc;
