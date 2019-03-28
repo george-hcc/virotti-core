@@ -1,40 +1,41 @@
 
-`include "hazard_control.sv"
-`include "if_stage.sv"
+`include "riscv_defines.svh"
+`include "if_to_id.sv"
 `include "id_stage.sv"
+`include "id_to_ex.sv"
 `include "ex_stage.sv"
-`include "wb_stage.sv"
 
 module Kelvin_TB ();
 
+	parameter 	WORD_WIDTH = 32,
+				ALU_OP_WIDTH = 4;
 
-
-	input  logic									clk;
-	input  logic									rst_n;
+	logic									clk;
+	logic									rst_n;
 
 	// Interface da Memória de Instruções
-	output logic 									instr_req_o;		// Request Ready; precisa estar ativo até gnt_i estiver ativo por um ciclo
-	output logic [WORD_WIDTH-1:0]	instr_addr_o;		// Recebe PC e manda como endereço para memória
-	input  logic [WORD_WIDTH-1:0]	instr_rdata_i;	// Instrução vinda da memória
-	input  logic 									instr_rvalid_i;	// Quando ativo; rdata_i é valido durante o ciclo
-	input  logic 									instr_gnt_i;		// O cache de instrução aceitou a requisição; addr_o pode mudar no próximo cíclo
+	logic 									instr_req_o;		// Request Ready; precisa estar ativo até gnt_i estiver ativo por um ciclo
+	logic [WORD_WIDTH-1:0]	instr_addr_o;		// Recebe PC e manda como endereço para memória
+	logic [WORD_WIDTH-1:0]	instr_rdata_i;	// Instrução vinda da memória
+	logic 									instr_rvalid_i;	// Quando ativo; rdata_i é valido durante o ciclo
+	logic 									instr_gnt_i;		// O cache de instrução aceitou a requisição; addr_o pode mudar no próximo cíclo
 
 	// Interface da Memória de Dados
-	output logic									data_req_o;
-	output logic [WORD_WIDTH-1:0]	data_addr_o;
-	output logic 									data_we_o;
-	output logic [3:0]						data_be_o;
-	output logic [WORD_WIDTH-1:0]	data_wdata_o;
-	input  logic [WORD_WIDTH-1:0] data_rdata_i;
-	input  logic									data_rvalid_i;
-	input  logic									data_gnt_i;
+	logic									data_req_o;
+	logic [WORD_WIDTH-1:0]	data_addr_o;
+	logic 									data_we_o;
+	logic [3:0]						data_be_o;
+	logic [WORD_WIDTH-1:0]	data_wdata_o;
+	logic [WORD_WIDTH-1:0] data_rdata_i;
+	logic									data_rvalid_i;
+	logic									data_gnt_i;
 
 	// Interface de Controle do Core
-	input  logic									fetch_en_i;
-	input	 logic [WORD_WIDTH-1:0]	pc_start_addr_i;
-	input  logic [4:0]						irq_id_i;
-	input  logic									irq_event_i;
-	input	 logic									socctrl_mmc_exception_i;
+	logic									fetch_en_i;
+	logic [WORD_WIDTH-1:0]	pc_start_addr_i;
+	logic [4:0]						irq_id_i;
+	logic									irq_event_i;
+	logic									socctrl_mmc_exception_i;
 
 	/*********Saídas do IF_STAGE*********/
 	// Entradas do IF_ID
@@ -110,7 +111,7 @@ module Kelvin_TB ();
 		(
 			.clk								(clk											),
 			.rst_n							(rst_n										),
-			.stall_ctrl     		(					),
+			.stall_ctrl     		(1'b0),
 
 			.program_count_i		(pc_IF_EX_w1							),
 			.pc_plus4_i 				(pc_plus4_IF_ID_w1				),
@@ -159,7 +160,7 @@ module Kelvin_TB ();
 		(
 			.clk								(clk											),
 			.rst_n							(rst_n										),
-			.stall_ctrl     		(					),
+			.stall_ctrl     		(1'b0),
 
 			.program_count_i		(pc_IF_EX_w2							),
 			.instruction_i 			(instr_IF_EX_w2						),
@@ -224,7 +225,7 @@ module Kelvin_TB ();
 		(
 			.clk								(clk											),
 			.rst_n							(rst_n										),
-			.stall_ctrl     		(						),
+			.stall_ctrl     		(1'b0),
 
 			.store_data_i				(rdata2_ID_EX_w2					),			
 			.load_type_i				(load_type_ID_WB_w2				),

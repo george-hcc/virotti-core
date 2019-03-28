@@ -1,7 +1,7 @@
 run: all
 
 all:
-	xrun -access +r -input shm.tcl /home/george/Documents/minisoc/rtl/HDL/RI5CY/includes/riscv_defines.sv core.sv  -nowarn "NONPRT"
+	xrun -access +r -input shm.tcl Kelvin_TB.sv  -nowarn "NONPRT"
 	
 waves: 
 	simvision waves.shm	
