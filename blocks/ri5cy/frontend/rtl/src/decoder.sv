@@ -4,6 +4,8 @@ module decoder
 		output decoded_instr						decoded_instr_o
 	);
 
+	parameter DCODE_WIDTH = 7;
+
 	logic [OPCODE_WIDTH-1:0]	opcode;
 	logic [6:0]								funct7;
 	logic [2:0]								funct3;
