@@ -7,13 +7,13 @@ parameter PC_START_ADDR   = 32'h0000_00ff;
 
 // Parametros globais
 
-parameter WORD_WIDTH 			= 32;
-parameter ADDR_WIDTH 			= 5;
-parameter N_OF_REGS				=	32;
+parameter WORD_WIDTH 	    = 32;
+parameter ADDR_WIDTH 	    = 5;
+parameter N_OF_REGS		    =	32;
 
 // Parametros de opcodes
 
-parameter OPCODE_WIDTH		= 7;
+parameter OPCODE_WIDTH	  = 7;
 
 parameter OPCODE_SYSTEM   = 7'h73;
 parameter OPCODE_FENCE    = 7'h0f;

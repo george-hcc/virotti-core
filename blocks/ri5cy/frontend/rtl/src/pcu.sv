@@ -16,8 +16,16 @@ module pcu
     output logic                  id_to_ex_stall_o,
     output logic                  id_to_ex_clear_o,
     output logic                  ex_to_wb_stall_o,
-    output logic                  ex_to_wb_clear_o
+    output logic                  ex_to_wb_clear_o,
+
+    output logic                  fwrd_opA_type1_o,
+    output logic                  fwrd_opA_type2_o,
+    output logic                  fwrd_opB_type1_o,
+    output logic                  fwrd_opB_type2_o
   );
+
+  logic operation_use_opA;
+  logic operation_use_opB;
 
   // Definição de Estado e Estágio
   typedef struct
@@ -61,6 +69,40 @@ module pcu
     end
   end
 
+  always_comb begin
+    case(state_array[0].instr_type)
+      OP_COMP, OP_STORE, OP_BRANCH: begin
+        operation_use_opA = 1'b1;
+        operation_use_opB = 1'b1;
+      end
+      OP_COMP_IMM, OP_LOAD, OP_JALR: begin
+        operation_use_opA = 1'b1;
+        operation_use_opB = 1'b0;
+      end
+      default: begin
+        operation_use_opA = 1'b0;
+        operation_use_opB = 1'b0;
+    endcase
+  end
 
+  always_comb begin
+    fwrd_opA_type1_o = 1'b0;
+    fwrd_opA_type2_o = 1'b0;
+    if(operation_use_opA) begin
+      if(state_array[1].write_en && (state_array[1].write_addr == state_array[0].read_addr1))
+        fwrd_opA_type1_o = 1'b1;
+      else if(state_array[2].write_en && (state_array[2].write_addr == state_array[0].read_addr1))       
+        fwrd_opA_type2_o = 1'b1;
+    end
+
+    fwrd_opB_type1_o = 1'b0;
+    fwrd_opB_type2_o = 1'b0;    
+    if(operation_use_opB) begin
+      if(state_array[1].write_en && (state_array[1].write_addr == state_array[0].read_addr2))
+        fwrd_opB_type1_o = 1'b1;
+      else if(state_array[2].write_en && (state_array[2].write_addr == state_array[0].read_addr2))       
+        fwrd_opB_type2_o = 1'b1;
+    end
+  end
 
 endmodule
