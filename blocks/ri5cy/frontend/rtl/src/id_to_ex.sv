@@ -37,12 +37,16 @@ module ID_to_EX
     output logic                    load_type_ctrl_o,
     output logic                    store_type_ctrl_o,
     output logic                    branch_pc_ctrl_o
+
+    input  logic [WORD_WIDTH-1:0]   foward_wb_data_i,
+    input  logic                    fwrd_opA_type1_i,
+    input  logic                    fwrd_opA_type2_i,
+    input  logic                    fwrd_opB_type1_i,
+    input  logic                    fwrd_opB_type2_i
   );
 
   logic [WORD_WIDTH-1:0]    program_count_w;
   logic [WORD_WIDTH-1:0]    instruction_w;
-  logic [WORD_WIDTH-1:0]    rdata1_w;
-  logic [WORD_WIDTH-1:0]    rdata2_w;
   logic [ALU_OP_WIDTH-1:0]  alu_op_ctrl_w;
   logic                     write_en_w;
   logic                     stype_ctrl_w;
@@ -56,12 +60,25 @@ module ID_to_EX
   logic                     store_type_ctrl_w;
   logic                     branch_pc_ctrl_w;
 
+  logic [WORD_WIDTH-1:0]    rdata1_w1;
+  logic [WORD_WIDTH-1:0]    rdata2_w1;
+  logic [WORD_WIDTH-1:0]    rdata1_w2;
+  logic [WORD_WIDTH-1:0]    rdata2_w2;
+
+
+  rdata1_w          = rdata1_o;
+  rdata2_w          = rdata2_o;
+  rdata1_w          = rdata1_i;
+  rdata2_w          = rdata2_i;
+
+
+  rdata2_o          <= rdata2_w;
+  rdata1_o          <= rdata1_w;
+
   always_comb begin
     if(stall_ctrl) begin
       program_count_w   = program_count_o;
       instruction_w     = instruction_o;
-      rdata1_w          = rdata1_o;
-      rdata2_w          = rdata2_o;
       alu_op_ctrl_w     = alu_op_ctrl_o;
       write_en_w        = write_en_o;
       stype_ctrl_w      = stype_ctrl_o;
@@ -78,8 +95,6 @@ module ID_to_EX
     else begin
       program_count_w   = program_count_i;
       instruction_w     = instruction_i;
-      rdata1_w          = rdata1_i;
-      rdata2_w          = rdata2_i;
       alu_op_ctrl_w     = alu_op_ctrl_i;
       write_en_w        = write_en_i;
       stype_ctrl_w      = stype_ctrl_i;
@@ -98,8 +113,6 @@ module ID_to_EX
   always_ff @(posedge clk) begin
     program_count_o   <= program_count_w;
     instruction_o     <= instruction_w;
-    rdata1_o          <= rdata1_w;
-    rdata2_o          <= rdata2_w;
     alu_op_ctrl_o     <= alu_op_ctrl_w;
     write_en_o        <= write_en_w;
     stype_ctrl_o      <= stype_ctrl_w;
@@ -113,5 +126,17 @@ module ID_to_EX
     store_type_ctrl_o <= store_type_ctrl_w;
     branch_pc_ctrl_o  <= branch_pc_ctrl_w;
   end
+
+  // Muxes de foward
+  assign rdata1_w1 = (fwrd_opA_type1_i) ? (foward_wb_data_i) ? (rdata1_i);
+  assign rdata2_w1 = (fwrd_opB_type1_i) ? (foward_wb_data_i) ? (rdata2_i);
+
+  always_ff begin
+    rdata1_w2 <= rdata1_w1;
+    rdata2_w2 <= rdata2_w1;
+  end
+
+  assign rdata1_o = (fwrd_opA_type2_i) ? (foward_wb_data_i) : (rdata1_w2);
+  assign rdata2_o = (fwrd_opB_type2_i) ? (foward_wb_data_i) : (rdata1_w2);
   
 endmodule
