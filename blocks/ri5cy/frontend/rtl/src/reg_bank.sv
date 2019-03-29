@@ -22,7 +22,10 @@ module reg_bank
 		rd2_o = reg_bank[addr_rd2_i];
 	end
 
-	assign reg_bank[5'b0] = 32'b0;
+	assign reg_bank[5'b00000] = 32'b0;
+	assign reg_bank[5'b00001] = 32'd31;
+	assign reg_bank[5'b00010] = 32'd15;
+
 	always_ff @(posedge clk) begin
 		if(wen_i && addr_wd_i != 5'b00000)
 			reg_bank[addr_wd_i] <= wd_i;

@@ -67,20 +67,20 @@ module id_stage
 		(
 			.instruction_i(instruction_i),
 
-			.alu_op_ctrl_o(),
-			.load_type_ctrl_o(),
-			.store_type_ctrl_o(),
-			.write_en_o(),
-			.stype_ctrl_o(),
-			.utype_ctrl_o(),
-			.jtype_ctrl_o(),
-			.imm_alu_ctrl_o(),
-			.auipc_alu_ctrl_o(),
-			.branch_alu_ctrl_o(),
-			.zeroflag_ctrl_o(),
-			.branch_pc_ctrl_o(),
+			.alu_op_ctrl_o(alu_op_ctrl_o),
+			.load_type_ctrl_o(load_type_ctrl_o),
+			.store_type_ctrl_o(store_type_ctrl_o),
+			.write_en_o(write_en_o),
+			.stype_ctrl_o(stype_ctrl_o),
+			.utype_ctrl_o(utype_ctrl_o),
+			.jtype_ctrl_o(jtype_ctrl_o),
+			.imm_alu_ctrl_o(imm_alu_ctrl_o),
+			.auipc_alu_ctrl_o(auipc_alu_ctrl_o),
+			.branch_alu_ctrl_o(branch_alu_ctrl_o),
+			.zeroflag_ctrl_o(zeroflag_ctrl_o),
+			.branch_pc_ctrl_o(branch_pc_ctrl_o),
 
-			.mdu_op_ctrl_o
+			.mdu_op_ctrl_o(mdu_op_ctrl_o)
 		);
 
 endmodule

@@ -10,8 +10,8 @@ module Kelvin_TB ();
 	parameter 	WORD_WIDTH = 32,
 				ALU_OP_WIDTH = 4;
 
-	logic									clk;
-	logic									rst_n;
+	logic									clk = '0;
+	logic									rst_n = '0;
 
 	// Interface da Memória de Instruções
 	logic 									instr_req_o;		// Request Ready; precisa estar ativo até gnt_i estiver ativo por um ciclo
@@ -153,7 +153,7 @@ module Kelvin_TB ();
 			.zeroflag_ctrl_o		(zeroflag_ctrl_ID_EX_w1		),
 			.branch_pc_ctrl_o		(branch_pc_ctrl_ID_WB_w1	),
 
-			.md_op_ctrl_o				(					)
+			.mdu_op_ctrl_o				(					)
 		);
 
 	ID_to_EX id_ex
@@ -194,10 +194,7 @@ module Kelvin_TB ();
 			.zeroflag_ctrl_o		(zeroflag_ctrl_ID_EX_w2		),
 			.load_type_ctrl_o		(load_type_ID_WB_w2				),
 			.store_type_ctrl_o	(store_type_ID_WB_w2			),
-			.branch_pc_ctrl_o		(branch_pc_ctrl_ID_WB_w2	),
-
-			.md_op_ctrl_i				(					),
-			.md_op_ctrl_o				(					)
+			.branch_pc_ctrl_o		(branch_pc_ctrl_ID_WB_w2	)
 		);
 
 	ex_stage EX 
@@ -218,35 +215,86 @@ module Kelvin_TB ();
 			.zeroflag_inv_i   	(zeroflag_ctrl_ID_EX_w2		),
 			.branch_comp_flag_o	(comp_flag_EX_WB_w1				),
 
-			.alu_mdu_mux_i   		(					)
+			.alu_mdu_mux_i   		(			1'b0		)
 		);
 
-	EX_to_WB ex_wb
-		(
-			.clk								(clk											),
-			.rst_n							(rst_n										),
-			.stall_ctrl     		(1'b0),
+always #2 clk = !clk;
 
-			.store_data_i				(rdata2_ID_EX_w2					),			
-			.load_type_i				(load_type_ID_WB_w2				),
-			.store_type_i				(store_type_ID_WB_w2			),
-			.write_en_i					(write_en_ID_WB_w2				),
-			.branch_pc_ctrl_i		(branch_pc_ctrl_ID_WB_w2	),
-			.ex_data_i					(ex_data_EX_WB_w1					),
-			.store_data_i				(store_data_EX_WB_w1			),
-			.comp_flag_i				(comp_flag_EX_WB_w1				),
+initial begin
+	$display("fiphrtpigjryohykehwrohr *************<<<<<<<<<<<<<<<<,"); 
+	#10 rst_n <= '1;
+	
+	@(posedge clk);
+	@(posedge clk)
+		begin 
+			pc_IF_EX_w1			<= 32'd0;
+			pc_plus4_IF_ID_w1	<= 32'd0;
+			instr_IF_EX_w1		<= 32'b 0000000_00001_00010_000_00011_0110011; //ADD
+			no_op_IF_ID_w1		<= '0;
+		end
 
-			.store_data_o				(rdata2_ID_EX_w3					),
-			.load_type_o				(load_type_ID_WB_w3				),
-			.store_type_o				(store_type_ID_WB_w3			),
-			.write_en_o					(write_en_ID_WB_w3				),
-			.branch_pc_ctrl_o		(branch_pc_ctrl_ID_WB_w3	),
-			.ex_data_o					(ex_data_EX_WB_w2					),
-			.store_data_o				(store_data_EX_WB_w2			),
-			.comp_flag_o				(comp_flag_EX_WB_w2				),
-		);
+	@(posedge clk);
+	@(posedge clk);
+	@(posedge clk);
+
+	@(posedge clk)
+		begin 
+			pc_IF_EX_w1			<= 32'd0;
+			pc_plus4_IF_ID_w1	<= 32'd0;
+			instr_IF_EX_w1		<= 32'b 0100000_00010_00001_000_00011_0110011; //SUB
+			no_op_IF_ID_w1		<= '0;
+		end
+
+	@(posedge clk);
+	@(posedge clk);
+	@(posedge clk);
+
+	@(posedge clk)
+		begin 
+			pc_IF_EX_w1			<= 32'd0;
+			pc_plus4_IF_ID_w1	<= 32'd0;
+			instr_IF_EX_w1		<= 32'b 000001000000_00010_000_00011_0010011; //ADDi
+			no_op_IF_ID_w1		<= '0;
+		end
+
+	@(posedge clk);
+	@(posedge clk);
+	@(posedge clk);
+
+	@(posedge clk)
+		begin 
+			pc_IF_EX_w1			<= 32'd0;
+			pc_plus4_IF_ID_w1	<= 32'd0;
+			instr_IF_EX_w1		<= 32'b 0000000_00001_00010_111_00011_0110011; //AND
+			no_op_IF_ID_w1		<= '0;
+		end
+
+	@(posedge clk);
+	@(posedge clk);
+	@(posedge clk);
+	
+	@(posedge clk)
+		begin 
+			pc_IF_EX_w1			<= 32'd0;
+			pc_plus4_IF_ID_w1	<= 32'd0;
+			instr_IF_EX_w1		<= 32'b 011110000101_00010_111_00011_0010011; //ANDi
+			no_op_IF_ID_w1		<= '0;
+		end
 
 
+	@(posedge clk);
+	@(posedge clk);
+	@(posedge clk);
+	@(posedge clk);
+	@(posedge clk);
+	@(posedge clk);
+	@(posedge clk);
+	@(posedge clk);
+	@(posedge clk);
+	@(posedge clk);
+
+	$finish;
+end
 
 
 
