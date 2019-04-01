@@ -16,7 +16,7 @@ module lsu_lite (
 
 	input [31:0] data_rdata_i,
 	input data_rvalid_i,
-	input data_gnd_i
+	input data_gnt_i
 );
 /* 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Escrita1_Leitura0[Bit 1,Bit 0]<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
