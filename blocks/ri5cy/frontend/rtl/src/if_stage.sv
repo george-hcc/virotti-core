@@ -6,11 +6,11 @@ module if_stage
 		input  logic rst_n,
 
 		// Interface da Memória de Instruções
-		output logic 									instr_req_o; 			// Request Ready, precisa estar ativo até gnt_i estiver ativo por um ciclo
-		output logic [WORD_WIDTH-1:0]	instr_addr_o; 		// Recebe PC e manda como endereço para memória
-		input  logic [WORD_WIDTH-1:0]	instr_rdata_i; 		// Instrução vinda da memória
-		input  logic 									instr_rvalid_i; 	// Quando ativo, rdata_i é valido durante o ciclo
-		input  logic 									instr_gnt_i;			// O cache de instrução aceitou a requisição, addr_o pode mudar no próximo cíclo
+		output logic 									instr_req_o 			// Request Ready, precisa estar ativo até gnt_i estiver ativo por um ciclo
+		output logic [WORD_WIDTH-1:0]	instr_addr_o 			// Recebe PC e manda como endereço para memória
+		input  logic [WORD_WIDTH-1:0]	instr_rdata_i 		// Instrução vinda da memória
+		input  logic 									instr_rvalid_i 		// Quando ativo, rdata_i é valido durante o ciclo
+		input  logic 									instr_gnt_i				// O cache de instrução aceitou a requisição, addr_o pode mudar no próximo cíclo
 
 		// Interface de Controle do Core
 		input  logic 									fetch_en_i,
