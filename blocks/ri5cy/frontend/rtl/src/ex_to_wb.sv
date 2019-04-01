@@ -3,6 +3,7 @@ module EX_to_WB
     input  logic                  clk,
     input  logic                  rst_n,
     input  logic                  stall_ctrl,
+    input  logic                  clear_ctrl,
 
     input  logic [WORD_WIDTH-1:0] store_data_i
     input  logic [2:0]            load_type_i,
@@ -58,14 +59,21 @@ module EX_to_WB
   end
 
   always_ff @(posedge clk) begin    
-      load_type_o       = load_type_w;
-      store_type_o      = store_type_w;
-      write_en_o        = write_en_w;
-      branch_pc_ctrl_o  = branch_pc_ctrl_w;
-      ex_data_o         = ex_data_w;
-      store_data_o      = store_data_w;
-      comp_flag_o       = comp_flag_w;
-      reg_waddr_o       = reg_waddr_w;
+    load_type_o        <= load_type_w;
+    store_type_o       <= store_type_w;
+    branch_pc_ctrl_o   <= branch_pc_ctrl_w;
+    ex_data_o          <= ex_data_w;
+    store_data_o       <= store_data_w;
+    comp_flag_o        <= comp_flag_w;
+    reg_waddr_o        <= reg_waddr_w;
+    if(clear_ctrl) begin
+      write_en_o       <= 1'b0;
+      store_type_o     <= 2'b00;
+    end
+    else begin
+      write_en_o       <= write_en_w;
+      store_type_o     <= store_type_w;
+    end
   end
 
 endmodule

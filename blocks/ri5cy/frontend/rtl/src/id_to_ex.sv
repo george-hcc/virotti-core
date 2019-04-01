@@ -3,6 +3,7 @@ module ID_to_EX
     input  logic                    clk,
     input  logic                    rst_n,
     input  logic                    stall_ctrl,
+    input  logic                    clear_ctrl,
 
     input  logic [WORD_WIDTH-1:0]   program_count_i,
     input  logic [WORD_WIDTH-1:0]   instruction_i,
@@ -65,16 +66,6 @@ module ID_to_EX
   logic [WORD_WIDTH-1:0]    rdata1_w2;
   logic [WORD_WIDTH-1:0]    rdata2_w2;
 
-
-  rdata1_w          = rdata1_o;
-  rdata2_w          = rdata2_o;
-  rdata1_w          = rdata1_i;
-  rdata2_w          = rdata2_i;
-
-
-  rdata2_o          <= rdata2_w;
-  rdata1_o          <= rdata1_w;
-
   always_comb begin
     if(stall_ctrl) begin
       program_count_w   = program_count_o;
@@ -114,7 +105,6 @@ module ID_to_EX
     program_count_o   <= program_count_w;
     instruction_o     <= instruction_w;
     alu_op_ctrl_o     <= alu_op_ctrl_w;
-    write_en_o        <= write_en_w;
     stype_ctrl_o      <= stype_ctrl_w;
     utype_ctrl_o      <= utype_ctrl_w;
     jtype_ctrl_o      <= jtype_ctrl_w;
@@ -123,8 +113,15 @@ module ID_to_EX
     branch_alu_ctrl_o <= branch_alu_ctrl_w;
     zeroflag_ctrl_o   <= zeroflag_ctrl_w;
     load_type_ctrl_o  <= load_type_ctrl_w;
-    store_type_ctrl_o <= store_type_ctrl_w;
     branch_pc_ctrl_o  <= branch_pc_ctrl_w;
+    if(clear_ctrl) begin
+      write_en_o        <= 1'b0;
+      store_type_ctrl_o <= 2'b00;
+    end
+    else begin
+      write_en_o        <= write_en_w;
+      store_type_ctrl_o <= store_type_ctrl_w;
+    end
   end
 
   // Muxes de foward

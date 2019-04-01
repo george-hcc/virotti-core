@@ -3,6 +3,7 @@ module IF_to_ID
     input  logic                  clk,
     input  logic                  rst_n,
     input  logic                  stall_ctrl,
+    input  logic                  clear_ctrl,
 
     input  logic [WORD_WIDTH-1:0] program_count_i,
     input  logic [WORD_WIDTH-1:0] pc_plus4_i,
@@ -39,7 +40,10 @@ module IF_to_ID
     program_count_o  <= program_count_w;
     pc_plus4_o       <= pc_plus4_w;
     instruction_o    <= instruction_w;
-    no_op_flag_o     <= no_op_flag_w;
+    if(clear_ctrl)
+      no_op_flag_o   <= 1'b1;
+    else
+      no_op_flag_o   <= no_op_flag_w;
   end
 
 endmodule
