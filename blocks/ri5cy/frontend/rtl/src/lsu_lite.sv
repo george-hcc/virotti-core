@@ -1,4 +1,4 @@
-module LSU_Lite (
+module lsu_lite (
 	input clk,
 	input rst_n,
 

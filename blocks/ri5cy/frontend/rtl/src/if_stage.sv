@@ -39,6 +39,7 @@ module if_stage
 		{
 			RESET,
 			IDLE,
+			PRE_FETCH,
 			FETCH
 		}	fetch_state, next_fetch_state;
 
@@ -49,26 +50,35 @@ module if_stage
 	always_ff @(posedge clk)
 		fetch_state <= next_fetch_state;
 
-	// Lógica de transição de estados (O proximo estágio está temporariamente independente do estágio atual)
+	// Lógica de transição de estados (O proximo estágio está mais ou menos independente do estágio atual)
 	always_comb  begin
 		if(!rst_n)
 			next_fetch_state = RESET;
-		else begin
-			if(fetch_en_i)
-				next_fetch_state = FETCH;
-			else
-				next_fetch_state = IDLE;
-		end
+		else if(!fetch_en_i)
+			next_fetch_state = IDLE;
+		else if(fetch_state == PRE_FETCH)
+			next_fetch_state = FETCH;
+		else
+			next_fetch_state = PRE_FETCH;
 	end
 
 	always_comb begin
-		case(fetch_state)
+		unique case(next_fetch_state)
 			RESET:
 				next_pc = pc_start_address_i;
-			IDLE:
+			IDLE, PRE_FETCH:
 				next_pc = pc;
 			FETCH:
 				next_pc = (branch_pc_mux) ? (writeback_data_i) : (pc_plus4);
+		endcase
+	end
+
+	always_comb begin
+		unique case(fetch_state)
+			RESET, IDLE:
+				instr_req_o = 1'b0;
+			PRE_FETCH, FETCH:
+				instr_req_o = 1'b1;
 		endcase
 	end
 
@@ -83,6 +93,6 @@ module if_stage
 	assign program_count_o = previous_pc;
 	assign pc_plus4_o = pc_plus4;
 	assign instruction_o = instr_rdata_i;
-	assign no_op_flag_o = ~fetch_enable_i;
+	assign no_op_flag_o = !instr_req_o;
 
 endmodule
