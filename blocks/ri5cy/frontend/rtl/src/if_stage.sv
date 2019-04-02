@@ -44,7 +44,7 @@ module if_stage
 		}	fetch_state, next_fetch_state;
 
 	assign branch_pc_mux = ((branch_pc_ctrl_i) && (branch_comp_flag_i)) || (jump_flag_i);	
-	assign pc_plus4 = pc + 32'd4;
+	assign pc_plus4 = prev_pc + 32'd4;
 
 	// Mudança de estados em cada clock
 	always_ff @(posedge clk)
@@ -90,7 +90,7 @@ module if_stage
 
 	// Saídas
 	assign instr_addr_o = pc;
-	assign program_count_o = previous_pc;
+	assign program_count_o = prev_pc;
 	assign pc_plus4_o = pc_plus4;
 	assign instruction_o = instr_rdata_i;
 	assign no_op_flag_o = (fetch_state == FETCH);

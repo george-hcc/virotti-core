@@ -39,7 +39,8 @@ module ID_to_EX
     output logic                    store_type_ctrl_o,
     output logic                    branch_pc_ctrl_o
 
-    input  logic [WORD_WIDTH-1:0]   foward_wb_data_i,
+    input  logic [WORD_WIDTH-1:0]   fwrd_type1_data_i,
+    input  logic [WORD_WIDTH-1:0]   fwrd_type2_data_i,    
     input  logic                    fwrd_opA_type1_i,
     input  logic                    fwrd_opA_type2_i,
     input  logic                    fwrd_opB_type1_i,
@@ -61,10 +62,37 @@ module ID_to_EX
   logic                     store_type_ctrl_w;
   logic                     branch_pc_ctrl_w;
 
-  logic [WORD_WIDTH-1:0]    rdata1_w1;
-  logic [WORD_WIDTH-1:0]    rdata2_w1;
-  logic [WORD_WIDTH-1:0]    rdata1_w2;
-  logic [WORD_WIDTH-1:0]    rdata2_w2;
+  logic [WORD_WIDTH-1:0]    rdata1_w;
+  logic [WORD_WIDTH-1:0]    rdata2_w;
+
+  // Mux do dado vindo do registrador 1, com controle de foward
+  always_comb begin
+    if(stall_ctrl)
+      rdata1_w = rdata1_o;
+    else if(fwrd_opA_type1_i)
+      rdata1_w = fwrd_type1_data_i;
+    else if(fwrd_opA_type2_i)
+      rdata1_w = fwrd_type2_data_i;
+    else
+      rdata1_w = rdata1_i;
+  end
+
+  // Mux do dado vindo do registrador 2, com controle de foward
+  always_comb begin
+    if(stall_ctrl)
+      rdata2_w = rdata2_o;
+    else if(fwrd_opB_type1_i)
+      rdata2_w = fwrd_type1_data_i;
+    else if(fwrd_opB_type2_i)
+      rdata2_w = fwrd_type2_data_i;
+    else
+      rdata2_w = rdata2_i;
+  end
+
+  always_ff begin
+    rdata1_o <= rdata1_w;
+    rdata2_o <= rdata2_w;
+  end
 
   always_comb begin
     if(stall_ctrl) begin
@@ -123,17 +151,5 @@ module ID_to_EX
       store_type_ctrl_o <= store_type_ctrl_w;
     end
   end
-
-  // Muxes de foward
-  assign rdata1_w1 = (fwrd_opA_type1_i) ? (foward_wb_data_i) ? (rdata1_i);
-  assign rdata2_w1 = (fwrd_opB_type1_i) ? (foward_wb_data_i) ? (rdata2_i);
-
-  always_ff begin
-    rdata1_w2 <= rdata1_w1;
-    rdata2_w2 <= rdata2_w1;
-  end
-
-  assign rdata1_o = (fwrd_opA_type2_i) ? (foward_wb_data_i) : (rdata1_w2);
-  assign rdata2_o = (fwrd_opB_type2_i) ? (foward_wb_data_i) : (rdata1_w2);
   
 endmodule

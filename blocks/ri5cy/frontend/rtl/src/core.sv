@@ -108,7 +108,7 @@ module core
 	logic [WORD_WIDTH-1:0]		writeback_data_WB_w;
 	/************************************/
 
-	/****Conexões do Pipeline Control****/
+	/*****Saídas do Pipeline Control*****/
 	logic		                  if_to_id_stall_w,
 	logic		                  id_to_ex_stall_w,
 	logic		                  ex_to_wb_stall_w,
@@ -149,7 +149,8 @@ module core
 		(
 			.clk								(clk											),
 			.rst_n							(rst_n										),
-			.stall_ctrl     		(					),
+			.stall_ctrl     		(if_to_id_stall_w					),
+			.clear_ctrl     		(if_to_id_clear_w					),
 
 			.program_count_i		(pc_IF_EX_w1							),
 			.pc_plus4_i 				(pc_plus4_IF_ID_w1				),
@@ -198,7 +199,8 @@ module core
 		(
 			.clk								(clk											),
 			.rst_n							(rst_n										),
-			.stall_ctrl     		(					),
+			.stall_ctrl     		(id_to_ex_stall_w					),
+			.clear_ctrl       	(id_to_ex_clear_w					),
 
 			.program_count_i		(pc_IF_EX_w2							),
 			.instruction_i 			(instr_IF_EX_w2						),
@@ -234,8 +236,15 @@ module core
 			.utype_ctrl_o				(utype_ctrl_ID_EX_w2			),
 			.branch_pc_ctrl_o		(branch_pc_ctrl_ID_WB_w2	),
 
-			.mdu_op_ctrl_i				(					),
-			.mdu_op_ctrl_o				(					)
+			.fwrd_type1_data_i	(ex_data_EX_WB_w1					),
+    	.fwrd_type2_data_i	(writeback_data_WB_w			),
+    	.fwrd_opA_type1_i		(fwrd_opA_type1_w					),
+    	.fwrd_opA_type2_i		(fwrd_opA_type2_w					),
+    	.fwrd_opB_type1_i		(fwrd_opB_type1_w					),
+    	.fwrd_opB_type2_i		(fwrd_opB_type2_w					),
+
+			.mdu_op_ctrl_i			(),
+			.mdu_op_ctrl_o			()
 		);
 
 	ex_stage EX 
@@ -264,7 +273,8 @@ module core
 		(
 			.clk								(clk											),
 			.rst_n							(rst_n										),
-			.stall_ctrl     		(						),
+			.stall_ctrl     		(ex_to_wb_stall_w					),
+			.clear_ctrl      		(ex_to_wb_clear_w					),
 
 			.store_data_i				(rdata2_ID_EX_w2					),			
 			.load_type_i				(load_type_ID_WB_w2				),
@@ -328,5 +338,5 @@ module core
     	.fwrd_opB_type1_o		(fwrd_opB_type1_w					),
     	.fwrd_opB_type2_o		(fwrd_opB_type2_w					)
 		);
-		
+
 endmodule
