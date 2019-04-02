@@ -93,6 +93,6 @@ module if_stage
 	assign program_count_o = previous_pc;
 	assign pc_plus4_o = pc_plus4;
 	assign instruction_o = instr_rdata_i;
-	assign no_op_flag_o = !instr_req_o;
+	assign no_op_flag_o = (fetch_state == FETCH);
 
 endmodule
