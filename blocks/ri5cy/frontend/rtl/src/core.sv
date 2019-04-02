@@ -108,10 +108,18 @@ module core
 	logic [WORD_WIDTH-1:0]		writeback_data_WB_w;
 	/************************************/
 
-	pcu pipeline_control_unit 
-		(
-
-		);
+	/****Conexões do Pipeline Control****/
+	logic		                  if_to_id_stall_w,
+	logic		                  id_to_ex_stall_w,
+	logic		                  ex_to_wb_stall_w,
+	logic		                  if_to_id_clear_w,
+	logic		                  id_to_ex_clear_w,
+	logic		                  ex_to_wb_clear_w,
+	logic                  		fwrd_opA_type1_w,
+	logic                  		fwrd_opA_type2_w,
+	logic                  		fwrd_opB_type1_w,
+	logic                  		fwrd_opB_type2_w
+	/************************************/
 
 	if_stage IF
 		(
@@ -298,4 +306,27 @@ module core
 			.store_type_i 			(store_type_ID_WB_w3			)
 		);
 
+		pcu pipeline_control_unit 
+		(
+			.clk								(clk											),
+    	.rst_n							(rst_n										),
+
+    	.instr_type_i				(													),
+    	.read_addr1_i				(													),
+    	.read_addr2_i				(													),
+    	.write_addr_i				(													),
+    	.write_en_i					(													),
+    	
+    	.if_to_id_stall_o		(if_to_id_stall_w					),
+    	.id_to_ex_stall_o		(id_to_ex_stall_w					),
+    	.ex_to_wb_stall_o		(ex_to_wb_stall_w					),
+    	.if_to_id_clear_o		(if_to_id_clear_w					),
+    	.id_to_ex_clear_o		(id_to_ex_clear_w					),
+    	.ex_to_wb_clear_o		(ex_to_wb_clear_w					),
+    	.fwrd_opA_type1_o		(fwrd_opA_type1_w					),
+    	.fwrd_opA_type2_o		(fwrd_opA_type2_w					),
+    	.fwrd_opB_type1_o		(fwrd_opB_type1_w					),
+    	.fwrd_opB_type2_o		(fwrd_opB_type2_w					)
+		);
+		
 endmodule

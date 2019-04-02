@@ -11,19 +11,25 @@ module pcu
     input  logic [ADDR_WIDTH-1:0] write_addr_i,
     input  logic                  write_en_i,
 
+    // Controle de Stall
     output logic                  if_to_id_stall_o,
-    output logic                  if_to_id_clear_o,
     output logic                  id_to_ex_stall_o,
-    output logic                  id_to_ex_clear_o,
     output logic                  ex_to_wb_stall_o,
+
+    // Controle de Clear
+    output logic                  if_to_id_clear_o,
+    output logic                  id_to_ex_clear_o,
     output logic                  ex_to_wb_clear_o,
 
+    // Controle de Muxes de Foward
     output logic                  fwrd_opA_type1_o,
     output logic                  fwrd_opA_type2_o,
     output logic                  fwrd_opB_type1_o,
     output logic                  fwrd_opB_type2_o
   );
 
+  // Flags para separar quais operações utilizam quais operandos no EX_Stage
+  // Necessário para identificar Data Hazards que podem ser solucionados com Fowarding
   logic operation_use_opA;
   logic operation_use_opB;
 
@@ -85,6 +91,7 @@ module pcu
     endcase
   end
 
+  // Controle de Foward no operando A
   always_comb begin
     fwrd_opA_type1_o = 1'b0;
     fwrd_opA_type2_o = 1'b0;
@@ -94,7 +101,10 @@ module pcu
       else if(state_array[2].write_en && (state_array[2].write_addr == state_array[0].read_addr1))       
         fwrd_opA_type2_o = 1'b1;
     end
+  end
 
+  // Controle de Foward no operando B
+  always_comb begin
     fwrd_opB_type1_o = 1'b0;
     fwrd_opB_type2_o = 1'b0;    
     if(operation_use_opB) begin
