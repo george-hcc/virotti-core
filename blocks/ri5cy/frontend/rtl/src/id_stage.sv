@@ -56,6 +56,7 @@ module id_stage
 		(
 			.instruction_i			(instruction_i			),
 
+			.no_op_flag_i				(no_op_flag_i				),
 			.alu_op_ctrl_o			(alu_op_ctrl_o			),
 			.load_type_ctrl_o		(load_type_ctrl_o		),
 			.store_type_ctrl_o	(store_type_ctrl_o	),

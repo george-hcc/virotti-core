@@ -1,7 +1,9 @@
 module decoder
 	(
 		input  logic [WORD_WIDTH-1:0]		instr_i,
-		output decoded_instr						decoded_instr_o
+		output decoded_instr						decoded_instr_o,
+
+		input	 logic										no_op_flag_i,
 	);
 
 	parameter DCODE_WIDTH = 7;
@@ -111,7 +113,9 @@ module decoder
 			end
 
 			always_comb begin
-				case(opcode)
+				if(no_op_flag_i)
+					decoded_instr = INSTR_NO_OP;
+				else case(opcode)
 					OPCODE_COMP:		decoded_instr = (funct7[0]) ? (multdiv_instr) : (comp_instr);
 					OPCODE_COMPIMM: decoded_instr = compimm_instr;
 					OPCODE_STORE:   decoded_instr = store_instr;
@@ -122,7 +126,7 @@ module decoder
 					OPCODE_AUIPC:   decoded_instr = INSTR_AUIPC;
 					OPCODE_LUI:     decoded_instr = INSTR_LUI;
 					default:				decoded_instr = INSTR_BAD_INSTR;
-				endcase	
+				endcase
 			end
 
 		end
@@ -133,7 +137,9 @@ module decoder
 		else begin
 
 			always_comb begin
-				case(opcode)
+				if(no_op_flag_i)
+					decoded_instr = INSTR_NO_OP;
+				else case(opcode)
 					OPCODE_COMP:		decoded_instr = comp_instr;
 					OPCODE_COMPIMM: decoded_instr = compimm_instr;
 					OPCODE_STORE:   decoded_instr = store_instr;

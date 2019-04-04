@@ -135,14 +135,12 @@ module core
 			.fetch_en_i        	(fetch_en_i 							),
 			.pc_start_address_i	(pc_start_address_i				),
 
-			.writeback_data_i		(writeback_data_WB_w			),
-			.program_count_o		(pc_IF_EX_w1							),
-			.pc_plus4_o 				(pc_plus4_IF_ID_w1				),
-			.instruction_o 			(instr_IF_EX_w1						),
+			.pc_branch_addr_i		(			),
+			.instruction_o 			(			),
+			.program_count_o		(			),
 
-			.no_op_flag_o     	(no_op_IF_ID_w1						),
-			.branch_pc_ctrl_i		(branch_pc_ctrl_ID_WB_w3	),
-			.branch_comp_flag_i (comp_flag_EX_WB_w2				)
+			.branch_pc_ctrl_i		(			),
+			.no_op_flag_o     	(			)
 		);
 
 	IF_to_ID if_id 

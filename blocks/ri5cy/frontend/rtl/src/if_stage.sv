@@ -16,24 +16,22 @@ module if_stage
 		input  logic 									fetch_en_i,
 		input  logic [WORD_WIDTH-1:0]	pc_start_address_i,
 
-		// Sinais de outros estágios
-		input  logic [WORD_WIDTH-1:0] writeback_data_i, // Writeback de instruções para jalr
-		output logic [WORD_WIDTH-1:0] program_count_o,  // PC, levado ao EX_Stage para ser operado
-		output logic [WORD_WIDTH-1:0] pc_plus4_o, 			// PC + 4, armazenado em RD nas instruções JAL e JALR
+		// Sinais de DataPath
+		input  logic [WORD_WIDTH-1:0] pc_branch_addr_i, // Writeback de instruções para Jumps e Branchs
 		output logic [WORD_WIDTH-1:0]	instruction_o, 		// Instrução saindo para ID
+		output logic [WORD_WIDTH-1:0] program_count_o,  // Endereço da instrução, levado ao EX_Stage para ser operado
 
-		// Sinais de Controle
-		output logic 									no_op_flag_o,
+		// Sinais de ControlPath
 		input  logic 									branch_pc_ctrl_i,
-		input  logic 									branch_comp_flag_i
+		output logic 									no_op_flag_o,
 	);
 
-	logic [WORD_WIDTH-1:0] 	pc;
-	logic [WORD_WIDTH-1:0]	pc_plus4;
-	logic	[WORD_WIDTH-1:0]	next_pc;
 	logic [WORD_WIDTH-1:0]	prev_pc;
+	logic [WORD_WIDTH-1:0] 	pc;
+	logic [WORD_WIDTH-1:0] 	pc_plus_four;
+	logic	[WORD_WIDTH-1:0]	next_pc;
 
-	logic										branch_pc_mux;
+	assign pc_plus_four = pc + 32'd4;
 
 	enum logic
 		{
@@ -42,9 +40,6 @@ module if_stage
 			PRE_FETCH,
 			FETCH
 		}	fetch_state, next_fetch_state;
-
-	assign branch_pc_mux = ((branch_pc_ctrl_i) && (branch_comp_flag_i)) || (jump_flag_i);	
-	assign pc_plus4 = prev_pc + 32'd4;
 
 	// Mudança de estados em cada clock
 	always_ff @(posedge clk)
@@ -69,7 +64,7 @@ module if_stage
 			IDLE, PRE_FETCH:
 				next_pc = pc;
 			FETCH:
-				next_pc = (branch_pc_mux) ? (writeback_data_i) : (pc_plus4);
+				next_pc = (branch_pc_ctrl_i) ? (pc_branch_addr_i) : (pc_plus_four);
 		endcase
 	end
 
@@ -91,8 +86,7 @@ module if_stage
 	// Saídas
 	assign instr_addr_o = pc;
 	assign program_count_o = prev_pc;
-	assign pc_plus4_o = pc_plus4;
 	assign instruction_o = instr_rdata_i;
-	assign no_op_flag_o = (fetch_state == FETCH);
+	assign no_op_flag_o = (fetch_state != FETCH);
 
 endmodule

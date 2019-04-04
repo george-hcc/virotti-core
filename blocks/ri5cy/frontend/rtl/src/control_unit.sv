@@ -7,7 +7,8 @@ module control_unit
 	(
 		input  logic [WORD_WIDTH-1:0]		instruction_i,
 
-		// Saídas de controle
+		// Sinais de ControlPath
+		input	 logic										no_op_flag_i,
 		output logic [ALU_OP_WIDTH-1:0]	alu_op_ctrl_o,
 		output logic [2:0]							load_type_ctrl_o,
 		output logic [1:0]							store_type_ctrl_o,
