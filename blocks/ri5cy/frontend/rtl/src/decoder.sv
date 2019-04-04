@@ -64,11 +64,11 @@ module decoder
 	always_comb begin
 		case(funct3)
 			3'b000:		load_instr	= INSTR_LB;
-			3'b001:		load_instr = INSTR_LH;
+			3'b001:		load_instr 	= INSTR_LH;
 			3'b010:		load_instr	=	INSTR_LW;
-			3'b100:		load_instr = INSTR_LBU;
+			3'b100:		load_instr 	= INSTR_LBU;
 			3'b101:		load_instr	=	INSTR_LHU;
-			default:	load_instr = INSTR_LW;
+			default:	load_instr 	= INSTR_LW;
 		endcase
 	end
 
@@ -76,8 +76,8 @@ module decoder
 	always_comb begin
 		case(funct3)
 			3'b000:		branch_instr = INSTR_BEQ;
-			3'b001:		branch_instr	=	INSTR_BNE;
-			3'b100:		branch_instr	=	INSTR_BLT;
+			3'b001:		branch_instr = INSTR_BNE;
+			3'b100:		branch_instr = INSTR_BLT;
 			3'b101:		branch_instr = INSTR_BGE;
 			3'b110:		branch_instr = INSTR_BLTU;
 			3'b111:		branch_instr = INSTR_BGEU;
@@ -121,7 +121,7 @@ module decoder
 					OPCODE_JAL:     decoded_instr = INSTR_JAL;
 					OPCODE_AUIPC:   decoded_instr = INSTR_AUIPC;
 					OPCODE_LUI:     decoded_instr = INSTR_LUI;
-					default:				decoded_instr = 'bx;
+					default:				decoded_instr = INSTR_BAD_INSTR;
 				endcase	
 			end
 
@@ -143,7 +143,7 @@ module decoder
 					OPCODE_JAL:     decoded_instr = INSTR_JAL;
 					OPCODE_AUIPC:   decoded_instr = INSTR_AUIPC;
 					OPCODE_LUI:     decoded_instr = INSTR_LUI;
-					default:				decoded_instr = 'bx;
+					default:				decoded_instr = INSTR_BAD_INSTR;
 				endcase	
 			end
 

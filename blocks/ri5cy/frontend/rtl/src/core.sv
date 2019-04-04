@@ -165,32 +165,26 @@ module core
 
 	id_stage ID 
 		(
-			.clk								(clk											),
-			.rst_n							(rst_n										),
+			.clk									(clk										),
 
-			.instruction_i 			(instr_IF_EX_w2						),
-			.pc_plus4_i      		(pc_plus4_IF_ID_w2				),
+			.instruction_i				(							),
+			.reg_waddr_i					(							),
+			.reg_wdata_i					(							),
+			.reg_rdata1_o					(							),
+			.reg_rdata2_o					(							),
 
-			.rdata1_o 					(rdata1_ID_EX_w1					),
-			.rdata2_o 					(rdata2_ID_EX_w1					),
-
-			.waddr_wb_i      		(reg_waddr_EX_WB_w2				),
-			.wdata_wb_i 				(writeback_data_WB_w			),
-
-			.no_op_flag_i				(no_op_IF_ID_w2						),
-			.write_en_i					(write_en_ID_WB_w3				),
-			.alu_op_ctrl_o			(alu_op_ID_EX_w1					),
-			.load_type_ctrl_o		(load_type_ID_WB_w1				),
-			.store_type_ctrl_o	(store_type_ID_WB_w1			),
-			.write_en_o					(write_en_ID_WB_w1 				),
-			.stype_ctrl_o				(stype_ctrl_ID_EX_w1			),
-			.utype_ctrl_o				(utype_ctrl_ID_EX_w1			),
-			.jtype_ctrl_o				(jtype_ctrl_ID_EX_w1			),
-			.imm_alu_ctrl_o			(imm_alu_ctrl_ID_EX_w1		),
-			.auipc_alu_ctrl_o		(auipc_alu_ctrl_ID_EX_w1	),
-			.branch_alu_ctrl_o	(branch_alu_ctrl_ID_EX_w1	),
-			.zeroflag_ctrl_o		(zeroflag_ctrl_ID_EX_w1		),
-			.branch_pc_ctrl_o		(branch_pc_ctrl_ID_WB_w1	),
+			.alu_op_ctrl_o				(							),
+			.load_type_ctrl_o			(							),
+			.store_type_ctrl_o		(							),
+			.write_en_o						(							),
+			.stype_ctrl_o					(							),
+			.imm_alu_ctrl_o				(							),
+			.jarl_ctrl_o					(							),
+			.jal_ctrl_o						(							),
+			.branch_ctrl_o				(							),
+			.auipc_ctrl_o					(							),
+			.lui_ctrl_o						(							),
+			.zeroflag_ctrl_o			(							),
 
 			.mdu_op_ctrl_o				(					)
 		);
@@ -259,7 +253,7 @@ module core
 
 			.alu_op_ctrl_i			(alu_op_ID_EX_w2					),
 			.stype_imm_mux_i		(stype_ctrl_ID_EX_w2			),
-			.auipc_mux_i				(utype_ctrl_ID_EX_w2			),
+			.auipc_flag_i				(utype_ctrl_ID_EX_w2			),
 			.imm_alu_mux_i			(imm_alu_ctrl_ID_EX_w2		),
 			.jarl_flag_i     		(					),
 			.jal_flag_i 				(					),

@@ -5,7 +5,7 @@
 
 module ex_stage
 	(
-		// Sinais de Datapath
+		// Sinais de DataPath
 		input  logic [WORD_WIDTH-1:0]		reg_rdata1_i,				// Dado vindo de RS1
 		input	 logic [WORD_WIDTH-1:0] 	reg_rdata2_i,				// Dado vindo de RS2
 		input  logic [WORD_WIDTH-1:0]		instruction_i,			// Instrução vinda do Fetch
@@ -14,10 +14,10 @@ module ex_stage
 		output logic [ADDR_WIDTH-1:0]   reg_waddr_o, 				// Endereço de escrita nos registradores
 		output logic [WORD_WIDTH-1:0]		pc_jump_addr_o,			// Endereço de novo PC em casos de Jumps e Branches
 
-		// Sinais de Controlpath
+		// Sinais de ControlPath
 		input  logic [ALU_OP_WIDTH-1:0]	alu_op_ctrl_i,			// Controle de ULA e UMD
 		input  logic										stype_imm_mux_i,		// Sinal de operação tipo S (Stores)
-		input  logic										auipc_mux_i,				// Sinal de operação tipo U (AUIPC)
+		input  logic										auipc_flag_i,				// Sinal de operação tipo U (AUIPC)
 		input  logic										imm_alu_mux_i,			// Sinal de operações imediatas (I, S e U)
 		input  logic										jarl_flag_i,				// Sinal de operação Jarl
 		input  logic 										jal_flag_i,					// Sinal de operação tipo J (JAL)

@@ -10,13 +10,13 @@ module controller
 		output logic [1:0]							store_type_ctrl_o,
 		output logic										write_en_o,
 		output logic										stype_ctrl_o,
-		output logic										utype_ctrl_o,
-		output logic										jtype_ctrl_o,
 		output logic										imm_alu_ctrl_o,
-		output logic										auipc_alu_ctrl_o,
-		output logic										branch_alu_ctrl_o,
+		output logic										jarl_ctrl_o,
+		output logic										jal_ctrl_o,
+		output logic										branch_ctrl_o,
+		output logic										auipc_ctrl_o,
+		output logic										lui_ctrl_o,
 		output logic										zeroflag_ctrl_o,
-		output logic										branch_pc_ctrl_o,
 
 		// Sinal de controle ULA/UMD - Só é usado caso UMD exista
 		output logic										mdu_op_ctrl_o
@@ -27,13 +27,13 @@ module controller
 	logic [1:0]								store_type;
 	logic											write_en;
 	logic											stype;
-	logic											utype;
-	logic											jtype;
 	logic											imm_alu;
-	logic											auipc_alu;
-	logic											branch_alu;
+	logic											jarl;
+	logic											jal;
+	logic											branch;
+	logic											auipc;
+	logic											lui;
 	logic											zeroflag_inv;
-	logic											branch_pc;
 
 	// Decodificação de controle da ULA
 	always_comb begin
@@ -92,121 +92,121 @@ module controller
 			begin
 				write_en			= 1'b1;
 				stype					= 1'b0;
-				utype					= 1'b0;
-				jtype					= 1'b0;
 				imm_alu				= 1'b0;
-				auipc_alu			= 1'b0;
-				branch_alu		= 1'b0;
+				jarl					= 1'b0;
+				jal						= 1'b0;
+				branch				= 1'b0;
+				auipc					= 1'b0;
+				lui						= 1'b0;
 				zeroflag_inv	= 1'b0;
-				branch_pc			= 1'b0;
 			end
 			INSTR_ADDI, INSTR_SLLI, INSTR_SRLI, INSTR_SRAI, INSTR_ANDI, INSTR_ORI, INSTR_XORI, INSTR_SLTI, INSTR_SLTIU, INSTR_LB, INSTR_LBU, INSTR_LH, INSTR_LHU, INSTR_LW:
 			begin
 				write_en			= 1'b1;
 				stype					= 1'b0;
-				utype					= 1'b0;
-				jtype					= 1'b0;
 				imm_alu				= 1'b1;
-				auipc_alu			= 1'b0;
-				branch_alu		= 1'b0;
+				jarl					= 1'b0;
+				jal						= 1'b0;
+				branch				= 1'b0;
+				auipc					= 1'b0;
+				lui						= 1'b0;
 				zeroflag_inv	= 1'b0;
-				branch_pc			= 1'b0;
 			end
 			INSTR_LUI:
 			begin
 				write_en			= 1'b1;
 				stype					= 1'b0;
-				utype					= 1'b1;
-				jtype					= 1'b0;
 				imm_alu				= 1'b0;
-				auipc_alu			= 1'b0;
-				branch_alu		= 1'b0;
+				jarl					= 1'b0;
+				jal						= 1'b0;
+				branch				= 1'b0;
+				auipc					= 1'b0;
+				lui						= 1'b1;
 				zeroflag_inv	= 1'b0;
-				branch_pc			= 1'b0;
 			end
 			INSTR_AUIPC:
 			begin
 				write_en			= 1'b1;
 				stype					= 1'b0;
-				utype					= 1'b1;
-				jtype					= 1'b0;
 				imm_alu				= 1'b1;
-				auipc_alu			= 1'b1;
-				branch_alu		= 1'b0;
+				jarl					= 1'b0;
+				jal						= 1'b0;
+				branch				= 1'b0;
+				auipc					= 1'b1;
+				lui						= 1'b0;
 				zeroflag_inv	= 1'b0;
-				branch_pc			= 1'b0;
 			end
 			INSTR_SB, INSTR_SH, INSTR_SW:
 			begin
 				write_en			= 1'b0;
 				stype					= 1'b1;
-				utype					= 1'b0;
-				jtype					= 1'b0;
 				imm_alu				= 1'b1;
-				auipc_alu			= 1'b0;
-				branch_alu		= 1'b0;
+				jarl					= 1'b0;
+				jal						= 1'b0;
+				branch				= 1'b0;
+				auipc					= 1'b0;
+				lui						= 1'b0;
 				zeroflag_inv	= 1'b0;
-				branch_pc			= 1'b0;
 			end
 			INSTR_BEQ, INSTR_BLT, INSTR_BLTU:
 			begin
 				write_en			= 1'b0;
 				stype					= 1'b0;
-				utype					= 1'b0;
-				jtype					= 1'b0;
-				imm_alu				= 1'b1; // Esquece essa porra
-				auipc_alu			= 1'b0;
-				branch_alu		= 1'b1; // Muda essa porra
-				zeroflag_inv	= 1'b0; // Isso ta massa
-				branch_pc			= 1'b1; // Também ta massa
+				imm_alu				= 1'b0;
+				jarl					= 1'b0;
+				jal						= 1'b0;
+				branch				= 1'b1;
+				auipc					= 1'b0;
+				lui						= 1'b0;
+				zeroflag_inv	= 1'b0;
 			end
 			INSTR_BNE, INSTR_BGE, INSTR_BGEU:
 			begin
 				write_en			= 1'b0;
 				stype					= 1'b0;
-				utype					= 1'b0;
-				jtype					= 1'b0;
-				imm_alu				= 1'b1;
-				auipc_alu			= 1'b0;
-				branch_alu		= 1'b1;
+				imm_alu				= 1'b0;
+				jarl					= 1'b0;
+				jal						= 1'b0;
+				branch				= 1'b1;
+				auipc					= 1'b0;
+				lui						= 1'b0;
 				zeroflag_inv	= 1'b1;
-				branch_pc			= 1'b1;
 			end
 			INSTR_JAL:
 			begin
 				write_en			= 1'b1;
 				stype					= 1'b0;
-				utype					= 1'b0;
-				jtype					= 1'b1;
 				imm_alu				= 1'b0;
-				auipc_alu			= 1'b0;
-				branch_alu		= 1'b1;
+				jarl					= 1'b0;
+				jal						= 1'b1;
+				branch				= 1'b0;
+				auipc					= 1'b0;
+				lui						= 1'b0;
 				zeroflag_inv	= 1'b0;
-				branch_pc			= 1'b1;
 			end
 			INSTR_JALR:
 			begin
 				write_en			= 1'b1;
 				stype					= 1'b0;
-				utype					= 1'b0;
-				jtype					= 1'b0;
-				imm_alu				= 1'b1;
-				auipc_alu			= 1'b0;
-				branch_alu		= 1'b0;
+				imm_alu				= 1'b0;
+				jarl					= 1'b1;
+				jal						= 1'b0;
+				branch				= 1'b0;
+				auipc					= 1'b0;
+				lui						= 1'b0;
 				zeroflag_inv	= 1'b0;
-				branch_pc			= 1'b1;
 			end
 			default:
 			begin
 				write_en			= 1'b0;
 				stype					= 1'b0;
-				utype					= 1'b0;
-				jtype					= 1'b0;
 				imm_alu				= 1'b0;
-				auipc_alu			= 1'b0;
-				branch_alu		= 1'b0;
+				jarl					= 1'b0;
+				jal						= 1'b0;
+				branch				= 1'b0;
+				auipc					= 1'b0;
+				lui						= 1'b0;
 				zeroflag_inv	= 1'b0;
-				branch_pc			= 1'b0;
 			end
 		endcase
 	end
@@ -252,30 +252,30 @@ module controller
 
 			always_comb begin
 				if(mdu_op_ctrl_o) begin
-					load_type_ctrl_o 	= 3'b000;
-					store_type_ctrl_o = 2'b00;
-					write_en_o 				= 1'b1;
-					stype_ctrl_o 			= 1'b0;
-					utype_ctrl_o 			= 1'b0;
-					jtype_ctrl_o 			= 1'b0;
-					imm_alu_ctrl_o 		= 1'b0;
-					auipc_alu_ctrl_o 	= 1'b0;
-					branch_alu_ctrl_o = 1'b0;
-					zeroflag_ctrl_o 	= 1'b0;
-					branch_pc_ctrl_o 	= 1'b0;
+					load_type_ctrl_o	= 3'b000;
+					store_type_ctrl_o	= 2'b00;
+					write_en_o				= 1'b1;
+					stype_ctrl_o			= 1'b0;
+					imm_alu_ctrl_o		= 1'b0;
+					jarl_ctrl_o				= 1'b0;
+					jal_ctrl_o				= 1'b0;
+					branch_ctrl_o			= 1'b0;
+					auipc_ctrl_o			= 1'b0;
+					lui_ctrl_o				= 1'b0;
+					zeroflag_ctrl_o		= 1'b0;
 				end
 				else begin
-					load_type_ctrl_o 	= load_type;
-					store_type_ctrl_o = store_type;
-					write_en_o 				= write_en;
-					stype_ctrl_o 			= stype;
-					utype_ctrl_o 			= utype;
-					jtype_ctrl_o 			= jtype;
-					imm_alu_ctrl_o 		= imm_alu;
-					auipc_alu_ctrl_o 	= auipc_alu;
-					branch_alu_ctrl_o = branch_alu;
-					zeroflag_ctrl_o 	= zeroflag_inv;
-					branch_pc_ctrl_o 	= branch_pc;
+					load_type_ctrl_o	= load_type;
+					store_type_ctrl_o	= store_type;
+					write_en_o				= write_en;
+					stype_ctrl_o			= stype;
+					imm_alu_ctrl_o		= utype;
+					jarl_ctrl_o				= jtype;
+					jal_ctrl_o				= imm_alu;
+					branch_ctrl_o			= auipc_alu;
+					auipc_ctrl_o			= branch_alu;
+					lui_ctrl_o				= zeroflag_inv;
+					zeroflag_ctrl_o		= branch_pc;
 				end
 			end
 
@@ -287,17 +287,18 @@ module controller
 		else begin
 
 			always_comb begin
-					load_type_ctrl_o 	= load_type;
-					store_type_ctrl_o = store_type;
-					write_en_o 				= write_en;
-					stype_ctrl_o 			= stype;
-					utype_ctrl_o 			= utype;
-					jtype_ctrl_o 			= jtype;
-					imm_alu_ctrl_o 		= imm_alu;
-					auipc_alu_ctrl_o 	= auipc_alu;
-					branch_alu_ctrl_o = branch_alu;
-					zeroflag_ctrl_o 	= zeroflag_inv;
-					branch_pc_ctrl_o 	= branch_pc;
+					alu_op_ctrl_o 		= alu_op;
+					load_type_ctrl_o	= load_type;
+					store_type_ctrl_o	= store_type;
+					write_en_o				= write_en;
+					stype_ctrl_o			= stype;
+					imm_alu_ctrl_o		= utype;
+					jarl_ctrl_o				= jtype;
+					jal_ctrl_o				= imm_alu;
+					branch_ctrl_o			= auipc_alu;
+					auipc_ctrl_o			= branch_alu;
+					lui_ctrl_o				= zeroflag_inv;
+					zeroflag_ctrl_o		= branch_pc;
 			end
 
 		end

@@ -40,11 +40,12 @@ typedef enum
     OP_JALR,
     OP_JAL,
     OP_AUIPC,
-    OP_LUI
+    OP_LUI,
   } decoded_opcode;
 
 typedef enum
   {
+    INSTR_NO_OP,
     INSTR_ADD,
     INSTR_SUB,
     INSTR_SLL,
@@ -91,7 +92,8 @@ typedef enum
     INSTR_DIV,
     INSTR_DIVU,
     INSTR_REM,
-    INSTR_REMU
+    INSTR_REMU,
+    INSTR_BAD_INSTR
   } decoded_instr;
 
 // Controle da ULA

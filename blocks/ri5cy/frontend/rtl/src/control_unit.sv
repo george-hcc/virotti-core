@@ -13,13 +13,13 @@ module control_unit
 		output logic [1:0]							store_type_ctrl_o,
 		output logic										write_en_o,
 		output logic										stype_ctrl_o,
-		output logic										utype_ctrl_o,
-		output logic										jtype_ctrl_o,
 		output logic										imm_alu_ctrl_o,
-		output logic										auipc_alu_ctrl_o,
-		output logic										branch_alu_ctrl_o,
+		output logic										jarl_ctrl_o,
+		output logic										jal_ctrl_o,
+		output logic										branch_ctrl_o,
+		output logic										auipc_ctrl_o,
+		output logic										lui_ctrl_o,
 		output logic										zeroflag_ctrl_o,
-		output logic										branch_pc_ctrl_o,
 
 		// Sinal de controle ULA/UMD - Só é usado caso UMD exista
 		output logic										mdu_op_ctrl_o		
@@ -46,13 +46,13 @@ module control_unit
 					.store_type_ctrl_o,
 					.write_en_o,
 					.stype_ctrl_o,
-					.utype_ctrl_o(utype_ctrl_o),
-					.jtype_ctrl_o,
 					.imm_alu_ctrl_o,
-					.auipc_alu_ctrl_o,
-					.branch_alu_ctrl_o,
+					.jarl_ctrl_o,
+					.jal_ctrl_o,
+					.branch_ctrl_o,
+					.auipc_ctrl_o,
+					.lui_ctrl_o,
 					.zeroflag_ctrl_o,
-					.branch_pc_ctrl_o,
 
 					.mdu_op_ctrl_o
 				);
@@ -70,13 +70,13 @@ module control_unit
 					.store_type_ctrl_o,
 					.write_en_o,
 					.stype_ctrl_o,
-					.utype_ctrl_o(utype_ctrl_o),
-					.jtype_ctrl_o,
 					.imm_alu_ctrl_o,
-					.auipc_alu_ctrl_o,
-					.branch_alu_ctrl_o,
+					.jarl_ctrl_o,
+					.jal_ctrl_o,
+					.branch_ctrl_o,
+					.auipc_ctrl_o,
+					.lui_ctrl_o,
 					.zeroflag_ctrl_o,
-					.branch_pc_ctrl_o
 				);
 
 		end
