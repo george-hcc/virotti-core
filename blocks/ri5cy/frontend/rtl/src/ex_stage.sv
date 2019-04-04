@@ -5,23 +5,26 @@
 
 module ex_stage
 	(
+		// Sinais de Datapath
 		input  logic [WORD_WIDTH-1:0]		reg_rdata1_i,				// Dado vindo de RS1
 		input	 logic [WORD_WIDTH-1:0] 	reg_rdata2_i,				// Dado vindo de RS2
 		input  logic [WORD_WIDTH-1:0]		instruction_i,			// Instrução vinda do Fetch
 		input  logic [WORD_WIDTH-1:0]		program_count_i,		// Endereço da atual instrução
-		output logic [WORD_WIDTH-1:0]		ex_data_o,					// Saída do EX_Stage
-		output logic [ADDR_WIDTH-1:0]   reg_waddr_o, // TEMPORARIAMENTE AQUI MUDE DEPOIS
+		output logic [WORD_WIDTH-1:0]		wb_data_o,					// Saída do EX_Stage
+		output logic [ADDR_WIDTH-1:0]   reg_waddr_o, 				// Endereço de escrita nos registradores
+		output logic [WORD_WIDTH-1:0]		pc_jump_addr_o,			// Endereço de novo PC em casos de Jumps e Branches
 
-		// Sinais de controle
+		// Sinais de Controlpath
 		input  logic [ALU_OP_WIDTH-1:0]	alu_op_ctrl_i,			// Controle de ULA e UMD
-		input  logic										stype_mux_i,				// Sinal de operação tipo S (Store)
-		input  logic										utype_mux_i,				// Sinal de operação tipo U (LUI e AUIPC)
-		input  logic 										jtype_mux_i,				// Sinal de operação tipo J (JAL)
+		input  logic										stype_imm_mux_i,		// Sinal de operação tipo S (Stores)
+		input  logic										auipc_mux_i,				// Sinal de operação tipo U (AUIPC)
 		input  logic										imm_alu_mux_i,			// Sinal de operações imediatas (I, S e U)
-		input  logic										pc_alu_mux_i,				// Sinal de operação com PC (AUIPC)
-		input  logic 										branch_alu_mux_i,		// Sinal de bypass da ULA (Branches e JAL)
-		input  logic										zeroflag_inv_i, 		// Inversor de zeroflag
-		output logic										branch_comp_flag_o,	// Flag de resultado de comparação para branches
+		input  logic										jarl_flag_i,				// Sinal de operação Jarl
+		input  logic 										jal_flag_i,					// Sinal de operação tipo J (JAL)
+		input  logic										branch_flag_i,			// Sinal de Operações de Branch
+		input  logic										lui_alu_bypass_i,		// Sinal de operação LUI
+		input  logic										zeroflag_inv_i, 		// Inversor de zeroflag (Usado em alguns branches)
+		output logic										pc_branch_ctrl_o,		// Saída de controle para modificar PC
 
 		// Sinal de controle ULA/UMD - Só é usado caso UMD exista
 		input  logic										alu_mdu_mux_i
@@ -32,7 +35,7 @@ module ex_stage
 	logic	[WORD_WIDTH-1:0] 	alu_result;
 	logic [WORD_WIDTH-1:0]	ex_data;
 	logic										zero_flag;
-	logic										bypass_alu_mux;
+	logic										branch_taken
 
 	// Imediatos I, S e U (Usados para cálculo)
 	logic [11:0]					 	itype_imm;
@@ -40,21 +43,24 @@ module ex_stage
 	logic	[WORD_WIDTH-1:0] 	xtended_lower_imm;
 	logic [19:0]						utype_imm;
 	logic [WORD_WIDTH-1:0] 	xtended_upper_imm;
-	logic [WORD_WIDTH-1:0] 	full_comp_immediate;
+	logic [WORD_WIDTH-1:0] 	full_alu_immediate;
 
-	// Imediatos SB e UJ (Usados para branch)
+	// Imediatos SB e UJ (Usados para branches e jumps)
 	logic [12:0]						btype_imm;
 	logic	[WORD_WIDTH-1:0] 	xtended_branch_imm;
-	logic [WORD_WIDTH-1:0]	pc_plus_branch;
 	logic [20:0]						jtype_imm;
 	logic [WORD_WIDTH-1:0] 	xtended_jal_imm;
-	logic [WORD_WIDTH-1:0]	full_branch_immediate;
+	logic [WORD_WIDTH-1:0]	full_pc_immediate;
+
+	// Resultados de soma com program count
+	logic [WORD_WIDTH-1:0]	pc_plus_four;
+	logic [WORD_WIDTH-1:0]	pc_plus_imm;
 
 	// Extensão de sinal de imediatos inferiores de 12 bits (Tipo I e S)
 	always_comb begin
 		itype_imm = instruction_i[31:20];
 		stype_imm = {instruction_i[31:25], instruction_i[11:7]};
-		xtended_lower_imm[11:0] = (stype_mux_i) ? (stype_imm) : (itype_imm);
+		xtended_lower_imm[11:0] = (stype_imm_mux_i) ? (stype_imm) : (itype_imm);
 		xtended_lower_imm[31:12] = (xtended_lower_imm[11]) ? 20'b1 : 20'b0;
 	end
 
@@ -79,17 +85,13 @@ module ex_stage
 	end
 
 	// Mux de escolha de imediato para cálculo
-	assign full_comp_immediate = (utype_mux_i) ? (xtended_upper_imm) : (xtended_lower_imm);
-
-	// Mux para seleção de imediato para Branch (JARL não incluso)
-	assign pc_plus_branch = program_count_i + xtended_branch_imm;
-	assign full_branch_immediate = (jtype_mux_i) ? (xtended_jal_imm) : (pc_plus_branch);
+	assign full_alu_immediate = (auipc_mux_i) ? (xtended_upper_imm) : (xtended_lower_imm);
 
 	// Caso AUIPC, operando A receberá PC para soma
-	assign operand_a = (pc_alu_mux_i) ? (program_count_i) : (reg_rdata1_i);
+	assign operand_a = (auipc_mux_i) ? (program_count_i) : (reg_rdata1_i);
 	
 	// Operando B recebe valor de registro ou imediato
-	assign operand_b = (imm_alu_mux_i) ? (full_comp_immediate) : (reg_rdata2_i);
+	assign operand_b = (imm_alu_mux_i) ? (full_alu_immediate) : (reg_rdata2_i);
 
 	alu ALU
 		(
@@ -128,22 +130,50 @@ module ex_stage
 			assign ex_data = alu_result;			
 		
 		end
-	endgenerate	
+	endgenerate
 
-	// Mux de saída do EX_Stage
-	assign bypass_alu_mux = utype_mux_i && ~pc_alu_mux_i;
+	// Mux para seleção de imediato para branches e jumps
 	always_comb begin
-		if(bypass_alu_mux)										// Usado somente em LUI
-			ex_data_o = full_comp_immediate; 
-		else if(branch_alu_mux_i)							// Usando em Branches e JAL
-			ex_data_o = full_branch_immediate; 
-		else																	// Caso Contrário
-			ex_data_o = ex_data;
+		if(jarl_flag_i)
+			full_pc_immediate = xtended_lower_imm;
+		else if(jal_flag_i)
+			full_pc_immediate = xtended_jal_imm;
+		else
+			full_pc_immediate = xtended_branch_imm;
 	end
+
+	// Somas com PC para branches e jumps
+	assign pc_plus_four = program_count_i + 32'h4;
+	assign pc_plus_imm = program_count_i + full_pc_immediate;
 
 	// Zeroflag da ULA e geração de flag de resultado de comparação de branch
 	assign zero_flag = (ex_data == 32'b0);
-	assign branch_comp_flag_o = (zeroflag_inv_i) ? (~zero_flag) : (zero_flag);
+
+	// Flag de resultado de comparação de operações de branch
+	assign branch_taken = (zeroflag_inv_i) ? (!zero_flag) : (zero_flag);
+
+	/****************************/
+	/*****SAIDAS DO DATAPATH*****/
+	/****************************/
+
+	// Mux de saída do EX_Stage
+	always_comb begin
+		if(lui_alu_bypass_i)									// Usado somente em LUI
+			wb_data_o = xtended_upper_imm; 
+		else if(jarl_flag_i || jal_flag_i)		// Usado em Jal e Jarl
+			wb_data_o = pc_plus_four; 
+		else																	// Caso Contrário
+			wb_data_o = ex_data;
+	end
+
 	assign reg_waddr_o = instruction_i[11:7];
+
+	assign pc_jump_addr_o = pc_plus_imm;
+
+	/****************************/
+	/*****SAIDAS DO DATAPATH*****/
+	/****************************/
+
+	assign pc_branch_ctrl_o = ((branch_taken && branch_flag_i) || jal_flag_i || jarl_flag_i);
 
 endmodule

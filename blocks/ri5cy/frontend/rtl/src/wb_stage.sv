@@ -72,7 +72,7 @@ module wb_stage
 			.clk									(clk						),
 			.rst_n								(rst_n					),
 
-			.Controle_Funcao_i		(								),
+			.Controle_Funcao_i		(lsu_ctrl				),
 			.Escrita1_Leitura0_i	(store_flag			),
 			.data_addr_i					(ex_data_i			),	
 			.data_wdata_i					(store_data_i		),

@@ -253,18 +253,20 @@ module core
 			.reg_rdata2_i				(rdata2_ID_EX_w2					),
 			.instruction_i   		(instr_IF_EX_w3						),
 			.program_count_i		(pc_IF_EX_w3							),
-			.ex_data_o 					(ex_data_EX_WB_w1					),
+			.wb_data_o 					(ex_data_EX_WB_w1					),
 			.reg_waddr_o       	(reg_waddr_EX_WB_w1				),
+			.pc_jump_addr_o  		(					),
 
 			.alu_op_ctrl_i			(alu_op_ID_EX_w2					),
-			.stype_mux_i				(stype_ctrl_ID_EX_w2			),
-			.utype_mux_i				(utype_ctrl_ID_EX_w2			),
-			.jtype_mux_i      	(jtype_ctrl_ID_EX_w2			),
+			.stype_imm_mux_i		(stype_ctrl_ID_EX_w2			),
+			.auipc_mux_i				(utype_ctrl_ID_EX_w2			),
 			.imm_alu_mux_i			(imm_alu_ctrl_ID_EX_w2		),
-			.pc_alu_mux_i				(auipc_alu_ctrl_ID_EX_w2	),
-			.branch_alu_mux_i 	(branch_alu_ctrl_ID_EX_w2	),
+			.jarl_flag_i     		(					),
+			.jal_flag_i 				(					),
+			.branch_flag_i   		(					),
+			.lui_alu_bypass_i 	(					),
 			.zeroflag_inv_i   	(zeroflag_ctrl_ID_EX_w2		),
-			.branch_comp_flag_o	(comp_flag_EX_WB_w1				),
+			.pc_branch_ctrl_o		(					),
 
 			.alu_mdu_mux_i   		(					)
 		);

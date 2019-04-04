@@ -9,7 +9,7 @@ parameter PC_START_ADDR   = 32'h0000_00ff;
 
 parameter WORD_WIDTH 	    = 32;
 parameter ADDR_WIDTH 	    = 5;
-parameter N_OF_REGS		    =	32;
+parameter N_OF_REGS		    = 32;
 
 // Parametros de opcodes
 
@@ -101,7 +101,7 @@ parameter ALU_OP_WIDTH		= 4;
 parameter ALU_ADD					= 4'b0000;
 parameter ALU_SUB					= 4'b0001;
 parameter ALU_SLT					= 4'b0010;
-parameter ALU_SLTU				= 4'b0011;
+parameter ALU_SLTU		    = 4'b0011;
 parameter ALU_OR					=	4'b0100;
 parameter ALU_AND					=	4'b0101;
 parameter ALU_XOR					=	4'b0110;

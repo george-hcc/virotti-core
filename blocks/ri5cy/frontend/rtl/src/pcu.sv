@@ -75,6 +75,7 @@ module pcu
     end
   end
 
+  // Lógica de flags de uso de operandos
   always_comb begin
     case(state_array[0].instr_type)
       OP_COMP, OP_STORE, OP_BRANCH: begin

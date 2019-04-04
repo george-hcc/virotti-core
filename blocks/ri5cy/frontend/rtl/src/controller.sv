@@ -154,11 +154,11 @@ module controller
 				stype					= 1'b0;
 				utype					= 1'b0;
 				jtype					= 1'b0;
-				imm_alu				= 1'b1;
+				imm_alu				= 1'b1; // Esquece essa porra
 				auipc_alu			= 1'b0;
-				branch_alu		= 1'b1;
-				zeroflag_inv	= 1'b0;
-				branch_pc			= 1'b1;
+				branch_alu		= 1'b1; // Muda essa porra
+				zeroflag_inv	= 1'b0; // Isso ta massa
+				branch_pc			= 1'b1; // Também ta massa
 			end
 			INSTR_BNE, INSTR_BGE, INSTR_BGEU:
 			begin
