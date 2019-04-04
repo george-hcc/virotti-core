@@ -3,11 +3,6 @@
 module wb_stage
 	(
 		input  logic									clk,
-		input  logic									rst_n,
-
-		input  logic [WORD_WIDTH-1:0]	ex_data_i,
-		input  logic [WORD_WIDTH-1:0] store_data_i,
-		output logic [WORD_WIDTH-1:0]	writeback_data_o,
 
 		// Interface da Memória de Dados
 		output logic									data_req_o,
@@ -17,9 +12,14 @@ module wb_stage
 		output logic [WORD_WIDTH-1:0]	data_wdata_o,
 		input  logic [WORD_WIDTH-1:0] data_rdata_i,
 		input  logic									data_rvalid_i,
-		input  logic									data_gnt_i
+		input  logic									data_gnt_i,
 
-		// Sinais de Controle		
+		// Sinais de Datapath
+		input  logic [WORD_WIDTH-1:0]	wb_data_i,
+		input  logic [WORD_WIDTH-1:0] store_data_i,
+		output logic [WORD_WIDTH-1:0]	reg_wdata_o,
+
+		// Sinais de ControlPath	
 		input  logic [2:0]						load_type_i,
 		input  logic [1:0]						store_type_i,
 	);
@@ -29,7 +29,7 @@ module wb_stage
 	logic 									store_flag; 
 
 	// Váriavel de controle para o LSU
-	logic 									lsu_ctrl;
+	logic [1:0]							lsu_ctrl;
 
 	// Dado lido na entrada pós processado
 	logic [WORD_WIDTH-1:0] 	xtended_load_data;
@@ -76,7 +76,7 @@ module wb_stage
 			.Escrita1_Leitura0_i	(store_flag			),
 			.data_addr_i					(ex_data_i			),	
 			.data_wdata_i					(store_data_i		),
-			.Dado_lido_o					(								),
+//		.Dado_lido_o					(								),  TEMPORARIAMENTE DESATIVADO ATÉ KELVIN EXPLICAR PORQUE ISSO TA AQUI
 
 			.data_req_o						(data_req_o			),
 			.data_be_o						(data_be_o			),
@@ -101,6 +101,6 @@ module wb_stage
 		endcase
 	end
 
-	assign writeback_data_o = (load_flag) ? (xtended_load_data) : (ex_data_i);
+	assign reg_wdata_o = (load_flag) ? (xtended_load_data) : (wb_data_i);
 
 endmodule

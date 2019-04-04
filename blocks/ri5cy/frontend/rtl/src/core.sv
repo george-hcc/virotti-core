@@ -38,15 +38,13 @@ module core
 
 	/*********Saídas do IF_STAGE*********/
 	// Entradas do IF_ID
-	logic [WORD_WIDTH-1:0]		pc_plus4_IF_ID_w1;
-	logic											no_op_IF_ID_w1;
 	logic [WORD_WIDTH-1:0] 		instr_IF_EX_w1;
 	logic [WORD_WIDTH-1:0]		pc_IF_EX_w1;
+	logic											no_op_IF_ID_w1;
 	// Saídas do IF_ID
-	logic [WORD_WIDTH-1:0]		pc_plus4_IF_ID_w2;
-	logic											no_op_IF_ID_w2;
 	logic [WORD_WIDTH-1:0] 		instr_IF_EX_w2;
 	logic [WORD_WIDTH-1:0]		pc_IF_EX_w2;
+	logic											no_op_IF_ID_w2;
 	// Saídas do ID_EX
 	logic [WORD_WIDTH-1:0] 		instr_IF_EX_w3;
 	logic [WORD_WIDTH-1:0]		pc_IF_EX_w3;
@@ -57,51 +55,48 @@ module core
 	logic	[WORD_WIDTH-1:0]		rdata1_ID_EX_w1;
 	logic	[WORD_WIDTH-1:0]		rdata2_ID_EX_w1;
 	logic [ALU_OP_WIDTH-1:0]	alu_op_ID_EX_w1;
-	logic 										stype_ctrl_ID_EX_w1;
-	logic 										utype_ctrl_ID_EX_w1;
-	logic 										jtype_ctrl_ID_EX_w1;
-	logic 										imm_alu_ctrl_ID_EX_w1;
-	logic 										auipc_alu_ctrl_ID_EX_w1;
-	logic 										branch_alu_ctrl_ID_EX_w1;
-	logic 										zeroflag_ctrl_ID_EX_w1;
 	logic [2:0]								load_type_ID_WB_w1;
 	logic [1:0]								store_type_ID_WB_w1;
 	logic 										write_en_ID_WB_w1;
-	logic 										branch_pc_ctrl_ID_WB_w1;
-	// Saídas do ID_EX	
+	logic 										stype_ctrl_ID_EX_w1;
+	logic 										imm_alu_ctrl_ID_EX_w1;
+	logic 										jarl_ctrl_ID_EX_w1;
+	logic 										jal_ctrl_ID_EX_w1;
+	logic 										branch_ctrl_ID_EX_w1;
+	logic 										auipc_ctrl_ID_EX_w1;
+	logic 										lui_ctrl_ID_EX_w1;
+	logic 										zeroflag_ctrl_ID_EX_w1;
+	// Saídas do ID_EX
 	logic	[WORD_WIDTH-1:0]		rdata1_ID_EX_w2;
 	logic	[WORD_WIDTH-1:0]		rdata2_ID_EX_w2;
 	logic [ALU_OP_WIDTH-1:0]	alu_op_ID_EX_w2;
-	logic 										stype_ctrl_ID_EX_w2;
-	logic 										utype_ctrl_ID_EX_w2;
-	logic 										jtype_ctrl_ID_EX_w2;
-	logic 										imm_alu_ctrl_ID_EX_w2;
-	logic 										auipc_alu_ctrl_ID_EX_w2;
-	logic 										branch_alu_ctrl_ID_EX_w2;
-	logic 										zeroflag_ctrl_ID_EX_w2;
 	logic [2:0]								load_type_ID_WB_w2;
 	logic [1:0]								store_type_ID_WB_w2;
 	logic 										write_en_ID_WB_w2;
-	logic 										branch_pc_ctrl_ID_WB_w2;
+	logic 										stype_ctrl_ID_EX_w2;
+	logic 										imm_alu_ctrl_ID_EX_w2;
+	logic 										jarl_ctrl_ID_EX_w2;
+	logic 										jal_ctrl_ID_EX_w2;
+	logic 										branch_ctrl_ID_EX_w2;
+	logic 										auipc_ctrl_ID_EX_w2;
+	logic 										lui_ctrl_ID_EX_w2;
+	logic 										zeroflag_ctrl_ID_EX_w2;
 	// Saídas do EX_WB
 	logic	[WORD_WIDTH-1:0]		rdata2_ID_EX_w3;
 	logic [2:0]								load_type_ID_WB_w3;
 	logic [1:0]								store_type_ID_WB_w3;
 	logic 										write_en_ID_WB_w3;
-	logic 										branch_pc_ctrl_ID_WB_w3;
 	/************************************/
 
 	/*********Saídas do EX_STAGE*********/
 	// Entradas do EX_WB
-	logic [WORD_WIDTH-1:0]		ex_data_EX_WB_w1;
-	logic [WORD_WIDTH-1:0]		store_data_EX_WB_w1;
-	logic											comp_flag_EX_WB_w1;
+	logic [WORD_WIDTH-1:0]		wb_data_EX_WB_w1;
 	logic	[ADDR_WIDTH-1:0]		reg_waddr_EX_WB_w1;
+	logic											branchtaken_flag_EX_WB_w1;
 	// Saídas do EX_WB
-	logic [WORD_WIDTH-1:0]		ex_data_EX_WB_w2;
-	logic [WORD_WIDTH-1:0]		store_data_EX_WB_w2;
-	logic											comp_flag_EX_WB_w2;
+	logic [WORD_WIDTH-1:0]		wb_data_EX_WB_w2;
 	logic	[ADDR_WIDTH-1:0]		reg_waddr_EX_WB_w2;
+	logic											branchtaken_EX_WB_w2;
 	/************************************/
 
 	/*********Saídas do EX_STAGE*********/
@@ -136,80 +131,78 @@ module core
 			.pc_start_address_i	(pc_start_address_i				),
 
 			.pc_branch_addr_i		(			),
-			.instruction_o 			(			),
-			.program_count_o		(			),
+			.instruction_o 			(instr_IF_EX_w1						),
+			.program_count_o		(pc_IF_EX_w1							),
 
 			.branch_pc_ctrl_i		(			),
-			.no_op_flag_o     	(			)
+			.no_op_flag_o     	(no_op_IF_ID_w1						)
 		);
 
 	IF_to_ID if_id 
 		(
 			.clk								(clk											),
-			.rst_n							(rst_n										),
 			.stall_ctrl     		(if_to_id_stall_w					),
 			.clear_ctrl     		(if_to_id_clear_w					),
 
-			.program_count_i		(pc_IF_EX_w1							),
-			.pc_plus4_i 				(pc_plus4_IF_ID_w1				),
 			.instruction_i 			(instr_IF_EX_w1						),
+			.program_count_i		(pc_IF_EX_w1							),
 			.no_op_flag_i				(no_op_IF_ID_w1						),
 
-			.program_count_o		(pc_IF_EX_w2							),
-			.pc_plus4_o 				(pc_plus4_IF_ID_w2				),
 			.instruction_o 			(instr_IF_EX_w2						),
+			.program_count_o		(pc_IF_EX_w2							),
 			.no_op_flag_o				(no_op_IF_ID_w2						)
 		);
 
 	id_stage ID 
 		(
-			.clk									(clk										),
+			.clk								(clk											),
 
-			.instruction_i				(							),
-			.reg_waddr_i					(							),
-			.reg_wdata_i					(							),
-			.reg_rdata1_o					(							),
-			.reg_rdata2_o					(							),
+			.instruction_i			(instr_IF_EX_w2						),
+			.reg_waddr_i				(							),
+			.reg_wdata_i				(							),
+			.reg_rdata1_o				(rdata1_ID_EX_w1					),
+			.reg_rdata2_o				(rdata2_ID_EX_w1					),
 
-			.alu_op_ctrl_o				(							),
-			.load_type_ctrl_o			(							),
-			.store_type_ctrl_o		(							),
-			.write_en_o						(							),
-			.stype_ctrl_o					(							),
-			.imm_alu_ctrl_o				(							),
-			.jarl_ctrl_o					(							),
-			.jal_ctrl_o						(							),
-			.branch_ctrl_o				(							),
-			.auipc_ctrl_o					(							),
-			.lui_ctrl_o						(							),
-			.zeroflag_ctrl_o			(							),
+			.no_op_flag_i     	(no_op_IF_ID_w2						),
+			.reg_wen_i        	(							),
+			.alu_op_ctrl_o			(alu_op_ID_EX_w1),
+			.load_type_ctrl_o		(load_type_ID_WB_w1				),
+			.store_type_ctrl_o	(store_type_ID_WB_w1			),
+			.write_en_o					(write_en_ID_WB_w1				),
+			.stype_ctrl_o				(stype_ctrl_ID_EX_w1			),
+			.imm_alu_ctrl_o			(imm_alu_ctrl_ID_EX_w1		),
+			.jarl_ctrl_o				(jarl_ctrl_ID_EX_w1				),
+			.jal_ctrl_o					(jal_ctrl_ID_EX_w1				),
+			.branch_ctrl_o			(branch_ctrl_ID_EX_w1			),
+			.auipc_ctrl_o				(auipc_ctrl_ID_EX_w1			),
+			.lui_ctrl_o					(lui_ctrl_ID_EX_w1				),
+			.zeroflag_ctrl_o		(zeroflag_ctrl_ID_EX_w1		),
 
-			.mdu_op_ctrl_o				(					)
+			.mdu_op_ctrl_o			(					)
 		);
 
 	ID_to_EX id_ex
 		(
 			.clk								(clk											),
-			.rst_n							(rst_n										),
 			.stall_ctrl     		(id_to_ex_stall_w					),
 			.clear_ctrl       	(id_to_ex_clear_w					),
 
 			.program_count_i		(pc_IF_EX_w2							),
 			.instruction_i 			(instr_IF_EX_w2						),
 			.rdata1_i 					(rdata1_ID_EX_w1					),
-			.rdata2_i 					(rdata2_ID_EX_w1					),			
+			.rdata2_i 					(rdata2_ID_EX_w1					),
 			.alu_op_ctrl_i			(alu_op_ID_EX_w1					),
-			.write_en_i					(write_en_ID_WB_w1 				),
-			.stype_ctrl_i				(stype_ctrl_ID_EX_w1			),
-			.utype_ctrl_i				(utype_ctrl_ID_EX_w1			),
-			.jtype_ctrl_i				(jtype_ctrl_ID_EX_w1			),
-			.imm_alu_ctrl_i			(imm_alu_ctrl_ID_EX_w1		),
-			.auipc_alu_ctrl_i		(auipc_alu_ctrl_ID_EX_w1	),
-			.branch_alu_ctrl_i	(branch_alu_ctrl_ID_EX_w1	),
-			.zeroflag_ctrl_i		(zeroflag_ctrl_ID_EX_w1		),
 			.load_type_ctrl_i		(load_type_ID_WB_w1				),
 			.store_type_ctrl_i	(store_type_ID_WB_w1			),
-			.branch_pc_ctrl_i		(branch_pc_ctrl_ID_WB_w1	),
+			.write_en_i					(write_en_ID_WB_w1				),
+			.stype_ctrl_i				(stype_ctrl_ID_EX_w1			),
+			.imm_alu_ctrl_i			(imm_alu_ctrl_ID_EX_w1		),
+			.jarl_ctrl_i				(jarl_ctrl_ID_EX_w1				),
+			.jal_ctrl_i					(jal_ctrl_ID_EX_w1				),
+			.branch_ctrl_i			(branch_ctrl_ID_EX_w1			),
+			.auipc_ctrl_i				(auipc_ctrl_ID_EX_w1			),
+			.lui_ctrl_i					(lui_ctrl_ID_EX_w1				),
+			.zeroflag_ctrl_i		(zeroflag_ctrl_ID_EX_w1		),
 
 			.program_count_o		(pc_IF_EX_w3							),
 			.instruction_o 			(instr_IF_EX_w3						),			
@@ -218,18 +211,18 @@ module core
 			.alu_op_ctrl_o			(alu_op_ID_EX_w2					),
 			.load_type_ctrl_o		(load_type_ID_WB_w2				),
 			.store_type_ctrl_o	(store_type_ID_WB_w2			),
-			.write_en_o					(write_en_ID_WB_w2 				),
-			.jtype_ctrl_o				(jtype_ctrl_ID_EX_w2			),
-			.imm_alu_ctrl_o			(imm_alu_ctrl_ID_EX_w2		),
-			.auipc_alu_ctrl_o		(auipc_alu_ctrl_ID_EX_w2	),
-			.branch_alu_ctrl_o	(branch_alu_ctrl_ID_EX_w2	),
-			.zeroflag_ctrl_o		(zeroflag_ctrl_ID_EX_w2		),
+			.write_en_o					(write_en_ID_WB_w2				),
 			.stype_ctrl_o				(stype_ctrl_ID_EX_w2			),
-			.utype_ctrl_o				(utype_ctrl_ID_EX_w2			),
-			.branch_pc_ctrl_o		(branch_pc_ctrl_ID_WB_w2	),
+			.imm_alu_ctrl_o			(imm_alu_ctrl_ID_EX_w2		),
+			.jarl_ctrl_o				(jarl_ctrl_ID_EX_w2				),
+			.jal_ctrl_o					(jal_ctrl_ID_EX_w2				),
+			.branch_ctrl_o			(branch_ctrl_ID_EX_w2			),
+			.auipc_ctrl_o				(auipc_ctrl_ID_EX_w2			),
+			.lui_ctrl_o					(lui_ctrl_ID_EX_w2				),
+			.zeroflag_ctrl_o		(zeroflag_ctrl_ID_EX_w2		),
 
-			.fwrd_type1_data_i	(ex_data_EX_WB_w1					),
-    	.fwrd_type2_data_i	(writeback_data_WB_w			),
+			.fwrd_type1_data_i	(					),
+    	.fwrd_type2_data_i	(					),
     	.fwrd_opA_type1_i		(fwrd_opA_type1_w					),
     	.fwrd_opA_type2_i		(fwrd_opA_type2_w					),
     	.fwrd_opB_type1_i		(fwrd_opB_type1_w					),
@@ -247,18 +240,18 @@ module core
 			.program_count_i		(pc_IF_EX_w3							),
 			.wb_data_o 					(ex_data_EX_WB_w1					),
 			.reg_waddr_o       	(reg_waddr_EX_WB_w1				),
-			.pc_jump_addr_o  		(					),
+			.pc_jump_addr_o  		(branch_addr_EX_IF_w1			),
 
 			.alu_op_ctrl_i			(alu_op_ID_EX_w2					),
 			.stype_imm_mux_i		(stype_ctrl_ID_EX_w2			),
-			.auipc_flag_i				(utype_ctrl_ID_EX_w2			),
+			.auipc_flag_i				(auipc_ctrl_ID_EX_w2			),
 			.imm_alu_mux_i			(imm_alu_ctrl_ID_EX_w2		),
-			.jarl_flag_i     		(					),
-			.jal_flag_i 				(					),
-			.branch_flag_i   		(					),
-			.lui_alu_bypass_i 	(					),
+			.jarl_flag_i     		(jarl_ctrl_ID_EX_w2				),
+			.jal_flag_i 				(jal_ctrl_ID_EX_w2 				),
+			.branch_flag_i   		(branch_ctrl_ID_EX_w2			),
+			.lui_alu_bypass_i 	(lui_ctrl_ID_EX_w2				),
 			.zeroflag_inv_i   	(zeroflag_ctrl_ID_EX_w2		),
-			.pc_branch_ctrl_o		(					),
+			.pc_branch_ctrl_o		(branchtaken_flag_EX_IF_w1),
 
 			.alu_mdu_mux_i   		(					)
 		);
@@ -266,36 +259,27 @@ module core
 	EX_to_WB ex_wb
 		(
 			.clk								(clk											),
-			.rst_n							(rst_n										),
 			.stall_ctrl     		(ex_to_wb_stall_w					),
 			.clear_ctrl      		(ex_to_wb_clear_w					),
-
-			.store_data_i				(rdata2_ID_EX_w2					),			
+		
 			.load_type_i				(load_type_ID_WB_w2				),
 			.store_type_i				(store_type_ID_WB_w2			),
 			.write_en_i					(write_en_ID_WB_w2				),
-			.branch_pc_ctrl_i		(branch_pc_ctrl_ID_WB_w2	),
-			.ex_data_i					(ex_data_EX_WB_w1					),
+			.wb_data_i					(wb_data_EX_WB_w1					),
 			.store_data_i				(store_data_EX_WB_w1			),
-			.comp_flag_i				(comp_flag_EX_WB_w1				),
 			.reg_waddr_i       	(reg_waddr_EX_WB_w1				),
 
-			.store_data_o				(rdata2_ID_EX_w3					),
 			.load_type_o				(load_type_ID_WB_w3				),
 			.store_type_o				(store_type_ID_WB_w3			),
 			.write_en_o					(write_en_ID_WB_w3				),
-			.branch_pc_ctrl_o		(branch_pc_ctrl_ID_WB_w3	),
-			.ex_data_o					(ex_data_EX_WB_w2					),
+			.wb_data_o					(wb_data_EX_WB_w2					),
 			.store_data_o				(store_data_EX_WB_w2			),
-			.comp_flag_o				(comp_flag_EX_WB_w2				),
 			.reg_waddr_o       	(reg_waddr_EX_WB_w2				),
 		);
 
 	wb_stage WB 
 		(
-			.ex_data_i    			(ex_data_EX_WB_w2					),
-			.store_data_i 			(rdata2_ID_EX_w3					),
-			.writeback_data_o 	(writeback_data_WB_w			),
+			.clk 								(clk											),
 
 			.data_req_o   			(data_req_o								),
 			.data_addr_o  			(data_addr_o							),
@@ -305,6 +289,10 @@ module core
 			.data_rdata_i 			(data_rdata_i							),
 			.data_rvalid_i			(data_rvalid_i						),
 			.data_gnt_i					(data_gnt_i								),
+
+			.wb_data_i    			(wb_data_EX_WB_w2					),
+			.store_data_i 			(rdata2_ID_EX_w3					),
+			.reg_wdata_o 				(writeback_data_WB_w			),			
 
 			.load_type_i 				(load_type_ID_WB_w3				),
 			.store_type_i 			(store_type_ID_WB_w3			)
