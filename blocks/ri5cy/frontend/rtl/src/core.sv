@@ -86,21 +86,24 @@ module core
 	logic [2:0]								load_type_ID_WB_w3;
 	logic [1:0]								store_type_ID_WB_w3;
 	logic 										write_en_ID_WB_w3;
+	// Saídas para_PCU
+	decoded_op 								instr_type_ID_PCU_w;
 	/************************************/
 
 	/*********Saídas do EX_STAGE*********/
 	// Entradas do EX_WB
 	logic [WORD_WIDTH-1:0]		wb_data_EX_WB_w1;
 	logic	[ADDR_WIDTH-1:0]		reg_waddr_EX_WB_w1;
-	logic											branchtaken_flag_EX_WB_w1;
 	// Saídas do EX_WB
 	logic [WORD_WIDTH-1:0]		wb_data_EX_WB_w2;
 	logic	[ADDR_WIDTH-1:0]		reg_waddr_EX_WB_w2;
-	logic											branchtaken_EX_WB_w2;
+	// Saídas para IF
+	logic [WORD_WIDTH-1:0]		branch_addr_EX_IF_w;
+	logic											branch_taken_EX_IF_w;
 	/************************************/
 
 	/*********Saídas do EX_STAGE*********/
-	logic [WORD_WIDTH-1:0]		writeback_data_WB_w;
+	logic [WORD_WIDTH-1:0]		reg_wdata_WB_ID_w;
 	/************************************/
 
 	/*****Saídas do Pipeline Control*****/
@@ -130,11 +133,11 @@ module core
 			.fetch_en_i        	(fetch_en_i 							),
 			.pc_start_address_i	(pc_start_address_i				),
 
-			.pc_branch_addr_i		(			),
+			.pc_branch_addr_i		(branch_addr_EX_IF_w			),
 			.instruction_o 			(instr_IF_EX_w1						),
 			.program_count_o		(pc_IF_EX_w1							),
 
-			.branch_pc_ctrl_i		(			),
+			.branch_pc_ctrl_i		(branch_taken_EX_IF_w			),
 			.no_op_flag_o     	(no_op_IF_ID_w1						)
 		);
 
@@ -158,14 +161,14 @@ module core
 			.clk								(clk											),
 
 			.instruction_i			(instr_IF_EX_w2						),
-			.reg_waddr_i				(							),
-			.reg_wdata_i				(							),
+			.reg_waddr_i				(reg_waddr_EX_WB_w2				),
+			.reg_wdata_i				(reg_wdata_WB_ID_w				),
 			.reg_rdata1_o				(rdata1_ID_EX_w1					),
 			.reg_rdata2_o				(rdata2_ID_EX_w1					),
 
 			.no_op_flag_i     	(no_op_IF_ID_w2						),
-			.reg_wen_i        	(							),
-			.alu_op_ctrl_o			(alu_op_ID_EX_w1),
+			.reg_wen_i        	(write_en_ID_WB_w3				),
+			.alu_op_ctrl_o			(alu_op_ID_EX_w1					),
 			.load_type_ctrl_o		(load_type_ID_WB_w1				),
 			.store_type_ctrl_o	(store_type_ID_WB_w1			),
 			.write_en_o					(write_en_ID_WB_w1				),
@@ -178,7 +181,7 @@ module core
 			.lui_ctrl_o					(lui_ctrl_ID_EX_w1				),
 			.zeroflag_ctrl_o		(zeroflag_ctrl_ID_EX_w1		),
 
-			.instr_type_o     	(							),
+			.instr_type_o     	(instr_type_ID_PCU_w			),
 
 			.mdu_op_ctrl_o			(					)
 		);
@@ -223,8 +226,8 @@ module core
 			.lui_ctrl_o					(lui_ctrl_ID_EX_w2				),
 			.zeroflag_ctrl_o		(zeroflag_ctrl_ID_EX_w2		),
 
-			.fwrd_type1_data_i	(					),
-    	.fwrd_type2_data_i	(					),
+			.fwrd_type1_data_i	(wb_data_EX_WB_w1					),
+    	.fwrd_type2_data_i	(reg_wdata_WB_ID_w				),
     	.fwrd_opA_type1_i		(fwrd_opA_type1_w					),
     	.fwrd_opA_type2_i		(fwrd_opA_type2_w					),
     	.fwrd_opB_type1_i		(fwrd_opB_type1_w					),
@@ -242,7 +245,7 @@ module core
 			.program_count_i		(pc_IF_EX_w3							),
 			.wb_data_o 					(ex_data_EX_WB_w1					),
 			.reg_waddr_o       	(reg_waddr_EX_WB_w1				),
-			.pc_jump_addr_o  		(branch_addr_EX_IF_w1			),
+			.pc_jump_addr_o  		(branch_addr_EX_IF_w			),
 
 			.alu_op_ctrl_i			(alu_op_ID_EX_w2					),
 			.stype_imm_mux_i		(stype_ctrl_ID_EX_w2			),
@@ -253,7 +256,7 @@ module core
 			.branch_flag_i   		(branch_ctrl_ID_EX_w2			),
 			.lui_alu_bypass_i 	(lui_ctrl_ID_EX_w2				),
 			.zeroflag_inv_i   	(zeroflag_ctrl_ID_EX_w2		),
-			.pc_branch_ctrl_o		(branchtaken_flag_EX_IF_w1),
+			.pc_branch_ctrl_o		(branch_taken_EX_IF_w			),
 
 			.alu_mdu_mux_i   		(					)
 		);
@@ -294,7 +297,7 @@ module core
 
 			.wb_data_i    			(wb_data_EX_WB_w2					),
 			.store_data_i 			(rdata2_ID_EX_w3					),
-			.reg_wdata_o 				(writeback_data_WB_w			),			
+			.reg_wdata_o 				(reg_wdata_WB_ID_w				),			
 
 			.load_type_i 				(load_type_ID_WB_w3				),
 			.store_type_i 			(store_type_ID_WB_w3			)
@@ -305,13 +308,13 @@ module core
 			.clk								(clk											),
     	.rst_n							(rst_n										),
 
-    	.instr_type_i				(													),
-    	.read_addr1_i				(													),
-    	.read_addr2_i				(													),
-    	.write_addr_i				(													),
-    	.write_en_i					(													),
-    	.valid_lsu_load_i		(													),
-    	.branch_taken_i  		(													),
+    	.instr_type_i				(instr_type_ID_PCU_w			),
+    	.read_addr1_i				(instr_IF_EX_w2[19:15]		),
+    	.read_addr2_i				(instr_IF_EX_w2[24:20]		),
+    	.write_addr_i				(instr_IF_EX_w2[11:7]			),
+    	.write_en_i					(write_en_ID_WB_w1				),
+    	.valid_lsu_load_i		(data_rvalid_i						),
+    	.branch_taken_i  		(branch_taken_EX_IF_w			),
     	
     	.fetch_stall_o   		(													),
     	.if_to_id_stall_o		(if_to_id_stall_w					),
