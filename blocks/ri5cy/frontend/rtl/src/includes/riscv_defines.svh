@@ -1,15 +1,13 @@
-//package riscv_defines;
+package riscv_defines;
 
 // Parametros de Configuração
 
 parameter RISCV_M_CORE    = 0;
-parameter PC_START_ADDR   = 32'h0000_00ff;
 
 // Parametros globais
 
 parameter WORD_WIDTH 	    = 32;
 parameter ADDR_WIDTH 	    = 5;
-parameter N_OF_REGS		    = 32;
 
 // Parametros de opcodes
 
@@ -26,75 +24,6 @@ parameter OPCODE_JALR     = 7'h67;
 parameter OPCODE_JAL      = 7'h6f;
 parameter OPCODE_AUIPC    = 7'h17;
 parameter OPCODE_LUI      = 7'h37;
-
-// Tipedefs do decodificador
-
-typedef enum
-  {
-    OP_NO_OP,
-    OP_COMP,
-    OP_COMP_IMM,
-    OP_STORE,
-    OP_LOAD,
-    OP_BRANCH,
-    OP_JALR,
-    OP_JAL,
-    OP_AUIPC,
-    OP_LUI,
-  } decoded_opcode;
-
-typedef enum
-  {
-    INSTR_NO_OP,
-    INSTR_ADD,
-    INSTR_SUB,
-    INSTR_SLL,
-    INSTR_SRL,
-    INSTR_SRA,
-    INSTR_AND,
-    INSTR_OR,
-    INSTR_XOR,
-    INSTR_SLT,
-    INSTR_SLTU,
-    INSTR_ADDI,
-    INSTR_SLLI,
-    INSTR_SRLI,
-    INSTR_SRAI,
-    INSTR_ANDI,
-    INSTR_ORI,
-    INSTR_XORI,
-    INSTR_SLTI,
-    INSTR_SLTIU,
-    INSTR_LUI,
-    INSTR_AUIPC,
-    INSTR_LB,
-    INSTR_LBU,
-    INSTR_LH,
-    INSTR_LHU,
-    INSTR_LW,
-    INSTR_SB,
-    INSTR_SH,
-    INSTR_SW,
-    INSTR_FENCE,
-    INSTR_FENCEI,
-    INSTR_BEQ,
-    INSTR_BNE,
-    INSTR_BLT,
-    INSTR_BLTU,
-    INSTR_BGE,
-    INSTR_BGEU,
-    INSTR_JAL,
-    INSTR_JALR,
-    INSTR_MUL,
-    INSTR_MULH,
-    INSTR_MULHSU,
-    INSTR_MULHU,
-    INSTR_DIV,
-    INSTR_DIVU,
-    INSTR_REM,
-    INSTR_REMU,
-    INSTR_BAD_INSTR
-  } decoded_instr;
 
 // Controle da ULA
 
@@ -124,4 +53,4 @@ parameter MDU_DIVU        = 3'b101;
 parameter MDU_REM         = 3'b110;
 parameter MDU_REMU        = 3'b111;
 
-//endpackage
+endpackage

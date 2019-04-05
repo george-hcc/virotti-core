@@ -14,6 +14,8 @@ module reg_bank
 		output logic 	[WORD_WIDTH-1:0] 	read_data2_o
 	);
 
+	localparam N_OF_REGS = 32;
+	
 	logic [WORD_WIDTH-1:0]	reg_bank	[N_OF_REGS-1:0];
 
 	always_comb begin		
