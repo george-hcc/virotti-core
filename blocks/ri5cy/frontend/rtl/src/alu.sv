@@ -1,3 +1,15 @@
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Autor:         	George Camboim - george.camboim@embedded.ufcg.edu.br         						//
+//																																													//
+// Nome do Design:  ALU (ULA - Unidade Lógica Aritmética)                       						//
+// Nome do Projeto: MiniSoc                                                    							//
+// Linguagem:       SystemVerilog                                              							//
+//                                                                            							//
+// Descrição:    		Unidade de lógica aritmética de um Core RISCV		          							//
+//                 	Suporta operações lógicas, aritméticas, de deslocamento e comparação		//
+//                                                                            							//
+//////////////////////////////////////////////////////////////////////////////////////////////
+
 //import riscv_defines::*;
 
 module alu

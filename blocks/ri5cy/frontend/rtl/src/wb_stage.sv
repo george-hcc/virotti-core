@@ -1,3 +1,15 @@
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Autor:         	George Camboim - george.camboim@embedded.ufcg.edu.br         						//
+//																																													//
+// Nome do Design:  WB_Stage (Estágio de Writeback)													                //
+// Nome do Projeto: MiniSoc                                                    							//
+// Linguagem:       SystemVerilog                                              							//
+//                                                                            							//
+// Descrição:    		Quarto e ultimo estágio do pipeline do core															//
+//                 	Responsável por lidar com memória de dados e escrita nos registradores	//
+//                                                                            							//
+//////////////////////////////////////////////////////////////////////////////////////////////
+
 //import riscv_defines::*;
 
 module wb_stage

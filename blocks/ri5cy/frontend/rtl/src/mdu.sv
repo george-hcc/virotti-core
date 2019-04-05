@@ -1,4 +1,3 @@
-
 module mdu
 	#(
 		parameter WORD_SIZE = 32

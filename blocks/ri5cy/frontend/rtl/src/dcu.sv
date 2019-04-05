@@ -1,9 +1,18 @@
-`include "decoder.sv"
-`include "controller.sv"
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Autor:         	George Camboim - george.camboim@embedded.ufcg.edu.br         						//
+//																																													//
+// Nome do Design:  DCU (Unidade de Controle de Datapath)	                  								//
+// Nome do Projeto: MiniSoc                                                    							//
+// Linguagem:       SystemVerilog                                              							//
+//                                                                            							//
+// Descrição:    		Unidade de decodificação e controle de um Core RISCV		   							//
+//                 	Responsável pelo controle do datapath do processador										//
+//                                                                            							//
+//////////////////////////////////////////////////////////////////////////////////////////////
 
 //import riscv_defines::*;
 
-module control_unit
+module dcu
 	(
 		input  logic [WORD_WIDTH-1:0]		instruction_i,
 

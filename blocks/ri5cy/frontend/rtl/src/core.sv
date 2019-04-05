@@ -1,8 +1,14 @@
-`include "hazard_control.sv"
-`include "if_stage.sv"
-`include "id_stage.sv"
-`include "ex_stage.sv"
-`include "wb_stage.sv"
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Autor:         	George Camboim - george.camboim@embedded.ufcg.edu.br         						//
+//																																													//
+// Nome do Design:  Core																	                  								//
+// Nome do Projeto: MiniSoc                                                    							//
+// Linguagem:       SystemVerilog                                              							//
+//                                                                            							//
+// Descrição:    		Processador Pipeline RISCV de 32 bits com instruções Base-I 						//
+//									Instruções Base-M de multiplicação e divisão podem ser adicionadas			//
+//                                                                            							//
+//////////////////////////////////////////////////////////////////////////////////////////////
 
 //import riscv_defines::*;
 

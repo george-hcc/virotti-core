@@ -1,3 +1,14 @@
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Autor:           George Camboim - george.camboim@embedded.ufcg.edu.br                    //
+//                                                                                          //
+// Nome do Design:  IF_to_ID                                                                //
+// Nome do Projeto: MiniSoc                                                                 //
+// Linguagem:       SystemVerilog                                                           //
+//                                                                                          //
+// Descrição:       Registrador entre-estágios de Pipeline                                  //
+//                                                                                          //
+//////////////////////////////////////////////////////////////////////////////////////////////
+
 module IF_to_ID
   (
     input  logic                  clk,

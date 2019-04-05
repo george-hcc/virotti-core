@@ -1,3 +1,15 @@
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Autor:           Kelvin Dantas Vale - kelvin.vale@embedded.ufcg.edu.br                   //
+//                                                                                          //
+// Nome do Design:  LSU (Unidade de Load e Store)                                           //
+// Nome do Projeto: MiniSoc                                                                 //
+// Linguagem:       SystemVerilog                                                           //
+//                                                                                          //
+// Descrição:       Responsável pela comunicação com a interface de memória de dados        //
+//									Utilizado nas 5 operações de Load e 3 de Store													//
+//                                                                                          //
+//////////////////////////////////////////////////////////////////////////////////////////////
+
 module lsu_lite (
 	input clk,
 	input rst_n,

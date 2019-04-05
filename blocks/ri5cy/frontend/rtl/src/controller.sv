@@ -1,3 +1,15 @@
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Autor:         	George Camboim - george.camboim@embedded.ufcg.edu.br         						//
+//																																													//
+// Nome do Design:  Controller (Controlador)							                  								//
+// Nome do Projeto: MiniSoc                                                    							//
+// Linguagem:       SystemVerilog                                              							//
+//                                                                            							//
+// Descrição:    		Recebe um sinal de instrução decodificada																//
+//                 	Codifica em diversos sinais de controle para o datapath do Core					//
+//                                                                            							//
+//////////////////////////////////////////////////////////////////////////////////////////////
+
 //import riscv_defines::*;
 
 module controller

@@ -1,3 +1,14 @@
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Autor:         	George Camboim - george.camboim@embedded.ufcg.edu.br         						//
+//																																													//
+// Nome do Design:  Reg Bank (Banco de Registradores)				 									              //
+// Nome do Projeto: MiniSoc                                                    							//
+// Linguagem:       SystemVerilog                                              							//
+//                                                                            							//
+// Descrição:    		Banco de 32 registradores de 32 bits																		//
+//                                                                            							//
+//////////////////////////////////////////////////////////////////////////////////////////////
+
 //import riscv_defines::*;
 
 module reg_bank

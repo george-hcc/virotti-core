@@ -1,3 +1,14 @@
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Autor:         	George Camboim - george.camboim@embedded.ufcg.edu.br         						//
+//																																													//
+// Nome do Design:  Decoder (Decodificador)								                  								//
+// Nome do Projeto: MiniSoc                                                    							//
+// Linguagem:       SystemVerilog                                              							//
+//                                                                            							//
+// Descrição:    		Recebe uma instrução de 32 bits e decodifica para outros módulos				//
+//                                                                            							//
+//////////////////////////////////////////////////////////////////////////////////////////////
+
 module decoder
 	(
 		input  logic [WORD_WIDTH-1:0]		instr_i,

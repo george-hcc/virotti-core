@@ -1,5 +1,14 @@
-`include "alu.sv"
-`include "mdu.sv"
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Autor:         	George Camboim - george.camboim@embedded.ufcg.edu.br         						//
+//																																													//
+// Nome do Design:  EX_Stage (Estágio de Execução)				                  								//
+// Nome do Projeto: MiniSoc                                                    							//
+// Linguagem:       SystemVerilog                                              							//
+//                                                                            							//
+// Descrição:    		Terceiro estágio do pipeline do core																		//
+//                 	Contém ULA e possivelmente UMD (Unidade de MultDiv)											//
+//                                                                            							//
+//////////////////////////////////////////////////////////////////////////////////////////////
 
 //import riscv_defines::*;
 

@@ -1,5 +1,14 @@
-`include "control_unit.sv"
-`include "reg_bank.sv"
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Autor:         	George Camboim - george.camboim@embedded.ufcg.edu.br         						//
+//																																													//
+// Nome do Design:  ID_Stage (Estágio de Decodificação de Instruções)				                //
+// Nome do Projeto: MiniSoc                                                    							//
+// Linguagem:       SystemVerilog                                              							//
+//                                                                            							//
+// Descrição:    		Segundo estágio do pipeline do core																			//
+//                 	Contém unidade de controle além do banco de registradores								//
+//                                                                            							//
+//////////////////////////////////////////////////////////////////////////////////////////////
 
 //import riscv_defines::*;
 

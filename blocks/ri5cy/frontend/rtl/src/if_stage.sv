@@ -1,3 +1,14 @@
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Autor:         	George Camboim - george.camboim@embedded.ufcg.edu.br         						//
+//																																													//
+// Nome do Design:  IF_Stage (Estágio de Fetch de Instruções)								                //
+// Nome do Projeto: MiniSoc                                                    							//
+// Linguagem:       SystemVerilog                                              							//
+//                                                                            							//
+// Descrição:    		Primeiro estágio do pipeline do core																		//
+//                                                                            							//
+//////////////////////////////////////////////////////////////////////////////////////////////
+
 //import riscv_defines::*;
 
 module if_stage

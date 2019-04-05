@@ -1,3 +1,14 @@
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Autor:           George Camboim - george.camboim@embedded.ufcg.edu.br                    //
+//                                                                                          //
+// Nome do Design:  PCU (Unidade de Controle de Pipeline)                                   //
+// Nome do Projeto: MiniSoc                                                                 //
+// Linguagem:       SystemVerilog                                                           //
+//                                                                                          //
+// Descrição:       Responsável pela identificação de hazards e seu controle                //
+//                                                                                          //
+//////////////////////////////////////////////////////////////////////////////////////////////
+
 import riscv_defines::*;
 import ctrl_typedefs::*;
 

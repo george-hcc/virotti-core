@@ -1,3 +1,14 @@
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Autor:           George Camboim - george.camboim@embedded.ufcg.edu.br                    //
+//                                                                                          //
+// Nome do Design:  ID_to_EX                                                                //
+// Nome do Projeto: MiniSoc                                                                 //
+// Linguagem:       SystemVerilog                                                           //
+//                                                                                          //
+// Descrição:       Registrador entre-estágios de Pipeline                                  //
+//                                                                                          //
+//////////////////////////////////////////////////////////////////////////////////////////////
+
 module ID_to_EX
   (
     input  logic                    clk,
