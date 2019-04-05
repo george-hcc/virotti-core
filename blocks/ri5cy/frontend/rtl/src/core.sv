@@ -10,7 +10,8 @@
 //                                                                            							//
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-//import riscv_defines::*;
+import riscv_defines::*;
+import ctrl_typedefs::*;
 
 module core
 	(
@@ -113,16 +114,17 @@ module core
 	/************************************/
 
 	/*****Saídas do Pipeline Control*****/
-	logic		                  if_to_id_stall_w,
-	logic		                  id_to_ex_stall_w,
-	logic		                  ex_to_wb_stall_w,
-	logic		                  if_to_id_clear_w,
-	logic		                  id_to_ex_clear_w,
-	logic		                  ex_to_wb_clear_w,
-	logic                  		fwrd_opA_type1_w,
-	logic                  		fwrd_opA_type2_w,
-	logic                  		fwrd_opB_type1_w,
-	logic                  		fwrd_opB_type2_w
+	logic											fetch_stall_w;
+	logic		                  if_to_id_stall_w;
+	logic		                  id_to_ex_stall_w;
+	logic		                  ex_to_wb_stall_w;
+	logic		                  if_to_id_clear_w;
+	logic		                  id_to_ex_clear_w;
+	logic		                  ex_to_wb_clear_w;
+	logic                  		fwrd_opA_type1_w;
+	logic                  		fwrd_opA_type2_w;
+	logic                  		fwrd_opB_type1_w;
+	logic                  		fwrd_opB_type2_w;
 	/************************************/
 
 	if_stage IF
@@ -143,6 +145,7 @@ module core
 			.instruction_o 			(instr_IF_EX_w1						),
 			.program_count_o		(pc_IF_EX_w1							),
 
+			.fetch_stall_i			(fetch_stall_w						),
 			.branch_pc_ctrl_i		(branch_taken_EX_IF_w			),
 			.no_op_flag_o     	(no_op_IF_ID_w1						)
 		);
@@ -322,7 +325,7 @@ module core
     	.valid_lsu_load_i		(data_rvalid_i						),
     	.branch_taken_i  		(branch_taken_EX_IF_w			),
     	
-    	.fetch_stall_o   		(													),
+    	.fetch_stall_o   		(fetch_stall_w						),
     	.if_to_id_stall_o		(if_to_id_stall_w					),
     	.id_to_ex_stall_o		(id_to_ex_stall_w					),
     	.ex_to_wb_stall_o		(ex_to_wb_stall_w					),

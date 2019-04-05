@@ -9,6 +9,9 @@
 //                                                                            							//
 //////////////////////////////////////////////////////////////////////////////////////////////
 
+import riscv_defines::*;
+import ctrl_typedefs::*;
+
 module decoder
 	(
 		input  logic [WORD_WIDTH-1:0]		instr_i,

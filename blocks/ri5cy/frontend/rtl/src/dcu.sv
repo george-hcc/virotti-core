@@ -10,7 +10,8 @@
 //                                                                            							//
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-//import riscv_defines::*;
+import riscv_defines::*;
+import ctrl_typedefs::*;
 
 module dcu
 	(
