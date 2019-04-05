@@ -22,6 +22,9 @@ module control_unit
 		output logic										lui_ctrl_o,
 		output logic										zeroflag_ctrl_o,
 
+		// Sinal de operação para o PCU
+		output decoded_opcode						instr_type_o,
+
 		// Sinal de controle ULA/UMD - Só é usado caso UMD exista
 		output logic										mdu_op_ctrl_o		
 	);
@@ -30,8 +33,9 @@ module control_unit
 
 	decoder decoder
 		(
-			.instr_i(instruction_i),
-			.decoded_instr_o(operation)
+			.instr_i 					(instruction_i	),
+			.decoded_instr_o	(operation			),
+			.instr_type_o			(instr_type_o		)
 		);
 
 	generate

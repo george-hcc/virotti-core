@@ -178,6 +178,8 @@ module core
 			.lui_ctrl_o					(lui_ctrl_ID_EX_w1				),
 			.zeroflag_ctrl_o		(zeroflag_ctrl_ID_EX_w1		),
 
+			.instr_type_o     	(							),
+
 			.mdu_op_ctrl_o			(					)
 		);
 
@@ -308,7 +310,10 @@ module core
     	.read_addr2_i				(													),
     	.write_addr_i				(													),
     	.write_en_i					(													),
+    	.valid_lsu_load_i		(													),
+    	.branch_taken_i  		(													),
     	
+    	.fetch_stall_o   		(													),
     	.if_to_id_stall_o		(if_to_id_stall_w					),
     	.id_to_ex_stall_o		(id_to_ex_stall_w					),
     	.ex_to_wb_stall_o		(ex_to_wb_stall_w					),

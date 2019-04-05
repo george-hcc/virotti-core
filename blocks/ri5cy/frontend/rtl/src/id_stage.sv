@@ -30,6 +30,9 @@ module id_stage
 		output logic										lui_ctrl_o,
 		output logic										zeroflag_ctrl_o,
 
+		// Sinal de operação para o PCU
+		output decoded_opcode						instr_type_o,
+
 		// Sinal de controle ULA/UMD - Só é usado caso UMD exista
 		output logic										mdu_op_ctrl_o
 	);
@@ -69,6 +72,8 @@ module id_stage
 			.auipc_ctrl_o				(auipc_ctrl_o				),
 			.lui_ctrl_o					(lui_ctrl_o					),
 			.zeroflag_ctrl_o		(zeroflag_ctrl_o		),
+
+			.instr_type_o     	(instr_type_o				),
 
 			.mdu_op_ctrl_o			(mdu_op_ctrl_o			)
 		);
