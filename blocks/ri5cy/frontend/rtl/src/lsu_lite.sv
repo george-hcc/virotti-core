@@ -14,7 +14,6 @@ import riscv_defines::*;
 
 module lsu_lite (
 	input clk,
-	input rst_n,
 
 	input [1:0] Controle_Funcao_i,
 	input Escrita1_Leitura0_i,
@@ -59,104 +58,97 @@ parameter 	FAZ_NADA 	= 2'b00,
 			XH 			= 2'b10, 
 			XW 			= 2'b11;
 
-
-always_ff @(posedge clk or negedge rst_n) 
+always_comb 
 	begin
-		if(~rst_n) begin
+		data_addr_o		= {2'b00, data_addr_i[31:2]};
 
-			data_req_o		<= '0;
-			data_be_o		<= '0;
-			data_addr_o		<= '0;
-			data_we_o		<= '0;
-			data_wdata_o	<= '0;
-		end 
-		else begin
-			data_addr_o		<= {2'b00, data_addr_i[31:2]};
+		if(Controle_Funcao_i != 2'b00) 
+			begin
+				data_req_o 		= '1;
+				if(Escrita1_Leitura0_i)
+					begin
+						data_we_o		= '1;
+					end
+				else 
+					begin
+						data_we_o		= '0;
+					end
+			end
+		else
+			begin 
+				data_req_o 		= '0;
+				data_we_o		= '0;
+			end
 
-			if(Controle_Funcao_i != 2'b00) 
+
+		case (Controle_Funcao_i)
+			FAZ_NADA:
 				begin
-					data_req_o 		<= '1;
-					if(Escrita1_Leitura0_i)
+					data_be_o		= 4'b0000;
+					data_wdata_o	= '0;
+				end
+
+			XB:
+				begin
+					case (data_addr_i[1:0])
+						2'b00:
+							begin 
+								data_be_o			= 4'b0001;
+								data_wdata_o[7:0]	= data_wdata_i[7:0];
+							end
+
+						2'b01:
+							begin 
+								data_be_o			= 4'b0010;
+								data_wdata_o[15:8]	= data_wdata_i[7:0];
+							end
+
+						2'b10:
+							begin 
+								data_be_o			= 4'b0100;
+								data_wdata_o[23:16]	= data_wdata_i[7:0];
+							end
+
+						2'b11:
+							begin 
+								data_be_o			= 4'b1000;
+								data_wdata_o[31:24]	= data_wdata_i[7:0];
+							end
+					
+						default:
+							begin 
+								data_be_o			= 4'b0000;
+								data_wdata_o		= '0;
+							end
+					endcase
+				end
+
+			XH:
+				begin
+					if(data_addr_i[1]) 
 						begin
-							data_we_o		<= '1;
+							data_be_o			= 4'b1100;
+							data_wdata_o[31:16]	= data_wdata_i[15:0];
 						end
 					else 
-						begin
-							data_we_o		<= '0;
+						begin 
+							data_be_o			= 4'b0011;
+							data_wdata_o[15:0]	= data_wdata_i[15:0];
 						end
 				end
-			else
-				begin 
-					data_req_o 		<= '0;
+
+			XW:
+				begin
+					data_be_o		= '1;	//Pega tudo !!!!!
+					data_wdata_o	= data_wdata_i;
 				end
-
-
-			case (Controle_Funcao_i)
-				FAZ_NADA:
-					begin
-						data_be_o		<= 4'b0000;
-					end
-
-				XB:
-					begin
-						case (data_addr_i[1:0])
-							2'b00:
-								begin 
-									data_be_o			<= 4'b0001;
-									data_wdata_o[7:0]	<= data_wdata_i[7:0];
-								end
-
-							2'b01:
-								begin 
-									data_be_o			<= 4'b0010;
-									data_wdata_o[15:8]	<= data_wdata_i[7:0];
-								end
-
-							2'b10:
-								begin 
-									data_be_o			<= 4'b0100;
-									data_wdata_o[23:16]	<= data_wdata_i[7:0];
-								end
-
-							2'b11:
-								begin 
-									data_be_o			<= 4'b1000;
-									data_wdata_o[31:24]	<= data_wdata_i[7:0];
-								end
-						
-							default:
-								begin 
-									data_be_o			<= 4'b0000;
-								end
-						endcase
-					end
-
-				XH:
-					begin
-						if(data_addr_i[1]) 
-							begin
-								data_be_o			<= 4'b1100;
-								data_wdata_o[31:16]	<= data_wdata_i[15:0];
-							end
-						else 
-							begin 
-								data_be_o			<= 4'b0011;
-								data_wdata_o[15:0]	<= data_wdata_i[15:0];
-							end
-					end
-
-				XW:
-					begin
-						data_be_o		<= '1;	//Pega tudo !!!!!
-						data_wdata_o	<= data_wdata_i;
-					end
-			
-				default 
-					begin
-						data_be_o		<= 4'b0000;
-					end
-			endcase
-		end
+		
+			default 
+				begin
+					data_be_o		= 4'b0000;
+					data_wdata_o	= '0;
+				end
+		endcase
 	end
 
 endmodule
