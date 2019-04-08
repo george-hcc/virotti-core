@@ -1,6 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Autor:         	George Camboim - george.camboim@embedded.ufcg.edu.br         						//
 //																																													//
+// Colaboradores:   Kelvin Dantas Vale - kelvin.vale@embedded.ufcg.edu.br										//
+//																																													//
 // Nome do Design:  WB_Stage (Estágio de Writeback)													                //
 // Nome do Projeto: MiniSoc                                                    							//
 // Linguagem:       SystemVerilog                                              							//
@@ -86,9 +88,8 @@ module wb_stage
 
 			.Controle_Funcao_i		(lsu_ctrl				),
 			.Escrita1_Leitura0_i	(store_flag			),
-			.data_addr_i					(ex_data_i			),	
+			.data_addr_i					(wb_data_i			),	
 			.data_wdata_i					(store_data_i		),
-//		.Dado_lido_o					(								),  TEMPORARIAMENTE DESATIVADO ATÉ KELVIN EXPLICAR PORQUE ISSO TA AQUI
 
 			.data_req_o						(data_req_o			),
 			.data_be_o						(data_be_o			),
