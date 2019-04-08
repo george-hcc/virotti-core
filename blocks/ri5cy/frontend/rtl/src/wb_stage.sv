@@ -33,7 +33,7 @@ module wb_stage
 
 		// Sinais de ControlPath	
 		input  logic [2:0]						load_type_i,
-		input  logic [1:0]						store_type_i,
+		input  logic [1:0]						store_type_i
 	);
 
 	// Flags de operações load e stores

@@ -18,7 +18,7 @@ module decoder
 		output decoded_instr						decoded_instr_o,
 		output decoded_opcode						instr_type_o,
 
-		input	 logic										no_op_flag_i,
+		input	 logic										no_op_flag_i
 	);
 
 	parameter DCODE_WIDTH = 7;
@@ -110,7 +110,7 @@ module decoder
 		/********************/
 		if(RISCV_M_CORE) begin
 
-			logic [DCODE_WIDTH-1:0] multdiv_instr;
+			decoded_instr multdiv_instr;
 
 			// Operações MultDiv
 			always_comb begin
@@ -128,9 +128,10 @@ module decoder
 			end
 
 			always_comb begin
-				if(no_op_flag_i)
+				if(no_op_flag_i) begin
 					decoded_instr = INSTR_NO_OP;
 					instr_type_o = OP_NO_OP;
+				end
 				else case(opcode)
 					OPCODE_COMP: begin		
 						decoded_instr = (funct7[0]) ? (multdiv_instr) : (comp_instr);
@@ -173,7 +174,6 @@ module decoder
 						instr_type_o = OP_NO_OP;
 					end
 				endcase	
-				endcase
 			end
 
 		end
@@ -184,9 +184,10 @@ module decoder
 		else begin
 
 			always_comb begin
-				if(no_op_flag_i)
+				if(no_op_flag_i) begin
 					decoded_instr = INSTR_NO_OP;
 					instr_type_o = OP_NO_OP;
+				end
 				else case(opcode)
 					OPCODE_COMP: begin		
 						decoded_instr = comp_instr;

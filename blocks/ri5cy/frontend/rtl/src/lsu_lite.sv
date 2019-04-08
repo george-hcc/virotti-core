@@ -20,7 +20,6 @@ module lsu_lite (
 	input Escrita1_Leitura0_i,
 	input [31:0] data_addr_i,	
 	input [31:0] data_wdata_i,
-	output logic [31:0] Dado_lido_o,
 
 	output logic data_req_o,
 	output logic [3:0] data_be_o,
@@ -157,11 +156,6 @@ always_ff @(posedge clk or negedge rst_n)
 						data_be_o		<= 4'b0000;
 					end
 			endcase
-
-
-			if(data_rvalid_i) begin
-				Dado_lido_o <= data_rdata_i;
-			end
 		end
 	end
 

@@ -101,7 +101,7 @@ module ID_to_EX
       rdata2_w = rdata2_i;
   end
 
-  always_ff begin
+  always_ff @(posedge clk) begin
     rdata1_o <= rdata1_w;
     rdata2_o <= rdata2_w;
   end

@@ -44,7 +44,7 @@ module ex_stage
 	logic	[WORD_WIDTH-1:0] 	alu_result;
 	logic [WORD_WIDTH-1:0]	ex_data;
 	logic										zero_flag;
-	logic										branch_taken
+	logic										branch_taken;
 
 	// Imediatos I, S e U (Usados para cálculo)
 	logic [11:0]					 	itype_imm;
@@ -94,10 +94,10 @@ module ex_stage
 	end
 
 	// Mux de escolha de imediato para cálculo
-	assign full_alu_immediate = (auipc_mux_i) ? (xtended_upper_imm) : (xtended_lower_imm);
+	assign full_alu_immediate = (auipc_flag_i) ? (xtended_upper_imm) : (xtended_lower_imm);
 
 	// Caso AUIPC, operando A receberá PC para soma
-	assign operand_a = (auipc_mux_i) ? (program_count_i) : (reg_rdata1_i);
+	assign operand_a = (auipc_flag_i) ? (program_count_i) : (reg_rdata1_i);
 	
 	// Operando B recebe valor de registro ou imediato
 	assign operand_b = (imm_alu_mux_i) ? (full_alu_immediate) : (reg_rdata2_i);

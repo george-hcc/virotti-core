@@ -62,7 +62,7 @@ module pcu
   stage_state state_vector [2:0];
 
   // Maquina de estádos do PCU - Responsável pelo controle de clear e stalls
-  enum logic
+  enum logic [2:0]
     {
       RESET,
       WORK,
@@ -114,6 +114,7 @@ module pcu
       default: begin
         operation_use_opA = 1'b0;
         operation_use_opB = 1'b0;
+      end
     endcase
   end
 
@@ -151,7 +152,7 @@ module pcu
         else if (state_vector[2].instr_type == OP_LOAD)
           next_pcu_state = LOAD_STALL;
         else if(branch_taken_i)
-          next_pcu_state = BRNCH_FLUSH;
+          next_pcu_state = BRNCH_FLUSH1;
         else
           next_pcu_state = WORK;
       end

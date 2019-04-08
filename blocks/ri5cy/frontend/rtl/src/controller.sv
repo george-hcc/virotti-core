@@ -281,14 +281,14 @@ module controller
 					load_type_ctrl_o	= load_type;
 					store_type_ctrl_o	= store_type;
 					write_en_o				= write_en;
-					stype_ctrl_o			= stype;
-					imm_alu_ctrl_o		= utype;
-					jarl_ctrl_o				= jtype;
-					jal_ctrl_o				= imm_alu;
-					branch_ctrl_o			= auipc_alu;
-					auipc_ctrl_o			= branch_alu;
-					lui_ctrl_o				= zeroflag_inv;
-					zeroflag_ctrl_o		= branch_pc;
+					stype_ctrl_o			= stype	;
+					imm_alu_ctrl_o		= imm_alu;
+					jarl_ctrl_o				= jarl;
+					jal_ctrl_o				= jal;
+					branch_ctrl_o			= branch;
+					auipc_ctrl_o			= auipc;
+					lui_ctrl_o				= lui;
+					zeroflag_ctrl_o		= zeroflag_inv;
 				end
 			end
 
@@ -304,14 +304,14 @@ module controller
 					load_type_ctrl_o	= load_type;
 					store_type_ctrl_o	= store_type;
 					write_en_o				= write_en;
-					stype_ctrl_o			= stype;
-					imm_alu_ctrl_o		= utype;
-					jarl_ctrl_o				= jtype;
-					jal_ctrl_o				= imm_alu;
-					branch_ctrl_o			= auipc_alu;
-					auipc_ctrl_o			= branch_alu;
-					lui_ctrl_o				= zeroflag_inv;
-					zeroflag_ctrl_o		= branch_pc;
+					stype_ctrl_o			= stype	;
+					imm_alu_ctrl_o		= imm_alu;
+					jarl_ctrl_o				= jarl;
+					jal_ctrl_o				= jal;
+					branch_ctrl_o			= branch;
+					auipc_ctrl_o			= auipc;
+					lui_ctrl_o				= lui;
+					zeroflag_ctrl_o		= zeroflag_inv;
 			end
 
 		end

@@ -11,7 +11,7 @@ typedef enum
     OP_JALR,
     OP_JAL,
     OP_AUIPC,
-    OP_LUI,
+    OP_LUI
   } decoded_opcode;
 
 typedef enum

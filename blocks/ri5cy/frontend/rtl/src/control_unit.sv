@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Autor:         	George Camboim - george.camboim@embedded.ufcg.edu.br         						//
 //																																													//
-// Nome do Design:  DCU (Unidade de Controle de Datapath)	                  								//
+// Nome do Design:  Control Unit (Unidade de Controle)	       		           								//
 // Nome do Projeto: MiniSoc                                                    							//
 // Linguagem:       SystemVerilog                                              							//
 //                                                                            							//
@@ -13,7 +13,7 @@
 import riscv_defines::*;
 import ctrl_typedefs::*;
 
-module dcu
+module control_unit
 	(
 		input  logic [WORD_WIDTH-1:0]		instruction_i,
 
@@ -45,7 +45,8 @@ module dcu
 		(
 			.instr_i 					(instruction_i	),
 			.decoded_instr_o	(operation			),
-			.instr_type_o			(instr_type_o		)
+			.instr_type_o			(instr_type_o		),
+			.no_op_flag_i     (no_op_flag_i		)
 		);
 
 	generate
@@ -91,7 +92,7 @@ module dcu
 					.branch_ctrl_o,
 					.auipc_ctrl_o,
 					.lui_ctrl_o,
-					.zeroflag_ctrl_o,
+					.zeroflag_ctrl_o
 				);
 
 		end
