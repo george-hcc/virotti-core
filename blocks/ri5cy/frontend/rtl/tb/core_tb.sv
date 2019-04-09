@@ -42,6 +42,13 @@ module core_tb;
   // Instaciação de array de memória
   logic [7:0] virtual_mem [MEM_SIZE-1:0];
 
+  logic instr_req, instr_rvalid, instr_gnt;
+  logic [WORD-WIDTH-1:0] instr_addr, instr_rdata;
+
+  logic fetch_en;
+  logic [WORD-WIDTH-1] pc_start_addr;
+
+
   // Instaciação do Core
   core core_da_massa
     (
@@ -49,12 +56,12 @@ module core_tb;
       .rst_n                    (rst_n),
 
       // Interface de memória de instruções
-      .instr_req_o              (),
-      .instr_addr_o             (),
-      .instr_rdata_i            (),
-      .instr_rvalid_i           (),
-      .instr_gnt_i              (),
-
+      .instr_req_o              (instr_req),
+      .instr_addr_o             (instr_addr),
+      .instr_rdata_i            (instr_rdata),
+      .instr_rvalid_i           (instr_rvalid),
+      .instr_gnt_i              (instr_gnt),
+/*
       // Interface de memória de dados
       .data_req_o               (),
       .data_addr_o              (),
@@ -64,26 +71,48 @@ module core_tb;
       .data_rdata_i             (),
       .data_rvalid_i            (),
       .data_gnt_i               (),
-
+*/
       // Interface de SocControl
-      .fetch_en_i               (),
-      .pc_start_addr_i          (),
-      .irq_id_i                 (),
+      .fetch_en_i               (fetch_en),
+      .pc_start_addr_i          (pc_start_addr),
+/*    .irq_id_i                 (),
       .irq_event_i              (),
       .socctrl_mmc_exception_i  ()
+*/
     );
 
+  always_ff @(posedge clk) begin
+    if(instr_req) begin
+      instr_rdata <= virtual_mem[instr_addr+4:instr_addr];
+      instr_rvalid <= 1'b1;
+    end else
+      instr_rvalid <= 1'b0;
+  end
+
+  assign instr_gnt = instr_req;
 
   localparam COUNT = XS0;
   localparam REVERSE_FLAG = XS1;
   localparam FIFTEEN  = XT0;
 
   initial begin
+    prepare_test();
+    for(int i = 0; i < 100; i++)
+      toggle_clk();
+    $finish;
+  end
+
+  task prepare_test();
     clk = 1'b0;
     rst_n = 1'b0;
+    fetch_en = 1'b0;
+    pc_start_addr = 32'b0;
     initiate_memory();
     toggle_clk();
-  end
+    rst_n = 1'b1;
+    toggle_clk();
+    fetch_en = 1'b1;
+  endtask
 
   task toggle_clk();
     #10 clk = !clk;
