@@ -121,9 +121,9 @@ module core_tb;
   endtask
 
   task initiate_memory();
-    virtual_mem[0*WORD_WIDTH+:32]   = ADD(COUNT, XZERO, XZERO); // Start of Main
-    virtual_mem[1*WORD_WIDTH+:32]   = ADD(REVERSE_FLAG, XZERO, XZERO);
-    virtual_mem[2*WORD_WIDTH+:32]   = ADDI(FIFTEEN, XZERO, 12'd15);
+    virtual_mem[0*WORD_WIDTH+:32]   = ADD(COUNT, XZERO, XZERO); // Count = 0
+    virtual_mem[1*WORD_WIDTH+:32]   = ADD(REVERSE_FLAG, XZERO, XZERO); // Reverse = 0
+    virtual_mem[2*WORD_WIDTH+:32]   = ADDI(FIFTEEN, XZERO, 12'd15); // Fifteen = 15
     virtual_mem[3*WORD_WIDTH+:32]   = BEQ(REVERSE_FLAG, XZERO, 6*WORD_WIDTH/4); // Start of Loop
     virtual_mem[4*WORD_WIDTH+:32]   = ADDI(COUNT, COUNT, -1);
     virtual_mem[5*WORD_WIDTH+:32]   = BEQ(XZERO, XZERO, 7*WORD_WIDTH/4);

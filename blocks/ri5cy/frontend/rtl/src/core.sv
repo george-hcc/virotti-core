@@ -249,7 +249,7 @@ module core
 			.reg_rdata2_i				(rdata2_ID_EX_w2					),
 			.instruction_i   		(instr_IF_EX_w3						),
 			.program_count_i		(pc_IF_EX_w3							),
-			.wb_data_o 					(ex_data_EX_WB_w1					),
+			.wb_data_o 					(wb_data_EX_WB_w1					),
 			.reg_waddr_o       	(reg_waddr_EX_WB_w1				),
 			.pc_branch_addr_o		(branch_addr_EX_IF_w			),
 
