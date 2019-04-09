@@ -94,7 +94,7 @@ module core
 	logic [1:0]								store_type_ID_WB_w3;
 	logic 										write_en_ID_WB_w3;
 	// Saídas para_PCU
-	decoded_op 								instr_type_ID_PCU_w;
+	decoded_opcode						instr_type_ID_PCU_w;
 	/************************************/
 
 	/*********Saídas do EX_STAGE*********/
@@ -139,7 +139,7 @@ module core
 			.instr_gnt_i				(instr_gnt_i							),
 
 			.fetch_en_i        	(fetch_en_i 							),
-			.pc_start_address_i	(pc_start_address_i				),
+			.pc_start_address_i	(pc_start_addr_i					),
 
 			.pc_branch_addr_i		(branch_addr_EX_IF_w			),
 			.instruction_o 			(instr_IF_EX_w1						),
@@ -240,10 +240,7 @@ module core
     	.fwrd_opA_type1_i		(fwrd_opA_type1_w					),
     	.fwrd_opA_type2_i		(fwrd_opA_type2_w					),
     	.fwrd_opB_type1_i		(fwrd_opB_type1_w					),
-    	.fwrd_opB_type2_i		(fwrd_opB_type2_w					),
-
-			.mdu_op_ctrl_i			(),
-			.mdu_op_ctrl_o			()
+    	.fwrd_opB_type2_i		(fwrd_opB_type2_w					)
 		);
 
 	ex_stage EX 
@@ -254,7 +251,7 @@ module core
 			.program_count_i		(pc_IF_EX_w3							),
 			.wb_data_o 					(ex_data_EX_WB_w1					),
 			.reg_waddr_o       	(reg_waddr_EX_WB_w1				),
-			.pc_jump_addr_o  		(branch_addr_EX_IF_w			),
+			.pc_branch_addr_o		(branch_addr_EX_IF_w			),
 
 			.alu_op_ctrl_i			(alu_op_ID_EX_w2					),
 			.stype_imm_mux_i		(stype_ctrl_ID_EX_w2			),
@@ -265,9 +262,7 @@ module core
 			.branch_flag_i   		(branch_ctrl_ID_EX_w2			),
 			.lui_alu_bypass_i 	(lui_ctrl_ID_EX_w2				),
 			.zeroflag_inv_i   	(zeroflag_ctrl_ID_EX_w2		),
-			.pc_branch_ctrl_o		(branch_taken_EX_IF_w			),
-
-			.alu_mdu_mux_i   		(					)
+			.pc_branch_ctrl_o		(branch_taken_EX_IF_w			)
 		);
 
 	EX_to_WB ex_wb
@@ -288,7 +283,7 @@ module core
 			.write_en_o					(write_en_ID_WB_w3				),
 			.wb_data_o					(wb_data_EX_WB_w2					),
 			.store_data_o				(store_data_EX_WB_w2			),
-			.reg_waddr_o       	(reg_waddr_EX_WB_w2				),
+			.reg_waddr_o       	(reg_waddr_EX_WB_w2				)
 		);
 
 	wb_stage WB 

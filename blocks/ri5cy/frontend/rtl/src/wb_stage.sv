@@ -84,7 +84,6 @@ module wb_stage
 	lsu_lite unidade_de_load_store
 		(
 			.clk									(clk						),
-			.rst_n								(rst_n					),
 
 			.Controle_Funcao_i		(lsu_ctrl				),
 			.Escrita1_Leitura0_i	(store_flag			),

@@ -2,7 +2,8 @@ import riscv_defines::*;
 
 module core_tb;
 
-  parameter MEM_SIZE  = 256;
+  parameter N_OF_BYTES = 64;
+  parameter MEM_SIZE = 64*4;
 
   localparam XZERO    = 5'b00000;
   localparam XRA      = 5'b00001;
@@ -40,13 +41,13 @@ module core_tb;
   logic clk, rst_n;
 
   // Instaciação de array de memória
-  logic [7:0] virtual_mem [MEM_SIZE-1:0];
+  logic [MEM_SIZE-1:0] virtual_mem ;
 
   logic instr_req, instr_rvalid, instr_gnt;
-  logic [WORD-WIDTH-1:0] instr_addr, instr_rdata;
+  logic [WORD_WIDTH-1:0] instr_addr, instr_rdata;
 
   logic fetch_en;
-  logic [WORD-WIDTH-1] pc_start_addr;
+  logic [WORD_WIDTH-1:0] pc_start_addr;
 
 
   // Instaciação do Core
@@ -74,7 +75,7 @@ module core_tb;
 */
       // Interface de SocControl
       .fetch_en_i               (fetch_en),
-      .pc_start_addr_i          (pc_start_addr),
+      .pc_start_addr_i          (pc_start_addr)
 /*    .irq_id_i                 (),
       .irq_event_i              (),
       .socctrl_mmc_exception_i  ()
@@ -83,7 +84,7 @@ module core_tb;
 
   always_ff @(posedge clk) begin
     if(instr_req) begin
-      instr_rdata <= virtual_mem[instr_addr+4:instr_addr];
+      instr_rdata <= virtual_mem[instr_addr*8+:32];
       instr_rvalid <= 1'b1;
     end else
       instr_rvalid <= 1'b0;
@@ -120,34 +121,34 @@ module core_tb;
   endtask
 
   task initiate_memory();
-    virtual_mem[3:0]    = ADD(COUNT, XZERO, XZERO); // Start of Main
-    virtual_mem[7:4]    = ADD(REVERSE_FLAG, XZERO, XZERO);
-    virtual_mem[11:8]   = ADDI(FIFTEEN, XZERO, 12'd15);
-    virtual_mem[15:12]  = BEQ(REVERSE_FLAG, XZERO, 13'd24); // Start of Loop
-    virtual_mem[19:16]  = ADDI(COUNT, COUNT, -1);
-    virtual_mem[23:20]  = BEQ(XZERO, XZERO, 13'd28);
-    virtual_mem[27:24]  = ADDI(COUNT, COUNT, 1);
-    virtual_mem[31:28]  = BNE(COUNT, XZERO, 13'd36);
-    virtual_mem[35:32]  = ADDI(REVERSE_FLAG, XZERO, 1);
-    virtual_mem[39:36]  = BNE(COUNT, FIFTEEN, 13'd44);
-    virtual_mem[43:40]  = ADD(REVERSE_FLAG, XZERO, XZERO);
-    virtual_mem[47:44]  = BEQ(XZERO, XZERO, 12);
-  endtask;
+    virtual_mem[0*WORD_WIDTH+:32]   = ADD(COUNT, XZERO, XZERO); // Start of Main
+    virtual_mem[1*WORD_WIDTH+:32]   = ADD(REVERSE_FLAG, XZERO, XZERO);
+    virtual_mem[2*WORD_WIDTH+:32]   = ADDI(FIFTEEN, XZERO, 12'd15);
+    virtual_mem[3*WORD_WIDTH+:32]   = BEQ(REVERSE_FLAG, XZERO, 6*WORD_WIDTH/4); // Start of Loop
+    virtual_mem[4*WORD_WIDTH+:32]   = ADDI(COUNT, COUNT, -1);
+    virtual_mem[5*WORD_WIDTH+:32]   = BEQ(XZERO, XZERO, 7*WORD_WIDTH/4);
+    virtual_mem[6*WORD_WIDTH+:32]   = ADDI(COUNT, COUNT, 1);
+    virtual_mem[7*WORD_WIDTH+:32]   = BNE(COUNT, XZERO, 9*WORD_WIDTH/4);
+    virtual_mem[8*WORD_WIDTH+:32]   = ADDI(REVERSE_FLAG, XZERO, 1);
+    virtual_mem[9*WORD_WIDTH+:32]   = BNE(COUNT, FIFTEEN, 11*WORD_WIDTH/4);
+    virtual_mem[10*WORD_WIDTH+:32]  = ADD(REVERSE_FLAG, XZERO, XZERO);
+    virtual_mem[11*WORD_WIDTH+:32]  = BEQ(XZERO, XZERO, 3*WORD_WIDTH/4);
+  endtask
 
   function logic [31:0] ADD(logic [4:0] rd, logic [4:0] rs1, logic [4:0] rs2);
-    return {7'b0000000, rs2, rs1, 3'b000, rd, OPCODE_COMP}  
+    return {7'b0000000, rs2, rs1, 3'b000, rd, OPCODE_COMP};
   endfunction
 
   function logic [31:0] ADDI(logic [4:0] rd, logic [4:0] rs1, logic [11:0] imm);
-    return {imm, rs1, 3'b000, rd, OPCODE_COMP_IMM}  
+    return {imm, rs1, 3'b000, rd, OPCODE_COMPIMM}; 
   endfunction
 
   function logic [31:0] BEQ(logic [4:0] rs1, logic [4:0] rs2, logic [12:1] imm);
-    return {imm[12], imm[10:5], rs2, rs1, 3'b000, imm[4:1], imm[11], OPCODE_BRANCH}  
+    return {imm[12], imm[10:5], rs2, rs1, 3'b000, imm[4:1], imm[11], OPCODE_BRANCH};
   endfunction
 
   function logic [31:0] BNE(logic [4:0] rs1, logic [4:0] rs2, logic [12:1] imm);
-    return {imm[12], imm[10:5], rs2, rs1, 3'b001, imm[4:1], imm[11], OPCODE_BRANCH}  
+    return {imm[12], imm[10:5], rs2, rs1, 3'b001, imm[4:1], imm[11], OPCODE_BRANCH};
   endfunction
 
 endmodule 

@@ -1,7 +1,7 @@
 run: all
 
 all:
-	irun -access +r -input shm.tcl ./includes/riscv_defines.svh ./includes/ctrl_typedefs.svh if_stage.sv reg_bank.sv decoder.sv controller.sv control_unit.sv id_stage.sv alu.sv mdu.sv ex_stage.sv lsu_lite.sv wb_stage.sv if_to_id.sv id_to_ex.sv ex_to_wb.sv pcu.sv  -nowarn "NONPRT"
+	irun -access +r -input shm.tcl ./includes/riscv_defines.svh ./includes/ctrl_typedefs.svh ./../tb/core_tb.sv core.sv if_stage.sv reg_bank.sv decoder.sv controller.sv control_unit.sv id_stage.sv alu.sv mdu.sv ex_stage.sv lsu_lite.sv wb_stage.sv if_to_id.sv id_to_ex.sv ex_to_wb.sv pcu.sv  -nowarn "NONPRT"
 
 create:
 	@echo "database -open waves -shm" >> shm.tcl

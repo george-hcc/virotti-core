@@ -57,8 +57,12 @@ module if_stage
 		}	fetch_state, next_fetch_state;
 
 	// Mudança de estados em cada clock
-	always_ff @(posedge clk)
-		fetch_state <= next_fetch_state;
+	always_ff @(posedge clk) begin
+		if(!rst_n)
+			fetch_state <= RESET;
+		else
+			fetch_state <= next_fetch_state;
+	end
 
 	// Lógica de transição de estados (O proximo estágio está mais ou menos independente do estágio atual)
 	always_comb  begin
@@ -108,7 +112,7 @@ module if_stage
 	end
 
 	always_comb begin
-		unique case(next_fetch_state)
+		unique case(fetch_state)
 			RESET:
 				next_pc = pc_start_address_i;
 			IDLE, PRE_FETCH:

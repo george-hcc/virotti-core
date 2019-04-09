@@ -177,7 +177,7 @@ module ex_stage
 
 	assign reg_waddr_o = instruction_i[11:7];
 
-	assign pc_jump_addr_o = pc_plus_imm;
+	assign pc_branch_addr_o = pc_plus_imm;
 
 	/****************************/
 	/*****SAIDAS DO DATAPATH*****/

@@ -225,6 +225,11 @@ module pcu
     endcase
   end
 
-  always_ff @(posedge clk) pcu_state <= next_pcu_state;
+  always_ff @(posedge clk) begin
+    if(!rst_n)
+      pcu_state <= RESET;  
+    else
+      pcu_state <= next_pcu_state;
+  end
 
 endmodule
