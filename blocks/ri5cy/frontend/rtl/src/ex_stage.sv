@@ -64,6 +64,7 @@ module ex_stage
 	// Resultados de soma com program count
 	logic [WORD_WIDTH-1:0]	pc_plus_four;
 	logic [WORD_WIDTH-1:0]	pc_plus_imm;
+	logic [WORD_WIDTH-1:0]  jarl_pc;
 
 	// Extensão de sinal de imediatos inferiores de 12 bits (Tipo I e S)
 	always_comb begin
@@ -142,18 +143,12 @@ module ex_stage
 	endgenerate
 
 	// Mux para seleção de imediato para branches e jumps
-	always_comb begin
-		if(jarl_flag_i)
-			full_pc_immediate = xtended_lower_imm;
-		else if(jal_flag_i)
-			full_pc_immediate = xtended_jal_imm;
-		else
-			full_pc_immediate = xtended_branch_imm;
-	end
+	assign full_pc_immediate = (jal_flag_i) ? (xtended_jal_imm) : (xtended_branch_imm);
 
 	// Somas com PC para branches e jumps
 	assign pc_plus_four = program_count_i + 32'h4;
 	assign pc_plus_imm = program_count_i + full_pc_immediate;
+	assign jarl_pc = xtended_lower_imm + reg_rdata1_i;
 
 	// Zeroflag da ULA e geração de flag de resultado de comparação de branch
 	assign zero_flag = (ex_data == 32'b0);
@@ -162,7 +157,7 @@ module ex_stage
 	assign branch_taken = (zeroflag_inv_i) ? (!zero_flag) : (zero_flag);
 
 	/****************************/
-	/*****SAIDAS DO DATAPATH*****/
+	/***********SAIDAS***********/
 	/****************************/
 
 	// Mux de saída do EX_Stage
@@ -177,11 +172,7 @@ module ex_stage
 
 	assign reg_waddr_o = instruction_i[11:7];
 
-	assign pc_branch_addr_o = pc_plus_imm;
-
-	/****************************/
-	/*****SAIDAS DO DATAPATH*****/
-	/****************************/
+	assign pc_branch_addr_o = (jarl_flag_i) ? (jarl_pc) : (pc_plus_imm);
 
 	assign pc_branch_ctrl_o = ((branch_taken && branch_flag_i) || jal_flag_i || jarl_flag_i);
 

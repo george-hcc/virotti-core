@@ -124,9 +124,10 @@ module core_tb;
     virtual_mem[0*WORD_WIDTH+:32]   = ADD(COUNT, XZERO, XZERO); // Count = 0
     virtual_mem[1*WORD_WIDTH+:32]   = ADD(REVERSE_FLAG, XZERO, XZERO); // Reverse = 0
     virtual_mem[2*WORD_WIDTH+:32]   = ADDI(FIFTEEN, XZERO, 12'd15); // Fifteen = 15
-    virtual_mem[3*WORD_WIDTH+:32]   = BEQ(REVERSE_FLAG, XZERO, 6*WORD_WIDTH/4); // Start of Loop
+    virtual_mem[3*WORD_WIDTH+:32]   = BEQ(REVERSE_FLAG, XZERO, 13'd3*WORD_WIDTH/4); // Start of Loop
+    $display("AY CARALHO OLHA ISSO %d", 13'd6*WORD_WIDTH/4);
     virtual_mem[4*WORD_WIDTH+:32]   = ADDI(COUNT, COUNT, -1);
-    virtual_mem[5*WORD_WIDTH+:32]   = BEQ(XZERO, XZERO, 7*WORD_WIDTH/4);
+    virtual_mem[5*WORD_WIDTH+:32]   = BEQ(XZERO, XZERO, 2*WORD_WIDTH/4);
     virtual_mem[6*WORD_WIDTH+:32]   = ADDI(COUNT, COUNT, 1);
     virtual_mem[7*WORD_WIDTH+:32]   = BNE(COUNT, XZERO, 9*WORD_WIDTH/4);
     virtual_mem[8*WORD_WIDTH+:32]   = ADDI(REVERSE_FLAG, XZERO, 1);
@@ -143,11 +144,11 @@ module core_tb;
     return {imm, rs1, 3'b000, rd, OPCODE_COMPIMM}; 
   endfunction
 
-  function logic [31:0] BEQ(logic [4:0] rs1, logic [4:0] rs2, logic [12:1] imm);
+  function logic [31:0] BEQ(logic [4:0] rs1, logic [4:0] rs2, logic [12:0] imm);
     return {imm[12], imm[10:5], rs2, rs1, 3'b000, imm[4:1], imm[11], OPCODE_BRANCH};
   endfunction
 
-  function logic [31:0] BNE(logic [4:0] rs1, logic [4:0] rs2, logic [12:1] imm);
+  function logic [31:0] BNE(logic [4:0] rs1, logic [4:0] rs2, logic [12:0] imm);
     return {imm[12], imm[10:5], rs2, rs1, 3'b001, imm[4:1], imm[11], OPCODE_BRANCH};
   endfunction
 
