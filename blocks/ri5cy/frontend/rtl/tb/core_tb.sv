@@ -2,53 +2,63 @@ import riscv_defines::*;
 
 module core_tb;
 
-  parameter N_OF_BYTES = 64;
-  parameter MEM_SIZE = 64*4;
+  localparam BYTE_WIDTH      = 8;
+  localparam BYTES_PER_INSTR = 4;
+  localparam N_OF_INSTR      = 16;
+  localparam WORD_WIDTH      = BYTE_WIDTH * BYTES_PER_INSTR;
+  localparam MEM_SIZE        = WORD_WIDTH * N_OF_INSTR;
 
-  localparam XZERO    = 5'b00000;
-  localparam XRA      = 5'b00001;
-  localparam XSP      = 5'b00010;
-  localparam XGP      = 5'b00011;
-  localparam XTP      = 5'b00100;
-  localparam XT0      = 5'b00101;
-  localparam XT1      = 5'b00110;
-  localparam XT2      = 5'b00111;
-  localparam XS0      = 5'b01000;
-  localparam XS1      = 5'b01001;
-  localparam XA0      = 5'b01010;
-  localparam XA1      = 5'b01011;
-  localparam XA2      = 5'b01100;
-  localparam XA3      = 5'b01101;
-  localparam XA4      = 5'b01110;
-  localparam XA5      = 5'b01111;
-  localparam XA6      = 5'b10000;
-  localparam XA7      = 5'b10001;
-  localparam XS2      = 5'b10010;
-  localparam XS3      = 5'b10011;
-  localparam XS4      = 5'b10100;
-  localparam XS5      = 5'b10101;
-  localparam XS6      = 5'b10110;
-  localparam XS7      = 5'b10111;
-  localparam XS8      = 5'b11000;
-  localparam XS9      = 5'b11001;
-  localparam XS10     = 5'b11010;
-  localparam XS11     = 5'b11011;
-  localparam XT3      = 5'b11100;
-  localparam XT4      = 5'b11101;
-  localparam XT5      = 5'b11110;
-  localparam XT6      = 5'b11111;
+  localparam XZERO  = 5'b00000;
+  localparam XRA    = 5'b00001;
+  localparam XSP    = 5'b00010;
+  localparam XGP    = 5'b00011;
+  localparam XTP    = 5'b00100;
+  localparam XT0    = 5'b00101;
+  localparam XT1    = 5'b00110;
+  localparam XT2    = 5'b00111;
+  localparam XS0    = 5'b01000;
+  localparam XS1    = 5'b01001;
+  localparam XA0    = 5'b01010;
+  localparam XA1    = 5'b01011;
+  localparam XA2    = 5'b01100;
+  localparam XA3    = 5'b01101;
+  localparam XA4    = 5'b01110;
+  localparam XA5    = 5'b01111;
+  localparam XA6    = 5'b10000;
+  localparam XA7    = 5'b10001;
+  localparam XS2    = 5'b10010;
+  localparam XS3    = 5'b10011;
+  localparam XS4    = 5'b10100;
+  localparam XS5    = 5'b10101;
+  localparam XS6    = 5'b10110;
+  localparam XS7    = 5'b10111;
+  localparam XS8    = 5'b11000;
+  localparam XS9    = 5'b11001;
+  localparam XS10   = 5'b11010;
+  localparam XS11   = 5'b11011;
+  localparam XT3    = 5'b11100;
+  localparam XT4    = 5'b11101;
+  localparam XT5    = 5'b11110;
+  localparam XT6    = 5'b11111;
 
   logic clk, rst_n;
 
   // Instaciação de array de memória
-  logic [MEM_SIZE-1:0] virtual_mem ;
+  logic [MEM_SIZE-1:0] virtual_mem;
 
+  // Instaciação de array de instruções;
+  logic [MEM_SIZE-1:0] list_of_instr;
+
+  // Flag de endereço de memória válida
+  logic valid_addr;
+
+  // Interface de memória $i
   logic instr_req, instr_rvalid, instr_gnt;
   logic [WORD_WIDTH-1:0] instr_addr, instr_rdata;
 
+  // Interface de controle
   logic fetch_en;
   logic [WORD_WIDTH-1:0] pc_start_addr;
-
 
   // Instaciação do Core
   core core_da_massa
@@ -82,16 +92,23 @@ module core_tb;
 */
     );
 
+  // Lógica de handshake e push de instruções
+  assign valid_addr = (instr_addr < N_OF_INSTR * BYTES_PER_INSTR);
+  assign instr_gnt = (valid_addr) ? (instr_req) : (1'b0);
   always_ff @(posedge clk) begin
-    if(instr_req) begin
+    if(!valid_addr) begin
+      instr_rdata <= 32'hx;
+      instr_rvalid <= 1'b0;
+    end
+    else if(instr_req) begin
       instr_rdata <= virtual_mem[instr_addr*8+:32];
       instr_rvalid <= 1'b1;
-    end else
+    end 
+    else
       instr_rvalid <= 1'b0;
   end
 
-  assign instr_gnt = instr_req;
-
+  // Parametros de abstração de variáveis usadas
   localparam COUNT = XS0;
   localparam REVERSE_FLAG = XS1;
   localparam FIFTEEN  = XT0;
@@ -121,19 +138,33 @@ module core_tb;
   endtask
 
   task initiate_memory();
-    virtual_mem[0*WORD_WIDTH+:32]   = ADD(COUNT, XZERO, XZERO); // Count = 0
-    virtual_mem[1*WORD_WIDTH+:32]   = ADD(REVERSE_FLAG, XZERO, XZERO); // Reverse = 0
-    virtual_mem[2*WORD_WIDTH+:32]   = ADDI(FIFTEEN, XZERO, 12'd15); // Fifteen = 15
-    virtual_mem[3*WORD_WIDTH+:32]   = BEQ(REVERSE_FLAG, XZERO, 13'd3*WORD_WIDTH/4); // Start of Loop
-    $display("AY CARALHO OLHA ISSO %d", 13'd6*WORD_WIDTH/4);
-    virtual_mem[4*WORD_WIDTH+:32]   = ADDI(COUNT, COUNT, -1);
-    virtual_mem[5*WORD_WIDTH+:32]   = BEQ(XZERO, XZERO, 2*WORD_WIDTH/4);
-    virtual_mem[6*WORD_WIDTH+:32]   = ADDI(COUNT, COUNT, 1);
-    virtual_mem[7*WORD_WIDTH+:32]   = BNE(COUNT, XZERO, 9*WORD_WIDTH/4);
-    virtual_mem[8*WORD_WIDTH+:32]   = ADDI(REVERSE_FLAG, XZERO, 1);
-    virtual_mem[9*WORD_WIDTH+:32]   = BNE(COUNT, FIFTEEN, 11*WORD_WIDTH/4);
-    virtual_mem[10*WORD_WIDTH+:32]  = ADD(REVERSE_FLAG, XZERO, XZERO);
-    virtual_mem[11*WORD_WIDTH+:32]  = BEQ(XZERO, XZERO, 3*WORD_WIDTH/4);
+    $display("################################");
+    $display("####CARREGAMENTO DE MEMORIA#####");
+    $display("################################");
+    assembly_code();
+    for(int i = 0; i < N_OF_INSTR; i++) begin
+      virtual_mem[i*WORD_WIDTH+:32] = list_of_instr[i*WORD_WIDTH+:32];
+      $display("- Mem Instr #%2h = %h", i*4, virtual_mem[i*WORD_WIDTH+:32]);
+    end
+    $display("################################");
+    $display("#FIM DE CARREGAMENTO DE MEMORIA#");
+    $display("################################");
+  endtask
+
+  task assembly_code();
+    list_of_instr = 'h0;
+    list_of_instr[0*WORD_WIDTH+:32]   = ADD(COUNT, XZERO, XZERO);                     // 00
+    list_of_instr[1*WORD_WIDTH+:32]   = ADD(REVERSE_FLAG, XZERO, XZERO);              // 04
+    list_of_instr[2*WORD_WIDTH+:32]   = ADDI(FIFTEEN, XZERO, 12'd15);                 // 08
+    list_of_instr[3*WORD_WIDTH+:32]   = BEQ(REVERSE_FLAG, XZERO, 13'd3*WORD_WIDTH/4); // 0c
+    list_of_instr[4*WORD_WIDTH+:32]   = ADDI(COUNT, COUNT, -1);                       // 10
+    list_of_instr[5*WORD_WIDTH+:32]   = BEQ(XZERO, XZERO, 2*WORD_WIDTH/4);            // 14
+    list_of_instr[6*WORD_WIDTH+:32]   = ADDI(COUNT, COUNT, 1);                        // 18
+    list_of_instr[7*WORD_WIDTH+:32]   = BNE(COUNT, XZERO, 9*WORD_WIDTH/4);            // 1c
+    list_of_instr[8*WORD_WIDTH+:32]   = ADDI(REVERSE_FLAG, XZERO, 1);                 // 20
+    list_of_instr[9*WORD_WIDTH+:32]   = BNE(COUNT, FIFTEEN, 11*WORD_WIDTH/4);         // 24
+    list_of_instr[10*WORD_WIDTH+:32]  = ADD(REVERSE_FLAG, XZERO, XZERO);              // 28
+    list_of_instr[11*WORD_WIDTH+:32]  = BEQ(XZERO, XZERO, 3*WORD_WIDTH/4);            // 2c
   endtask
 
   function logic [31:0] ADD(logic [4:0] rd, logic [4:0] rs1, logic [4:0] rs2);
