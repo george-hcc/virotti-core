@@ -115,7 +115,7 @@ module core_tb;
 
   initial begin
     prepare_test();
-    for(int i = 0; i < 100; i++)
+    for(int i = 0; i < 1000; i++)
       toggle_clk(1);
     $finish;
   end
@@ -171,13 +171,12 @@ module core_tb;
     list_of_instr[9*WORD_WIDTH+:32]   = BNE(COUNT, FIFTEEN, branch_imm(2));       // 24
     list_of_instr[10*WORD_WIDTH+:32]  = ADD(REVERSE_FLAG, XZERO, XZERO);          // 28
     list_of_instr[11*WORD_WIDTH+:32]  = BEQ(XZERO, XZERO, branch_imm(-8));        // 2c
+    $display("INSTRUÇÃO PROBLEMATICA: %b", list_of_instr[11*WORD_WIDTH+:32]);
+    $display("IMEDIATO PROBLEMATICO: %b", branch_imm(-8));
   endtask
 
   function logic [12:0] branch_imm (int imm);
-    if(imm < 0)
-      return !(imm*BYTES_PER_INSTR) + 1;
-    else
-      return imm*BYTES_PER_INSTR;  
+    return imm << 2;  
   endfunction
 
   function logic [31:0] ADD(logic [4:0] rd, logic [4:0] rs1, logic [4:0] rs2);

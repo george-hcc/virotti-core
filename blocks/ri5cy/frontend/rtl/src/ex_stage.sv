@@ -84,7 +84,7 @@ module ex_stage
 	always_comb begin
 		btype_imm = {instruction_i[31], instruction_i[7], instruction_i[30:25], instruction_i[11:8], 1'b0};
 		xtended_branch_imm[12:0]  = btype_imm;
-		xtended_branch_imm[31:13] = (btype_imm[12]) ? (19'b1) : (19'b0);	
+		xtended_branch_imm[31:13] = (btype_imm[12]) ? (19'h7FFFF) : (19'h00000);	
 	end
 
 	// Extensão de imediato de jal (Tipo UJ)

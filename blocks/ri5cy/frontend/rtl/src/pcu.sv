@@ -209,9 +209,9 @@ module pcu
         if_to_id_stall_o  = 1'b1;
         id_to_ex_stall_o  = 1'b0;
         ex_to_wb_stall_o  = 1'b0;
-        if_to_id_clear_o  = 1'b1;
-        id_to_ex_clear_o  = 1'b1;
-        ex_to_wb_clear_o  = 1'b1;
+        if_to_id_clear_o  = 1'b0;
+        id_to_ex_clear_o  = 1'b0;
+        ex_to_wb_clear_o  = 1'b0;
       end
       LOAD_STALL: begin
         fetch_stall_o     = 1'b1;
