@@ -143,8 +143,10 @@ module core_tb;
     $display("################################");
     assembly_code();
     for(int i = 0; i < N_OF_INSTR; i++) begin
-      virtual_mem[i*WORD_WIDTH+:32] = list_of_instr[i*WORD_WIDTH+:32];
-      $display("- Mem Instr #%2h = %h", i*4, virtual_mem[i*WORD_WIDTH+:32]);
+      logic [WORD_WIDTH-1:0] addr;
+      addr = i * WORD_WIDTH;
+      virtual_mem[addr+:32] = list_of_instr[addr+:32];
+      $display("- Mem Instr #%2h = %h", i*4, virtual_mem[addr+:32]);
     end
     $display("################################");
     $display("#FIM DE CARREGAMENTO DE MEMORIA#");
@@ -153,19 +155,26 @@ module core_tb;
 
   task assembly_code();
     list_of_instr = 'h0;
-    list_of_instr[0*WORD_WIDTH+:32]   = ADD(COUNT, XZERO, XZERO);                     // 00
-    list_of_instr[1*WORD_WIDTH+:32]   = ADD(REVERSE_FLAG, XZERO, XZERO);              // 04
-    list_of_instr[2*WORD_WIDTH+:32]   = ADDI(FIFTEEN, XZERO, 12'd15);                 // 08
-    list_of_instr[3*WORD_WIDTH+:32]   = BEQ(REVERSE_FLAG, XZERO, 13'd3*WORD_WIDTH/4); // 0c
-    list_of_instr[4*WORD_WIDTH+:32]   = ADDI(COUNT, COUNT, -1);                       // 10
-    list_of_instr[5*WORD_WIDTH+:32]   = BEQ(XZERO, XZERO, 2*WORD_WIDTH/4);            // 14
-    list_of_instr[6*WORD_WIDTH+:32]   = ADDI(COUNT, COUNT, 1);                        // 18
-    list_of_instr[7*WORD_WIDTH+:32]   = BNE(COUNT, XZERO, 9*WORD_WIDTH/4);            // 1c
-    list_of_instr[8*WORD_WIDTH+:32]   = ADDI(REVERSE_FLAG, XZERO, 1);                 // 20
-    list_of_instr[9*WORD_WIDTH+:32]   = BNE(COUNT, FIFTEEN, 11*WORD_WIDTH/4);         // 24
-    list_of_instr[10*WORD_WIDTH+:32]  = ADD(REVERSE_FLAG, XZERO, XZERO);              // 28
-    list_of_instr[11*WORD_WIDTH+:32]  = BEQ(XZERO, XZERO, 3*WORD_WIDTH/4);            // 2c
+    list_of_instr[0*WORD_WIDTH+:32]   = ADD(COUNT, XZERO, XZERO);                 // 00
+    list_of_instr[1*WORD_WIDTH+:32]   = ADD(REVERSE_FLAG, XZERO, XZERO);          // 04
+    list_of_instr[2*WORD_WIDTH+:32]   = ADDI(FIFTEEN, XZERO, 12'd15);             // 08
+    list_of_instr[3*WORD_WIDTH+:32]   = BEQ(REVERSE_FLAG, XZERO, branch_imm(3));  // 0c
+    list_of_instr[4*WORD_WIDTH+:32]   = ADDI(COUNT, COUNT, -1);                   // 10
+    list_of_instr[5*WORD_WIDTH+:32]   = BEQ(XZERO, XZERO, branch_imm(2));         // 14
+    list_of_instr[6*WORD_WIDTH+:32]   = ADDI(COUNT, COUNT, 1);                    // 18
+    list_of_instr[7*WORD_WIDTH+:32]   = BNE(COUNT, XZERO, branch_imm(2));         // 1c
+    list_of_instr[8*WORD_WIDTH+:32]   = ADDI(REVERSE_FLAG, XZERO, 1);             // 20
+    list_of_instr[9*WORD_WIDTH+:32]   = BNE(COUNT, FIFTEEN, branch_imm(2));       // 24
+    list_of_instr[10*WORD_WIDTH+:32]  = ADD(REVERSE_FLAG, XZERO, XZERO);          // 28
+    list_of_instr[11*WORD_WIDTH+:32]  = BEQ(XZERO, XZERO, branch_imm(-8));        // 2c
   endtask
+
+  function logic [12:0] branch_imm (int imm);
+    if(imm < 0)
+      return !(imm*BYTES_PER_INSTR) + 1;
+    else
+      return imm*BYTES_PER_INSTR;  
+  endfunction
 
   function logic [31:0] ADD(logic [4:0] rd, logic [4:0] rs1, logic [4:0] rs2);
     return {7'b0000000, rs2, rs1, 3'b000, rd, OPCODE_COMP};
