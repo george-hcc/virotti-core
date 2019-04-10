@@ -27,7 +27,7 @@ always_ff @(posedge clk or negedge rst_n) begin
 	else begin
 		if(instr_gnd_o) begin
 			instr_rvalid_o 	<= '1;
-			instr_rdata_o <= Inst_Mem [instr_addr_i];
+			instr_rdata_o <= Inst_Mem [2'b00:instr_addr_i[31:2]];
 		end
 		else
 		begin 
