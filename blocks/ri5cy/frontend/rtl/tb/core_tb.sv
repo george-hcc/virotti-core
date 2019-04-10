@@ -116,7 +116,7 @@ module core_tb;
   initial begin
     prepare_test();
     for(int i = 0; i < 100; i++)
-      toggle_clk();
+      toggle_clk(1);
     $finish;
   end
 
@@ -126,15 +126,17 @@ module core_tb;
     fetch_en = 1'b0;
     pc_start_addr = 32'b0;
     initiate_memory();
-    toggle_clk();
+    toggle_clk(2);
     rst_n = 1'b1;
-    toggle_clk();
+    toggle_clk(2);
     fetch_en = 1'b1;
   endtask
 
-  task toggle_clk();
-    #10 clk = !clk;
-    #10 clk = !clk;
+  task toggle_clk(int n_of_clocks);
+    for(int i = 0; i < n_of_clocks; i++) begin
+      #10 clk = !clk;
+      #10 clk = !clk;
+    end
   endtask
 
   task initiate_memory();

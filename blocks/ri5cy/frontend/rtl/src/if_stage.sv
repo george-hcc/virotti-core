@@ -112,10 +112,10 @@ module if_stage
 	end
 
 	always_comb begin
-		unique case(fetch_state)
-			RESET:
+		unique case(next_fetch_state)
+			RESET, IDLE:
 				next_pc = pc_start_address_i;
-			IDLE, PRE_FETCH:
+			PRE_FETCH:
 				next_pc = pc;
 			FETCH, POST_STALL:
 				next_pc = (branch_pc_ctrl_i) ? (pc_branch_addr_i) : (pc_plus_four);
