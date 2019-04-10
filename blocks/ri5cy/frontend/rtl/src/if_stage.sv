@@ -144,7 +144,7 @@ module if_stage
 	// Saídas
 	assign instr_addr_o = pc;
 	assign program_count_o = prev_pc;
-	assign instruction_o = (next_fetch_state == POST_STALL) ? (stalled_instruction) : (instr_rdata_i);
+	assign instruction_o = (next_fetch_state == POST_STALL || next_fetch_state == STALL) ? (stalled_instruction) : (instr_rdata_i);
 	assign no_op_flag_o = (fetch_state != FETCH);
 
 endmodule

@@ -155,9 +155,11 @@ module core_tb;
 
   task assembly_code();
     list_of_instr = 'h0;
+    // Inicialização
     list_of_instr[0*WORD_WIDTH+:32]   = ADD(COUNT, XZERO, XZERO);                 // 00
     list_of_instr[1*WORD_WIDTH+:32]   = ADD(REVERSE_FLAG, XZERO, XZERO);          // 04
     list_of_instr[2*WORD_WIDTH+:32]   = ADDI(FIFTEEN, XZERO, 12'd15);             // 08
+    // Loop Infinito
     list_of_instr[3*WORD_WIDTH+:32]   = BEQ(REVERSE_FLAG, XZERO, branch_imm(3));  // 0c
     list_of_instr[4*WORD_WIDTH+:32]   = ADDI(COUNT, COUNT, -1);                   // 10
     list_of_instr[5*WORD_WIDTH+:32]   = BEQ(XZERO, XZERO, branch_imm(2));         // 14
