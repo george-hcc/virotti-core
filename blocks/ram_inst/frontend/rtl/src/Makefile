@@ -1,7 +1,13 @@
 run: all
 
 all:
-	xrun -access +r -input shm.tcl AXI_4_FULL_Types.sv RAM_AXI4_Inst.sv moduletest.sv -nowarn "NONPRT"
+	irun -access +r -input shm.tcl IM_TB.sv -nowarn "NONPRT"
+
+create:
+	@echo "database -open waves -shm" >> shm.tcl
+	@echo "probe -create  IM_TB -depth all -all -memories -shm -database waves" >> shm.tcl
+	@echo "run" >> shm.tcl
+	@echo "exit" >> shm.tcl
 	
 waves: 
 	simvision waves.shm	
