@@ -28,13 +28,15 @@ module if_stage
 		input  logic [WORD_WIDTH-1:0]	pc_start_address_i,
 
 		// Sinais de DataPath
-		input  logic [WORD_WIDTH-1:0] pc_branch_addr_i, // Writeback de instruções para Jumps e Branchs
+		input  logic [WORD_WIDTH-1:0] pc_branch_addr_i, // Writeback de instruções para Branchs
+		input  logic [WORD_WIDTH-1:0] pc_jump_addr_i,		// Writeback de instruções para Jumps
 		output logic [WORD_WIDTH-1:0]	instruction_o, 		// Instrução saindo para ID
 		output logic [WORD_WIDTH-1:0] program_count_o,  // Endereço da instrução, levado ao EX_Stage para ser operado
 
 		// Sinais de ControlPath
 		input  logic									fetch_stall_i,
-		input  logic 									branch_pc_ctrl_i,
+		input  logic 									pc_branch_ctrl_i,
+		input  logic									pc_jump_ctrl_i,
 		output logic 									no_op_flag_o
 	);
 
@@ -117,8 +119,14 @@ module if_stage
 				next_pc = pc_start_address_i;
 			PRE_FETCH:
 				next_pc = pc;
-			FETCH, POST_STALL:
-				next_pc = (branch_pc_ctrl_i) ? (pc_branch_addr_i) : (pc_plus_four);
+			FETCH, POST_STALL: begin
+				if(pc_branch_ctrl_i)
+					next_pc = pc_branch_addr_i;
+				else if(pc_jump_ctrl_i)
+					next_pc = pc_jump_addr_i;
+				else
+					next_pc = pc_plus_four;
+			end
 			STALL:
 				next_pc = prev_pc;
 		endcase

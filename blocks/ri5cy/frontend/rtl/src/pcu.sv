@@ -24,6 +24,7 @@ module pcu
     input  logic                  write_en_i,
     input  logic                  valid_lsu_load_i,
     input  logic                  branch_taken_i,
+    input  logic                  jump_taken_i,
 
     // Controle de Stall
     output logic                  fetch_stall_o,
@@ -68,6 +69,8 @@ module pcu
       WORK,
       BRNCH_FLUSH1,
       BRNCH_FLUSH2,
+      JUMP_FLUSH1,
+      JUMP_FLUSH2,
       LOAD_STALL
     } pcu_state, next_pcu_state;
 
@@ -153,13 +156,17 @@ module pcu
           next_pcu_state = LOAD_STALL;
         else if(branch_taken_i)
           next_pcu_state = BRNCH_FLUSH1;
+        else if(jump_taken_i)
+          next_pcu_state = JUMP_FLUSH1;
         else
           next_pcu_state = WORK;
       end
       BRNCH_FLUSH1:
         next_pcu_state = (rst_n) ? (BRNCH_FLUSH2) : (RESET);
-      BRNCH_FLUSH2:
+      BRNCH_FLUSH2, JUMP_FLUSH2:
         next_pcu_state = (rst_n) ? (WORK) : (RESET);
+      JUMP_FLUSH1:
+        next_pcu_state = (rst_n) ? (JUMP_FLUSH2) : (RESET);
       LOAD_STALL: begin
         if(!rst_n)
           next_pcu_state = RESET;
@@ -204,7 +211,7 @@ module pcu
         id_to_ex_clear_o  = 1'b1;
         ex_to_wb_clear_o  = 1'b1;
       end
-      BRNCH_FLUSH2: begin
+      BRNCH_FLUSH2, JUMP_FLUSH1, JUMP_FLUSH2: begin
         fetch_stall_o     = 1'b0;
         if_to_id_stall_o  = 1'b1;
         id_to_ex_stall_o  = 1'b0;

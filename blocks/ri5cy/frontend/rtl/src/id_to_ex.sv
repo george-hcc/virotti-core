@@ -27,8 +27,7 @@ module ID_to_EX
     input  logic                    write_en_i,
     input  logic                    stype_ctrl_i,
     input  logic                    imm_alu_ctrl_i,
-    input  logic                    jarl_ctrl_i,
-    input  logic                    jal_ctrl_i,
+    input  logic                    jump_ctrl_i,
     input  logic                    branch_ctrl_i,
     input  logic                    auipc_ctrl_i,
     input  logic                    lui_ctrl_i,
@@ -44,8 +43,7 @@ module ID_to_EX
     output logic                    write_en_o,
     output logic                    stype_ctrl_o,
     output logic                    imm_alu_ctrl_o,
-    output logic                    jarl_ctrl_o,
-    output logic                    jal_ctrl_o,
+    output logic                    jump_ctrl_o,
     output logic                    branch_ctrl_o,
     output logic                    auipc_ctrl_o,
     output logic                    lui_ctrl_o,
@@ -70,8 +68,7 @@ module ID_to_EX
   logic                    write_en_w;
   logic                    stype_ctrl_w;
   logic                    imm_alu_ctrl_w;
-  logic                    jarl_ctrl_w;
-  logic                    jal_ctrl_w;
+  logic                    jump_ctrl_w;
   logic                    branch_ctrl_w;
   logic                    auipc_ctrl_w;
   logic                    lui_ctrl_w;
@@ -116,8 +113,7 @@ module ID_to_EX
       write_en_w        = write_en_o;
       stype_ctrl_w      = stype_ctrl_o;
       imm_alu_ctrl_w    = imm_alu_ctrl_o;
-      jal_ctrl_w        = jarl_ctrl_o;
-      jarl_ctrl_w       = jal_ctrl_o;
+      jump_ctrl_w       = jump_ctrl_o;
       branch_ctrl_w     = branch_ctrl_o;
       auipc_ctrl_w      = auipc_ctrl_o;
       lui_ctrl_w        = lui_ctrl_o;
@@ -132,8 +128,7 @@ module ID_to_EX
       write_en_w        = write_en_i;
       stype_ctrl_w      = stype_ctrl_i;
       imm_alu_ctrl_w    = imm_alu_ctrl_i;
-      jal_ctrl_w        = jarl_ctrl_i;
-      jarl_ctrl_w       = jal_ctrl_i;
+      jump_ctrl_w       = jump_ctrl_i;
       branch_ctrl_w     = branch_ctrl_i;
       auipc_ctrl_w      = auipc_ctrl_i;
       lui_ctrl_w        = lui_ctrl_i;
@@ -148,8 +143,7 @@ module ID_to_EX
     load_type_ctrl_o   <= load_type_ctrl_w;
     stype_ctrl_o       <= stype_ctrl_w;
     imm_alu_ctrl_o     <= imm_alu_ctrl_w;
-    jal_ctrl_o         <= jarl_ctrl_w;
-    jarl_ctrl_o        <= jal_ctrl_w;
+    jump_ctrl_o        <= jump_ctrl_w;
     branch_ctrl_o      <= branch_ctrl_w;
     auipc_ctrl_o       <= auipc_ctrl_w;
     lui_ctrl_o         <= lui_ctrl_w;

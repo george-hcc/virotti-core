@@ -67,8 +67,7 @@ module core
 	logic 										write_en_ID_WB_w1;
 	logic 										stype_ctrl_ID_EX_w1;
 	logic 										imm_alu_ctrl_ID_EX_w1;
-	logic 										jarl_ctrl_ID_EX_w1;
-	logic 										jal_ctrl_ID_EX_w1;
+	logic 										jump_ctrl_ID_EX_w1;
 	logic 										branch_ctrl_ID_EX_w1;
 	logic 										auipc_ctrl_ID_EX_w1;
 	logic 										lui_ctrl_ID_EX_w1;
@@ -82,8 +81,7 @@ module core
 	logic 										write_en_ID_WB_w2;
 	logic 										stype_ctrl_ID_EX_w2;
 	logic 										imm_alu_ctrl_ID_EX_w2;
-	logic 										jarl_ctrl_ID_EX_w2;
-	logic 										jal_ctrl_ID_EX_w2;
+	logic 										jump_ctrl_ID_EX_w2;
 	logic 										branch_ctrl_ID_EX_w2;
 	logic 										auipc_ctrl_ID_EX_w2;
 	logic 										lui_ctrl_ID_EX_w2;
@@ -93,7 +91,9 @@ module core
 	logic [2:0]								load_type_ID_WB_w3;
 	logic [1:0]								store_type_ID_WB_w3;
 	logic 										write_en_ID_WB_w3;
-	// Saídas para_PCU
+	// Saídas para ID
+	logic [WORD_WIDTH-1:0]		pc_jump_addr_ID_IF_w;
+	// Saídas para PCU
 	decoded_opcode						instr_type_ID_PCU_w;
 	/************************************/
 
@@ -142,11 +142,13 @@ module core
 			.pc_start_address_i	(pc_start_addr_i					),
 
 			.pc_branch_addr_i		(branch_addr_EX_IF_w			),
+			.pc_jump_addr_i    	(pc_jump_addr_ID_IF_w			),
 			.instruction_o 			(instr_IF_EX_w1						),
 			.program_count_o		(pc_IF_EX_w1							),
 
 			.fetch_stall_i			(fetch_stall_w						),
-			.branch_pc_ctrl_i		(branch_taken_EX_IF_w			),
+			.pc_branch_ctrl_i		(branch_taken_EX_IF_w			),
+			.pc_jump_ctrl_i 		(jump_ctrl_ID_EX_w1				),
 			.no_op_flag_o     	(no_op_IF_ID_w1						)
 		);
 
@@ -172,8 +174,10 @@ module core
 			.instruction_i			(instr_IF_EX_w2						),
 			.reg_waddr_i				(reg_waddr_EX_WB_w2				),
 			.reg_wdata_i				(reg_wdata_WB_ID_w				),
+			.program_count_i  	(pc_IF_EX_w2							),
 			.reg_rdata1_o				(rdata1_ID_EX_w1					),
 			.reg_rdata2_o				(rdata2_ID_EX_w1					),
+			.pc_jump_addr_o   	(pc_jump_addr_ID_IF_w			),
 
 			.no_op_flag_i     	(no_op_IF_ID_w2						),
 			.reg_wen_i        	(write_en_ID_WB_w3				),
@@ -183,8 +187,7 @@ module core
 			.write_en_o					(write_en_ID_WB_w1				),
 			.stype_ctrl_o				(stype_ctrl_ID_EX_w1			),
 			.imm_alu_ctrl_o			(imm_alu_ctrl_ID_EX_w1		),
-			.jarl_ctrl_o				(jarl_ctrl_ID_EX_w1				),
-			.jal_ctrl_o					(jal_ctrl_ID_EX_w1				),
+			.jump_ctrl_o				(jump_ctrl_ID_EX_w1				),
 			.branch_ctrl_o			(branch_ctrl_ID_EX_w1			),
 			.auipc_ctrl_o				(auipc_ctrl_ID_EX_w1			),
 			.lui_ctrl_o					(lui_ctrl_ID_EX_w1				),
@@ -211,8 +214,7 @@ module core
 			.write_en_i					(write_en_ID_WB_w1				),
 			.stype_ctrl_i				(stype_ctrl_ID_EX_w1			),
 			.imm_alu_ctrl_i			(imm_alu_ctrl_ID_EX_w1		),
-			.jarl_ctrl_i				(jarl_ctrl_ID_EX_w1				),
-			.jal_ctrl_i					(jal_ctrl_ID_EX_w1				),
+			.jump_ctrl_i				(jump_ctrl_ID_EX_w1				),
 			.branch_ctrl_i			(branch_ctrl_ID_EX_w1			),
 			.auipc_ctrl_i				(auipc_ctrl_ID_EX_w1			),
 			.lui_ctrl_i					(lui_ctrl_ID_EX_w1				),
@@ -228,8 +230,7 @@ module core
 			.write_en_o					(write_en_ID_WB_w2				),
 			.stype_ctrl_o				(stype_ctrl_ID_EX_w2			),
 			.imm_alu_ctrl_o			(imm_alu_ctrl_ID_EX_w2		),
-			.jarl_ctrl_o				(jarl_ctrl_ID_EX_w2				),
-			.jal_ctrl_o					(jal_ctrl_ID_EX_w2				),
+			.jump_ctrl_o				(jump_ctrl_ID_EX_w2				),
 			.branch_ctrl_o			(branch_ctrl_ID_EX_w2			),
 			.auipc_ctrl_o				(auipc_ctrl_ID_EX_w2			),
 			.lui_ctrl_o					(lui_ctrl_ID_EX_w2				),
@@ -257,8 +258,7 @@ module core
 			.stype_imm_mux_i		(stype_ctrl_ID_EX_w2			),
 			.auipc_flag_i				(auipc_ctrl_ID_EX_w2			),
 			.imm_alu_mux_i			(imm_alu_ctrl_ID_EX_w2		),
-			.jarl_flag_i     		(jarl_ctrl_ID_EX_w2				),
-			.jal_flag_i 				(jal_ctrl_ID_EX_w2 				),
+			.jump_flag_i     		(jump_ctrl_ID_EX_w2				),
 			.branch_flag_i   		(branch_ctrl_ID_EX_w2			),
 			.lui_alu_bypass_i 	(lui_ctrl_ID_EX_w2				),
 			.zeroflag_inv_i   	(zeroflag_ctrl_ID_EX_w2		),
@@ -319,6 +319,7 @@ module core
     	.write_en_i					(write_en_ID_WB_w1				),
     	.valid_lsu_load_i		(data_rvalid_i						),
     	.branch_taken_i  		(branch_taken_EX_IF_w			),
+    	.jump_taken_i    		(jump_ctrl_ID_EX_w1				),
     	
     	.fetch_stall_o   		(fetch_stall_w						),
     	.if_to_id_stall_o		(if_to_id_stall_w					),
