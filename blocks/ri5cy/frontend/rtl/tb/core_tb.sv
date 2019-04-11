@@ -167,9 +167,9 @@ module core_tb;
     list_of_instr[5*WORD_WIDTH+:32]   = BEQ(XZERO, XZERO, branch_imm(2));         // 14
     list_of_instr[6*WORD_WIDTH+:32]   = ADDI(COUNT, COUNT, 1);                    // 18
     list_of_instr[7*WORD_WIDTH+:32]   = BNE(COUNT, XZERO, branch_imm(2));         // 1c
-    list_of_instr[8*WORD_WIDTH+:32]   = ADDI(REVERSE_FLAG, XZERO, 1);             // 20
+    list_of_instr[8*WORD_WIDTH+:32]   = ADD(REVERSE_FLAG, XZERO, XZERO);          // 20
     list_of_instr[9*WORD_WIDTH+:32]   = BNE(COUNT, FIFTEEN, branch_imm(2));       // 24
-    list_of_instr[10*WORD_WIDTH+:32]  = ADD(REVERSE_FLAG, XZERO, XZERO);          // 28
+    list_of_instr[10*WORD_WIDTH+:32]  = ADDI(REVERSE_FLAG, XZERO, 1);             // 28
     list_of_instr[11*WORD_WIDTH+:32]  = BEQ(XZERO, XZERO, branch_imm(-8));        // 2c
     $display("INSTRUÇÃO PROBLEMATICA: %b", list_of_instr[11*WORD_WIDTH+:32]);
     $display("IMEDIATO PROBLEMATICO: %b", branch_imm(-8));
