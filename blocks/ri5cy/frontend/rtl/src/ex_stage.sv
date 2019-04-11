@@ -71,7 +71,7 @@ module ex_stage
 		itype_imm = instruction_i[31:20];
 		stype_imm = {instruction_i[31:25], instruction_i[11:7]};
 		xtended_lower_imm[11:0] = (stype_imm_mux_i) ? (stype_imm) : (itype_imm);
-		xtended_lower_imm[31:12] = (xtended_lower_imm[11]) ? 20'b1 : 20'b0;
+		xtended_lower_imm[31:12] = (xtended_lower_imm[11]) ? 20'hFFFFF : 20'h00000;
 	end
 
 	// Extensão de imediato superior (Tipo U)
@@ -91,7 +91,7 @@ module ex_stage
 	always_comb begin
 		jtype_imm = {instruction_i[31], instruction_i[19:12], instruction_i[20], instruction_i[30:21], 1'b0};
 		xtended_jal_imm[20:0]  = jtype_imm;
-		xtended_jal_imm[31:21] = (jtype_imm[20]) ? (11'b1) : (11'b0);
+		xtended_jal_imm[31:21] = (jtype_imm[20]) ? (11'h7FF) : (11'h7FF);
 	end
 
 	// Mux de escolha de imediato para cálculo

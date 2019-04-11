@@ -105,9 +105,9 @@ module wb_stage
 	always_comb begin
 		case(load_type_i)
 			3'b001:
-				xtended_load_data = (data_rdata_i[7]) ? {24'h1, data_rdata_i[7:0]} : {24'h0, data_rdata_i[7:0]};
+				xtended_load_data = (data_rdata_i[7]) ? {24'hFFFFFF, data_rdata_i[7:0]} : {24'h000000, data_rdata_i[7:0]};
 			3'b010:
-				xtended_load_data = (data_rdata_i[15]) ? {16'h1, data_rdata_i[15:0]} : {16'h1, data_rdata_i[15:0]};
+				xtended_load_data = (data_rdata_i[15]) ? {16'hFFFF, data_rdata_i[15:0]} : {16'h0000, data_rdata_i[15:0]};
 			default:
 				xtended_load_data = data_rdata_i;
 		endcase
