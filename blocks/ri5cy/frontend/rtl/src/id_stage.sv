@@ -80,7 +80,7 @@ module id_stage
 	always_comb begin
 		jtype_imm = {instruction_i[31], instruction_i[19:12], instruction_i[20], instruction_i[30:21], 1'b0};
 		xtended_jal_imm[20:0]  = jtype_imm;
-		xtended_jal_imm[31:21] = (jtype_imm[20]) ? (11'h7FF) : (11'h7FF);
+		xtended_jal_imm[31:21] = (jtype_imm[20]) ? (11'h7FF) : (11'h000);
 	end
 
 	reg_bank regbank 

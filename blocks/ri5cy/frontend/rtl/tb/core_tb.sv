@@ -110,7 +110,7 @@ module core_tb;
 
   // Parametros de abstração de variáveis usadas
   localparam COUNT = XS0;
-  localparam REVERSE_FLAG = XS1;
+  localparam REVERSE = XS1;
   localparam FIFTEEN  = XT0;
 
   initial begin
@@ -158,25 +158,29 @@ module core_tb;
   task assembly_code();
     list_of_instr = 'h0;
     // Inicialização
-    list_of_instr[0*WORD_WIDTH+:32]   = ADD(COUNT, XZERO, XZERO);                 // 00
-    list_of_instr[1*WORD_WIDTH+:32]   = ADD(REVERSE_FLAG, XZERO, XZERO);          // 04
-    list_of_instr[2*WORD_WIDTH+:32]   = ADDI(FIFTEEN, XZERO, 12'd15);             // 08
+    list_of_instr[0*WORD_WIDTH+:32]   = ADD(COUNT, XZERO, XZERO);            // 00
+    list_of_instr[1*WORD_WIDTH+:32]   = ADD(REVERSE, XZERO, XZERO);          // 04
+    list_of_instr[2*WORD_WIDTH+:32]   = ADDI(FIFTEEN, XZERO, 12'd15);        // 08
     // Loop Infinito
-    list_of_instr[3*WORD_WIDTH+:32]   = BEQ(REVERSE_FLAG, XZERO, branch_imm(3));  // 0c
-    list_of_instr[4*WORD_WIDTH+:32]   = ADDI(COUNT, COUNT, -1);                   // 10
-    list_of_instr[5*WORD_WIDTH+:32]   = BEQ(XZERO, XZERO, branch_imm(2));         // 14
-    list_of_instr[6*WORD_WIDTH+:32]   = ADDI(COUNT, COUNT, 1);                    // 18
-    list_of_instr[7*WORD_WIDTH+:32]   = BNE(COUNT, XZERO, branch_imm(2));         // 1c
-    list_of_instr[8*WORD_WIDTH+:32]   = ADD(REVERSE_FLAG, XZERO, XZERO);          // 20
-    list_of_instr[9*WORD_WIDTH+:32]   = BNE(COUNT, FIFTEEN, branch_imm(2));       // 24
-    list_of_instr[10*WORD_WIDTH+:32]  = ADDI(REVERSE_FLAG, XZERO, 1);             // 28
-    list_of_instr[11*WORD_WIDTH+:32]  = BEQ(XZERO, XZERO, branch_imm(-8));        // 2c
-    $display("INSTRUÇÃO PROBLEMATICA: %b", list_of_instr[11*WORD_WIDTH+:32]);
-    $display("IMEDIATO PROBLEMATICO: %b", branch_imm(-8));
+    list_of_instr[3*WORD_WIDTH+:32]   = BEQ(REVERSE, XZERO, branch_imm(3));  // 0c
+    list_of_instr[4*WORD_WIDTH+:32]   = ADDI(COUNT, COUNT, -1);              // 10
+    list_of_instr[5*WORD_WIDTH+:32]   = JAL(XZERO, jal_imm(2));              // 14
+    list_of_instr[6*WORD_WIDTH+:32]   = ADDI(COUNT, COUNT, 1);               // 18
+    list_of_instr[7*WORD_WIDTH+:32]   = BNE(COUNT, XZERO, branch_imm(2));    // 1c
+    list_of_instr[8*WORD_WIDTH+:32]   = ADD(REVERSE, XZERO, XZERO);          // 20
+    list_of_instr[9*WORD_WIDTH+:32]   = BNE(COUNT, FIFTEEN, branch_imm(2));  // 24
+    list_of_instr[10*WORD_WIDTH+:32]  = ADDI(REVERSE, XZERO, 1);             // 28
+    list_of_instr[11*WORD_WIDTH+:32]  = JAL(XZERO, jal_imm(-8));             // 2c
+    $display("INSTRUÇÃO PROBLEMATICA: %b", list_of_instr[5*WORD_WIDTH+:32]);
+    $display("IMEDIATO PROBLEMATICO: %b", jal_imm(2));
   endtask
 
   function logic [12:0] branch_imm (int imm);
     return imm << 2;  
+  endfunction
+
+  function logic [20:0] jal_imm (int imm);
+    return imm << 2;
   endfunction
 
   function logic [31:0] ADD(logic [4:0] rd, logic [4:0] rs1, logic [4:0] rs2);
@@ -193,6 +197,10 @@ module core_tb;
 
   function logic [31:0] BNE(logic [4:0] rs1, logic [4:0] rs2, logic [12:0] imm);
     return {imm[12], imm[10:5], rs2, rs1, 3'b001, imm[4:1], imm[11], OPCODE_BRANCH};
+  endfunction
+
+  function logic [31:0] JAL(logic [4:0] rd, logic [20:0] imm);
+    return {imm[20], imm[10:1], imm[11], imm[19:12], rd, OPCODE_JAL};
   endfunction
 
 endmodule 

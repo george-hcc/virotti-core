@@ -126,9 +126,9 @@ module pcu
     fwrd_opA_type1_o = 1'b0;
     fwrd_opA_type2_o = 1'b0;
     if(operation_use_opA) begin
-      if(state_vector[1].write_en && (state_vector[1].write_addr == state_vector[0].read_addr1))
+      if(state_vector[1].write_en && (state_vector[1].write_addr == state_vector[0].read_addr1) && state_vector[1].write_addr != 5'h00)
         fwrd_opA_type1_o = 1'b1;
-      else if(state_vector[2].write_en && (state_vector[2].write_addr == state_vector[0].read_addr1))       
+      else if(state_vector[2].write_en && (state_vector[2].write_addr == state_vector[0].read_addr1) && state_vector[2].write_addr != 5'h00)       
         fwrd_opA_type2_o = 1'b1;
     end
   end
@@ -138,9 +138,9 @@ module pcu
     fwrd_opB_type1_o = 1'b0;
     fwrd_opB_type2_o = 1'b0;    
     if(operation_use_opB) begin
-      if(state_vector[1].write_en && (state_vector[1].write_addr == state_vector[0].read_addr2))
+      if(state_vector[1].write_en && (state_vector[1].write_addr == state_vector[0].read_addr2) && state_vector[1].write_addr != 5'h00)
         fwrd_opB_type1_o = 1'b1;
-      else if(state_vector[2].write_en && (state_vector[2].write_addr == state_vector[0].read_addr2))       
+      else if(state_vector[2].write_en && (state_vector[2].write_addr == state_vector[0].read_addr2) && state_vector[2].write_addr != 5'h00)       
         fwrd_opB_type2_o = 1'b1;
     end
   end
@@ -211,12 +211,21 @@ module pcu
         id_to_ex_clear_o  = 1'b1;
         ex_to_wb_clear_o  = 1'b1;
       end
-      BRNCH_FLUSH2, JUMP_FLUSH1, JUMP_FLUSH2: begin
+      BRNCH_FLUSH2, JUMP_FLUSH2: begin
         fetch_stall_o     = 1'b0;
         if_to_id_stall_o  = 1'b1;
         id_to_ex_stall_o  = 1'b0;
         ex_to_wb_stall_o  = 1'b0;
         if_to_id_clear_o  = 1'b0;
+        id_to_ex_clear_o  = 1'b0;
+        ex_to_wb_clear_o  = 1'b0;
+      end
+      JUMP_FLUSH1: begin
+        fetch_stall_o     = 1'b0;
+        if_to_id_stall_o  = 1'b0;
+        id_to_ex_stall_o  = 1'b0;
+        ex_to_wb_stall_o  = 1'b0;
+        if_to_id_clear_o  = 1'b1;
         id_to_ex_clear_o  = 1'b0;
         ex_to_wb_clear_o  = 1'b0;
       end
