@@ -95,6 +95,7 @@ module core
 	logic [WORD_WIDTH-1:0]		pc_jump_addr_ID_IF_w;
 	// Saídas para PCU
 	decoded_opcode						instr_type_ID_PCU_w;
+	logic 										load_flag_WB_PCU_w;
 	/************************************/
 
 	/*********Saídas do EX_STAGE*********/
@@ -304,7 +305,8 @@ module core
 			.reg_wdata_o 				(reg_wdata_WB_ID_w				),			
 
 			.load_type_i 				(load_type_ID_WB_w3				),
-			.store_type_i 			(store_type_ID_WB_w3			)
+			.store_type_i 			(store_type_ID_WB_w3			),
+			.load_flag_o  			(load_flag_WB_PCU_w				)
 		);
 
 		pcu pipeline_control_unit 
@@ -315,8 +317,11 @@ module core
     	.instr_type_i				(instr_type_ID_PCU_w			),
     	.read_addr1_i				(instr_IF_EX_w2[19:15]		),
     	.read_addr2_i				(instr_IF_EX_w2[24:20]		),
-    	.write_addr_i				(instr_IF_EX_w2[11:7]			),
-    	.write_en_i					(write_en_ID_WB_w1				),
+    	.ex_write_addr_i 		(reg_waddr_EX_WB_w1				),
+    	.wb_write_addr_i 		(reg_waddr_EX_WB_w2				),
+    	.ex_write_en_i   		(write_en_ID_WB_w2				),
+    	.wb_write_en_i   		(write_en_ID_WB_w3				),
+    	.wb_load_flag_i  		(load_flag_WB_PCU_w				),
     	.valid_lsu_load_i		(data_rvalid_i						),
     	.branch_taken_i  		(branch_taken_EX_IF_w			),
     	.jump_taken_i    		(jump_ctrl_ID_EX_w1				),

@@ -35,7 +35,8 @@ module wb_stage
 
 		// Sinais de ControlPath	
 		input  logic [2:0]						load_type_i,
-		input  logic [1:0]						store_type_i
+		input  logic [1:0]						store_type_i,
+		output logic 									load_flag_o
 	);
 
 	// Flags de operações load e stores
@@ -49,7 +50,7 @@ module wb_stage
 	logic [WORD_WIDTH-1:0] 	xtended_load_data;
 
 	assign load_flag  = |(load_type_i);
-	assign store_flag = |(store_type_i);	
+	assign store_flag = |(store_type_i);
 
 	// Tradução dos sinais de controle decodificados para o controle da LSU
 	always_comb begin
@@ -114,5 +115,7 @@ module wb_stage
 	end
 
 	assign reg_wdata_o = (load_flag) ? (xtended_load_data) : (wb_data_i);
+
+	assign load_flag_o = load_flag;
 
 endmodule

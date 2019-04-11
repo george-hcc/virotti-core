@@ -171,8 +171,6 @@ module core_tb;
     list_of_instr[9*WORD_WIDTH+:32]   = BNE(COUNT, FIFTEEN, branch_imm(2));  // 24
     list_of_instr[10*WORD_WIDTH+:32]  = ADDI(REVERSE, XZERO, 1);             // 28
     list_of_instr[11*WORD_WIDTH+:32]  = JAL(XZERO, jal_imm(-8));             // 2c
-    $display("INSTRUÇÃO PROBLEMATICA: %b", list_of_instr[5*WORD_WIDTH+:32]);
-    $display("IMEDIATO PROBLEMATICO: %b", jal_imm(2));
   endtask
 
   function logic [12:0] branch_imm (int imm);
