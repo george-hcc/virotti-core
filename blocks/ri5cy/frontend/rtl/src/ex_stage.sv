@@ -41,7 +41,7 @@ module ex_stage
 	logic [WORD_WIDTH-1:0] 	operand_a;
 	logic [WORD_WIDTH-1:0] 	operand_b;
 	logic	[WORD_WIDTH-1:0] 	alu_result;
-	logic [WORD_WIDTH-1:0]	ex_data;
+	logic [WORD_WIDTH-1:0]	wb_data;
 	logic										zero_flag;
 	logic										branch_taken;
 
@@ -85,11 +85,18 @@ module ex_stage
 	// Mux de escolha de imediato para cálculo
 	assign full_alu_immediate = (auipc_flag_i) ? (xtended_upper_imm) : (xtended_lower_imm);
 
-	// Caso AUIPC, operando A receberá PC para soma
-	assign operand_a = (auipc_flag_i) ? (program_count_i) : (reg_rdata1_i);
+	// Caso AUIPC ou Jump, operando A receberá PC para soma
+	assign operand_a = (auipc_flag_i || jump_flag_i) ? (program_count_i) : (reg_rdata1_i);
 	
 	// Operando B recebe valor de registro ou imediato
-	assign operand_b = (imm_alu_mux_i) ? (full_alu_immediate) : (reg_rdata2_i);
+	always_comb begin
+		if(jump_flag_i)
+			operand_b = 32'h4;
+		else if(imm_alu_mux_i)
+			operand_b = full_alu_immediate;
+		else
+			operand_b = reg_rdata2_i;
+	end
 
 	alu ALU
 		(
@@ -116,7 +123,7 @@ module ex_stage
 					.operator_i 	(alu_op_ctrl_i[2:0]	)
 				);
 
-			assign ex_data = (alu_mdu_mux_i) ? (mdu_result) : (alu_result);
+			assign wb_data = (alu_mdu_mux_i) ? (mdu_result) : (alu_result);
 
 		end
 
@@ -125,17 +132,16 @@ module ex_stage
 		/********************/
 		else begin
 
-			assign ex_data = alu_result;			
+			assign wb_data = alu_result;			
 		
 		end
 	endgenerate
 
-	// Somas com PC para branches e jumps
-	assign pc_plus_four = program_count_i + 32'h4;
+	// Somas com PC para branches
 	assign pc_plus_imm = program_count_i + xtended_branch_imm;
 
 	// Zeroflag da ULA e geração de flag de resultado de comparação de branch
-	assign zero_flag = (ex_data == 32'h00000000);
+	assign zero_flag = (wb_data == 32'h00000000);
 
 	// Flag de resultado de comparação de operações de branch
 	assign branch_taken = (zeroflag_inv_i) ? (!zero_flag) : (zero_flag);
@@ -145,19 +151,15 @@ module ex_stage
 	/****************************/
 
 	// Mux de saída do EX_Stage
-	always_comb begin
-		if(lui_alu_bypass_i)									// Usado somente em LUI
-			wb_data_o = xtended_upper_imm; 
-		else if(jump_flag_i)									// Usado em Jal e Jarl
-			wb_data_o = pc_plus_four; 
-		else																	// Caso Contrário
-			wb_data_o = ex_data;
-	end
+	assign wb_data_o = (lui_alu_bypass_i) ? (xtended_upper_imm) : wb_data; 
 
+	// Endereço de escrita nos registradores
 	assign reg_waddr_o = instruction_i[11:7];
 
+	// Endereço para branch
 	assign pc_branch_addr_o = pc_plus_imm;
 
+	// Flag de controle para alertar que um branch condicional foi tomado
 	assign pc_branch_ctrl_o = branch_taken && branch_flag_i;
 
 endmodule
