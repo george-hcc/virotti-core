@@ -1,0 +1,111 @@
+% --------------------------------------
+%
+% XMEN Lab.
+% BlockGuide Template Documentation
+%
+% --------------------------------------
+
+%----------------
+% Packages configuration
+%----------------
+\documentclass[a4paper]{article}
+
+\usepackage[a4paper, left=2.5cm, right=2cm]{geometry} % A4 paper size and thin margins
+\usepackage[table,xcdraw]{xcolor} % Required for specifying custom colours
+
+\definecolor{grey}{rgb}{0.9,0.9,0.9} % Colour of the box surrounding the title
+\definecolor{LightBlue}{rgb}{0.69,0.768,0.95} % Colour of the box surrounding the title
+
+\usepackage[utf8]{inputenc} % Required for inputting international characters
+\usepackage[T1]{fontenc} % Output font encoding for international characters 
+%\usepackage[sfdefault]{ClearSans} % Use the Clear Sans font (sans serif)
+\usepackage{XCharter} % Use the XCharter font (serif)
+\usepackage{graphicx}
+\usepackage{draftwatermark} % adds draft watermark
+
+\SetWatermarkLightness{0.85}
+\SetWatermarkText{Confidencial}
+\SetWatermarkScale{0.7}
+
+\usepackage[owncaptions]{vhistory}
+\usepackage{indentfirst}
+\usepackage{longtable}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\rhead{\leftmark}
+\lhead{Block Guide: AWGN}
+
+\usepackage[portuguese]{babel}
+\usepackage{adjustbox}
+\usepackage{multirow}
+\usepackage{listings}
+\usepackage{tikz-timing} % timing diagram (waveforms)
+
+\usepackage{blindtext}
+
+\usepackage{hyperref}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=magenta,      
+    urlcolor=black,
+    bookmarks=true,
+}
+                                      
+
+\begin{document}
+
+
+%----------------
+% CAPA
+%----------------
+\include{title-pag}
+
+%----------------
+% VERSÕES
+%----------------
+
+\renewcommand \vhAuthorColWidth{.8\hsize}
+\renewcommand \vhChangeColWidth{1.2\hsize}
+ 
+\renewcommand{\vhhistoryname}{Histórico de Revisão}
+\renewcommand{\vhversionname}{Versão}
+\renewcommand{\vhdatename}{Data}
+\renewcommand{\vhauthorname}{Autor(es)}
+\renewcommand{\vhchangename}{Descrição}
+ 
+\begin{versionhistory}
+  \vhEntry{1.0}{01/03/19}{Fulano de Tal}{Versão inicial}
+\end{versionhistory}
+
+\newpage
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+\listoftables
+\newpage
+
+% ajusta contagem tabela
+\setcounter{table}{0}
+
+%----------------
+% CAPITULOS
+%----------------
+\include{prefacio}
+\input{introducao}
+\input{features}
+\include{sinaisdetalhados}
+\include{mapamemoria}
+\include{descricaofuncional}
+%\include{infoextra}
+%\include{infoinicializacao}
+%\include{infoaplicacao}
+
+\end{document}
