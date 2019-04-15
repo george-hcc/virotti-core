@@ -20,6 +20,6 @@ synthesize:
 clean_reports:
 	rm -r reports*
 clean:
-	rm -rf xcelium.d INCA_libs xrun.* *.shm *.dsn *.trn *.ucm ncvlog_*.err imc.key .simvision
+	rm -rf xcelium.d INCA_libs xrun.* *.shm *.dsn *.trn *.ucm ncvlog_*.err imc.key .simvision irun.* *.diag
 	rm -r  mapped* rc* fv libscore_work script
 

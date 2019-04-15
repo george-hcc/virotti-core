@@ -49,8 +49,8 @@ module id_stage
 	);
 
 	// Endereços de leitura de registradores
-	logic [ADDR_WIDTH-1:0]	rs1_addr;
-	logic [ADDR_WIDTH-1:0]	rs2_addr;
+	logic [ADDR_WIDTH-1:0]	reg_raddr1;
+	logic [ADDR_WIDTH-1:0]	reg_raddr2;
 
 	// Imediatos I e UJ (Usados em JARL e JAL respectivamente)
 	logic [11:0]					 	itype_imm;
@@ -58,16 +58,16 @@ module id_stage
 	logic [20:0]						jtype_imm;
 	logic [WORD_WIDTH-1:0] 	xtended_jal_imm;
 
+	// Operandos usados na soma do endereço para PC Jump
+	logic [WORD_WIDTH-1:0]	pc_sum_operandA;
+	logic [WORD_WIDTH-1:0]	pc_sum_operandB;
+
 	// Flags de controle para jumps
 	logic										jarl_flag;
 	logic 									jal_flag;
 
-	// Resultados de somas com o PC
-	logic	[WORD_WIDTH-1:0]	reg_plus_imm;
-	logic	[WORD_WIDTH-1:0]	pc_plus_imm;
-
-	assign rs1_addr = instruction_i[19:15];
-	assign rs2_addr = instruction_i[24:20];
+	assign reg_raddr1 = instruction_i[19:15];
+	assign reg_raddr2 = instruction_i[24:20];
 
 	// Extensão de imediato tipo I (JARL)
 	always_comb begin
@@ -86,8 +86,8 @@ module id_stage
 	reg_bank regbank 
 		(
 			.clk								(clk								),
-			.read_addr1_i				(rs1_addr						),
-			.read_addr2_i				(rs2_addr						),
+			.read_addr1_i				(reg_raddr1					),
+			.read_addr2_i				(reg_raddr2					),
 			.write_addr_i				(reg_waddr_i				),
 			.write_data_i				(reg_wdata_i				),
 			.write_en_i					(reg_wen_i					),
@@ -118,10 +118,10 @@ module id_stage
 			.mdu_op_ctrl_o			(mdu_op_ctrl_o			)
 		);
 
-	assign reg_plus_imm = reg_rdata1_o + xtended_jarl_imm;
-	assign pc_plus_imm = program_count_i + xtended_jal_imm;
+	assign pc_sum_operandA = (jarl_flag) ? (xtended_jarl_imm) : (xtended_jal_imm);
+	assign pc_sum_operandB = (jarl_flag) ? (reg_rdata1_o) : (program_count_i);
 
-	assign pc_jump_addr_o = (jarl_flag) ? (reg_plus_imm) : (pc_plus_imm);	
+	assign pc_jump_addr_o = pc_sum_operandA + pc_sum_operandB;
 
 	assign jump_ctrl_o = jarl_flag || jal_flag;
 
