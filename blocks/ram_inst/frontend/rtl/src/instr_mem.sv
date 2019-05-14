@@ -11,34 +11,34 @@
 //                                                                            							//
 //////////////////////////////////////////////////////////////////////////////////////////////
 
+import riscv_defines::*;
+
 module instr_mem
 #(
-	parameter CORE_TEST
+	parameter CORE_TEST = 1
 )(
-	input  logic				clk,
+	input  logic									clk,
 	// Interface de memória de instruções
-	input  logic				instr_req_i,
-	input  logic [31:0] instr_addr_i,
-	output logic [31:0] instr_rdata_o,
-	output logic 				instr_rvalid_o,
-	output logic 				instr_gnd_o
+	input  logic									instr_req_i,
+	input  logic [WORD_WIDTH-1:0] instr_addr_i,
+	output logic [WORD_WIDTH-1:0] instr_rdata_o,
+	output logic 									instr_rvalid_o,
+	output logic 									instr_gnd_o
 );
-
-	localparam BYTES_PER_INSTR = 4;
-	localparam N_OF_INSTR      = 1024;
-	localparam WORD_WIDTH      = 8 * BYTES_PER_INSTR;
-	localparam MEM_SIZE        = WORD_WIDTH * N_OF_INSTR;
-	localparam RAM_START_ADDR  = N_OF_INSTR * BYTES_PER_INSTR;
 	
 	// Array de Memória
-	logic [MEM_SIZE-1:0] inst_mem;
+	logic [INSTR_MEM_SIZE-1:0] 	instr_mem;
+	// Endereço Ignorando os ultimos dois bits para evitar acesso de memória desalinhado
+	logic [WORD_WIDTH-1:0]			instr_addr;
+
+	assign instr_addr = {instr_addr_i[31:2], 2'b00};
 	
 	assign instr_gnd_o = instr_req_i;
 	
 	always_ff @(posedge clk) begin
-		if(instr_req_i && instr_addr_i < RAM_START_ADDR) begin
+		if(instr_req_i && instr_addr_i < N_OF_INSTR) begin
 			instr_rvalid_o 	<= 1'b1;
-			instr_rdata_o		<= instr_mem[]; //////////////////////////////////SE LIGA BOY
+			instr_rdata_o		<= instr_mem[instr_addr+:32]; //////////////////////////////////SE LIGA BOY
 		end
 		else
 			instr_rvalid_o <= 1'b0;
@@ -98,15 +98,12 @@ module instr_mem
     	1: $display("Algoritmo Inserido: Contador");
     	2: $display("Algoritmo Inserido: Bubble Sort");
     endcase
-    int instr_count = 0;
-    int break_flag 	= 0;
-    while(!break_flag) begin
-    	if(instr_mem[WORD_WIDTH*instr_count+:WORD_WIDTH] == 32'h0000_0000)
-    		break_flag = 1;
+    for(int i = 0; i < N_OF_INSTR; i++) begin
+    	if(instr_mem[32*i+:32] == 32'h0000_0000)
+    		break;
     	else
-      	$display("- Mem Instr #%2h = %h", instr_count*4, instr_mem[WORD_WIDTH*instr_count+:WORD_WIDTH]);
-      instr_count = instr_count + 1;
-    end    
+      	$display("- Mem Instr #%2h = %h", i*4, instr_mem[32*i+:32]);
+    end
     $display("################################");
     $display("#FIM DE CARREGAMENTO DE MEMORIA#");
     $display("################################");
@@ -144,7 +141,7 @@ module instr_mem
 
 	task bubble_sort();
 		// Inicialização
-		instr_mem[0*WORD_WIDTH+:WORD_WIDTH]		=	ADDI(ARRAY_ADDR, XZERO, RAM_START_ADDR);	// 00
+		instr_mem[0*WORD_WIDTH+:WORD_WIDTH]		=	ADDI(ARRAY_ADDR, XZERO, DMEM_START_ADDR);	// 00
 		instr_mem[1*WORD_WIDTH+:WORD_WIDTH]		=	LW(ARRAY_LENGHT, ARRAY_ADDR, 0);					// 04
 		instr_mem[2*WORD_WIDTH+:WORD_WIDTH]		=	ADDI(ARRAY_ADDR, ARRAY_ADDR, 4);					// 08
 		instr_mem[3*WORD_WIDTH+:WORD_WIDTH]		=	JAL(XRA, 4*2);														// 0c
@@ -164,7 +161,7 @@ module instr_mem
 		instr_mem[13*WORD_WIDTH+:WORD_WIDTH]	=	ADDI(PNTR_J, PNTR_J, 4*1);								// 34
 		instr_mem[14*WORD_WIDTH+:WORD_WIDTH]	=	BLT(PNTR_J, PNTR_I, -4*7);								// 38
 		instr_mem[15*WORD_WIDTH+:WORD_WIDTH]	=	ADDI(PNTR_I, PNTR_I, -4*1);								// 3c
-		instr_mem[16*WORD_WIDTH+:WORD_WIDTH]	=	BNE(PNTR_I, ARRAY_ADDR);									// 40
+		instr_mem[16*WORD_WIDTH+:WORD_WIDTH]	=	BNE(PNTR_I, ARRAY_ADDR, -4*9);						// 40
 		instr_mem[17*WORD_WIDTH+:WORD_WIDTH]	=	JAL(XZERO, XRA);													// 44
 	endtask
 

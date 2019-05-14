@@ -12,11 +12,12 @@ package riscv_defines;
   parameter REG_ADDR_WIDTH  = 5;
 
   // Definições de Memória e Endereçamento
-  parameter N_OF_INSTR      = 1024;
+  parameter N_OF_INSTR      = 256;
   parameter INSTR_MEM_SIZE  = N_OF_INSTR * WORD_WIDTH;
-  parameter N_OF_DATA       = 1024;
+  parameter N_OF_DATA       = 256;
   parameter DATA_MEM_SIZE   = N_OF_DATA * WORD_WIDTH;
-  parameter RAM_START_ADDR  = N_OF_DATA << 2;
+  parameter DMEM_BIT_ADDR   = INSTR_MEM_SIZE;
+  parameter DMEM_BYTE_ADDR  = DMEM_BIT_ADDR >> 2;
   
   // Definições de OpCodes
   parameter OPCODE_WIDTH    = 7;
