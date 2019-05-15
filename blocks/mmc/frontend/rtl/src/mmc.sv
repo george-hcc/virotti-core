@@ -37,12 +37,6 @@ module mmc
     output logic                  mmc_exception_o
   );
 
-  localparam INSTR_RAM_ADDR = 32'h0000_0000;
-  localparam DATA_RAM_ADDR  = 32'h0000_8000;
-  localparam BOOT_ROM_ADDR  = 32'h0001_0000;
-  localparam PERIPH_ADDR    = 32'h0001_0200;
-  localparam END_ADDR       = 32'h0010_0000;
-
   // Conexão entre interfaces de instruções
   always_comb begin
     instr_rdata_o   =   instr_rdata_i;
@@ -59,7 +53,7 @@ module mmc
   // Conexão entre interfaces de dados
   always_comb begin
     data_req_o      =   data_req_i;
-    data_addr_o     =   data_addr_i;
+    data_addr_o     =   data_addr_i - DMEM_START_ADDR;
     data_we_o       =   data_we_i;
     data_be_o       =   data_be_i;
     data_wdata_o    =   data_wdata_i;

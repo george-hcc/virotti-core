@@ -14,17 +14,17 @@
 import riscv_defines::*;
 
 module instr_mem
-#(
-	parameter CORE_TEST = 1
-)(
-	input  logic									clk,
-	// Interface de memória de instruções
-	input  logic									instr_req_i,
-	input  logic [WORD_WIDTH-1:0] instr_addr_i,
-	output logic [WORD_WIDTH-1:0] instr_rdata_o,
-	output logic 									instr_rvalid_o,
-	output logic 									instr_gnd_o
-);
+	#(
+		parameter CORE_TEST = 1
+	)(
+		input  logic									clk,
+		// Interface de memória de instruções
+		input  logic									instr_req_i,
+		input  logic [WORD_WIDTH-1:0] instr_addr_i,
+		output logic [WORD_WIDTH-1:0] instr_rdata_o,
+		output logic 									instr_rvalid_o,
+		output logic 									instr_gnd_o
+	);
 	
 	// Array de Memória
 	logic [INSTR_MEM_SIZE-1:0] 	instr_mem;
@@ -93,6 +93,8 @@ module instr_mem
   task display_mem();
     $display("################################");
     $display("####CARREGAMENTO DE MEMORIA#####");
+    $display("################################");
+    $display("###########INSTRUÇÕES###########");
     $display("################################");
     case(CORE_TEST)
     	1: $display("Algoritmo Inserido: Contador");

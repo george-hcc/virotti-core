@@ -27,9 +27,7 @@ module data_mem
   	output logic                  data_gnt_o
 	);
 
-	localparam MEM_SIZE = N_OF_DATA * 4;
-
-	logic [7:0] data_mem [0:MEM_SIZE-1];
+	logic [7:0] data_mem [0:DATA_MEM_SIZE-1];
 
 	assign data_gnd_o = data_req_i;
 	
@@ -71,7 +69,7 @@ module data_mem
     $display("################################");
     $display("#############DADOS##############");
     $display("################################");
-    for(int i = 0; i < MEM_SIZE; i = i + 4) begin
+    for(int i = 0; i < DATA_MEM_SIZE; i = i + 4) begin
       $display("- Mem Data @%3h = %h", i+DMEM_START_ADDR, {data_mem[i+3], data_mem[i+2], data_mem[i+1], data_mem[i]});
     end
     $display("################################");

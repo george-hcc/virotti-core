@@ -1,4 +1,5 @@
 package riscv_defines;
+
   // Parametro para adição de UMD ao core
   parameter RISCV_M_CORE    = 0;
 
@@ -13,11 +14,11 @@ package riscv_defines;
 
   // Definições de Memória e Endereçamento
   parameter N_OF_INSTR      = 256;
-  parameter INSTR_MEM_SIZE  = N_OF_INSTR * WORD_WIDTH;
+  parameter INSTR_MEM_SIZE  = N_OF_INSTR * 4;
   parameter N_OF_DATA       = 256;
-  parameter DATA_MEM_SIZE   = N_OF_DATA * WORD_WIDTH;
-  parameter DMEM_BIT_ADDR   = INSTR_MEM_SIZE;
-  parameter DMEM_BYTE_ADDR  = DMEM_BIT_ADDR >> 2;
+  parameter DATA_MEM_SIZE   = N_OF_DATA * 4;
+  parameter DMEM_START_ADDR = INSTR_MEM_SIZE;
+  parameter ROM_START_ADDR  = DMEM_START_ADDR + (DATA_MEM_SIZE / 4);
   
   // Definições de OpCodes
   parameter OPCODE_WIDTH    = 7;
