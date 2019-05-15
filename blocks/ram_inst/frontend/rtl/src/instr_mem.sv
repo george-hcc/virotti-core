@@ -23,7 +23,7 @@ module instr_mem
 		input  logic [WORD_WIDTH-1:0] instr_addr_i,
 		output logic [WORD_WIDTH-1:0] instr_rdata_o,
 		output logic 									instr_rvalid_o,
-		output logic 									instr_gnd_o
+		output logic 									instr_gnt_o
 	);
 	
 	// Array de Memória
@@ -33,12 +33,12 @@ module instr_mem
 
 	assign instr_addr = {instr_addr_i[31:2], 2'b00};
 	
-	assign instr_gnd_o = instr_req_i;
+	assign instr_gnt_o = instr_req_i;
 	
 	always_ff @(posedge clk) begin
-		if(instr_req_i && instr_addr_i < N_OF_INSTR) begin
+		if(instr_req_i && instr_addr < INSTR_MEM_SIZE) begin
 			instr_rvalid_o 	<= 1'b1;
-			instr_rdata_o		<= instr_mem[instr_addr+:32]; //////////////////////////////////SE LIGA BOY
+			instr_rdata_o		<= instr_mem[8*instr_addr+:32]; //////////////////////////////////SE LIGA BOY
 		end
 		else
 			instr_rvalid_o <= 1'b0;
@@ -108,7 +108,7 @@ module instr_mem
     end
     $display("################################");
     $display("#FIM DE CARREGAMENTO DE MEMORIA#");
-    $display("################################");
+    $display("################################\n");
   endtask
 
   // Inserção de algoritmo assembly na memória: Contador entre 0 e 15
@@ -143,7 +143,7 @@ module instr_mem
 
 	task bubble_sort();
 		// Inicialização
-		instr_mem[0*WORD_WIDTH+:WORD_WIDTH]		=	ADDI(ARRAY_ADDR, XZERO, DMEM_START_ADDR);	// 00
+		instr_mem[0*WORD_WIDTH+:WORD_WIDTH]		=	ADDI(ARRAY_ADDR, XZERO, 12'h400);					// 00
 		instr_mem[1*WORD_WIDTH+:WORD_WIDTH]		=	LW(ARRAY_LENGHT, ARRAY_ADDR, 0);					// 04
 		instr_mem[2*WORD_WIDTH+:WORD_WIDTH]		=	ADDI(ARRAY_ADDR, ARRAY_ADDR, 4);					// 08
 		instr_mem[3*WORD_WIDTH+:WORD_WIDTH]		=	JAL(XRA, 4*2);														// 0c

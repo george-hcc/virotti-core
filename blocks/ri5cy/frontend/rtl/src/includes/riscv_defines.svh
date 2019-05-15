@@ -10,7 +10,7 @@ package riscv_defines;
 
   // Definições de Core
   parameter N_OF_REGS       = 32;
-  parameter REG_ADDR_WIDTH  = 5;
+  parameter ADDR_WIDTH      = 5;
 
   // Definições de Memória e Endereçamento
   parameter N_OF_INSTR      = 256;

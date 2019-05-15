@@ -37,10 +37,12 @@ module core
 
 		// Interface de Controle do Core
 		input  logic									fetch_en_i,
-		input	 logic [WORD_WIDTH-1:0]	pc_start_addr_i,
+		input	 logic [WORD_WIDTH-1:0]	pc_start_addr_i
+		/*
 		input  logic [4:0]						irq_id_i,
 		input  logic									irq_event_i,
 		input	 logic									socctrl_mmc_exception_i
+		*/
 	);
 
 	/*********Saídas do IF_STAGE*********/

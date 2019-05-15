@@ -1,3 +1,5 @@
+import riscv_defines::*;
+
 module mmc
   (
     // Interface da Memória de Dados vinda do Core
@@ -37,6 +39,11 @@ module mmc
     output logic                  mmc_exception_o
   );
 
+  logic instr_mmc_exception;
+  logic data_mmc_exception;
+
+  assign mmc_exception_o = instr_mmc_exception || data_mmc_exception;
+
   // Conexão entre interfaces de instruções
   always_comb begin
     instr_rdata_o   =   instr_rdata_i;
@@ -44,10 +51,10 @@ module mmc
     instr_gnt_o     =   instr_gnt_i;
     instr_req_o     =   instr_req_i;
     instr_addr_o    =   instr_addr_i;
-    if(instr_addr_i < DATA_RAM_ADDR)
-      mmc_exception_o = 1'b0;
+    if(!instr_req_i || instr_addr_i < DMEM_START_ADDR)
+      instr_mmc_exception = 1'b0;
     else
-      mmc_exception_o = 1'b1;
+      instr_mmc_exception = 1'b1;
   end
 
   // Conexão entre interfaces de dados
@@ -60,10 +67,10 @@ module mmc
     data_rdata_o    =   data_rdata_i;
     data_rvalid_o   =   data_rvalid_i;
     data_gnt_o      =   data_gnt_i;
-    if(DATA_RAM_ADDR <= data_addr_i < BOOT_ROM_ADDR)
-      mmc_exception_o = 1'b0;
+    if(!instr_req_i || DMEM_START_ADDR <= data_addr_i < ROM_START_ADDR)
+      data_mmc_exception = 1'b0;
     else
-      mmc_exception_o = 1'b1;
+      data_mmc_exception = 1'b1;
   end
 
 endmodule

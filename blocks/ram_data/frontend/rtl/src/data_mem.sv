@@ -59,7 +59,7 @@ module data_mem
 	logic [31:0] teste [4];
 
 	initial begin
-		$readmemh("./hex_mem/data_mem.h", data_mem);
+		$readmemh("../../../../../ram_data/frontend/rtl/src/hex_mem/data_mem.h", data_mem);
 		display_mem();
 	end
 
@@ -74,7 +74,7 @@ module data_mem
     end
     $display("################################");
     $display("#FIM DE CARREGAMENTO DE MEMORIA#");
-    $display("################################");
+    $display("################################\n");
   endtask
 
 endmodule
