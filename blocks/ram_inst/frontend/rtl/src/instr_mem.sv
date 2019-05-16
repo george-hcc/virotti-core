@@ -145,26 +145,27 @@ module instr_mem
 		// Inicialização
 		instr_mem[0*WORD_WIDTH+:WORD_WIDTH]		=	ADDI(ARRAY_ADDR, XZERO, 12'h400);					// 00
 		instr_mem[1*WORD_WIDTH+:WORD_WIDTH]		=	LW(ARRAY_LENGHT, ARRAY_ADDR, 0);					// 04
-		instr_mem[2*WORD_WIDTH+:WORD_WIDTH]		=	ADDI(ARRAY_ADDR, ARRAY_ADDR, 4);					// 08
-		instr_mem[3*WORD_WIDTH+:WORD_WIDTH]		=	JAL(XRA, 4*2);														// 0c
+		instr_mem[2*WORD_WIDTH+:WORD_WIDTH]		= SLLI(ARRAY_LENGHT, ARRAY_LENGHT, 2);			// 08
+		instr_mem[3*WORD_WIDTH+:WORD_WIDTH]		=	ADDI(ARRAY_ADDR, ARRAY_ADDR, 4);					// 0c
+		instr_mem[4*WORD_WIDTH+:WORD_WIDTH]		=	JAL(XRA, 4*2);														// 10
 		// End of Program
-		instr_mem[4*WORD_WIDTH+:WORD_WIDTH]		=	JAL(XZERO, 4*0);													// 10
+		instr_mem[5*WORD_WIDTH+:WORD_WIDTH]		=	JAL(XZERO, 4*0);													// 14
 		// Bubble Sort
-		instr_mem[5*WORD_WIDTH+:WORD_WIDTH]		=	ADD(PNTR_I, ARRAY_ADDR, ARRAY_LENGHT);		// 14
-		instr_mem[6*WORD_WIDTH+:WORD_WIDTH]		=	ADDI(PNTR_I, PNTR_I, -4*1);								// 18
-		instr_mem[7*WORD_WIDTH+:WORD_WIDTH]		=	ADD(PNTR_J, ARRAY_ADDR, XZERO);						// 1c
-		instr_mem[8*WORD_WIDTH+:WORD_WIDTH]		=	LW(ARRAY_J, PNTR_J, 4*0);									// 20
-		instr_mem[9*WORD_WIDTH+:WORD_WIDTH]		=	LW(ARRAY_JP1, PNTR_J, 4*1);								// 24
-		instr_mem[10*WORD_WIDTH+:WORD_WIDTH]	=	BGE(ARRAY_JP1, ARRAY_J, 4*3);							// 28
+		instr_mem[6*WORD_WIDTH+:WORD_WIDTH]		=	ADD(PNTR_I, ARRAY_ADDR, ARRAY_LENGHT);		// 18
+		instr_mem[7*WORD_WIDTH+:WORD_WIDTH]		=	ADDI(PNTR_I, PNTR_I, -4*1);								// 1c
+		instr_mem[8*WORD_WIDTH+:WORD_WIDTH]		=	ADD(PNTR_J, ARRAY_ADDR, XZERO);						// 20
+		instr_mem[9*WORD_WIDTH+:WORD_WIDTH]		=	LW(ARRAY_J, PNTR_J, 4*0);									// 24
+		instr_mem[10*WORD_WIDTH+:WORD_WIDTH]	=	LW(ARRAY_JP1, PNTR_J, 4*1);								// 28
+		instr_mem[11*WORD_WIDTH+:WORD_WIDTH]	=	BGE(ARRAY_JP1, ARRAY_J, 4*3);							// 2c
 		// Swap de Memória
-		instr_mem[11*WORD_WIDTH+:WORD_WIDTH]	=	SW(ARRAY_J, PNTR_J, 4*1);									// 2c
-		instr_mem[12*WORD_WIDTH+:WORD_WIDTH]	=	SW(ARRAY_JP1, PNTR_J, 4*0);								// 30
+		instr_mem[12*WORD_WIDTH+:WORD_WIDTH]	=	SW(ARRAY_J, PNTR_J, 4*1);									// 30
+		instr_mem[13*WORD_WIDTH+:WORD_WIDTH]	=	SW(ARRAY_JP1, PNTR_J, 4*0);								// 34
 		// Bubble Sort cont.
-		instr_mem[13*WORD_WIDTH+:WORD_WIDTH]	=	ADDI(PNTR_J, PNTR_J, 4*1);								// 34
-		instr_mem[14*WORD_WIDTH+:WORD_WIDTH]	=	BLT(PNTR_J, PNTR_I, -4*7);								// 38
-		instr_mem[15*WORD_WIDTH+:WORD_WIDTH]	=	ADDI(PNTR_I, PNTR_I, -4*1);								// 3c
-		instr_mem[16*WORD_WIDTH+:WORD_WIDTH]	=	BNE(PNTR_I, ARRAY_ADDR, -4*9);						// 40
-		instr_mem[17*WORD_WIDTH+:WORD_WIDTH]	=	JAL(XZERO, XRA);													// 44
+		instr_mem[14*WORD_WIDTH+:WORD_WIDTH]	=	ADDI(PNTR_J, PNTR_J, 4*1);								// 38
+		instr_mem[15*WORD_WIDTH+:WORD_WIDTH]	=	BLT(PNTR_J, PNTR_I, -4*7);								// 3c
+		instr_mem[16*WORD_WIDTH+:WORD_WIDTH]	=	ADDI(PNTR_I, PNTR_I, -4*1);								// 40
+		instr_mem[17*WORD_WIDTH+:WORD_WIDTH]	=	BNE(PNTR_I, ARRAY_ADDR, -4*9);						// 44
+		instr_mem[18*WORD_WIDTH+:WORD_WIDTH]	=	JAL(XZERO, XRA);													// 48
 	endtask
 
 	// Funções codificadoras de instruções
@@ -174,6 +175,10 @@ module instr_mem
 
   function logic [31:0] ADDI(logic [4:0] rd, logic [4:0] rs1, logic [11:0] imm);
     return {imm, rs1, 3'b000, rd, OPCODE_COMPIMM}; 
+  endfunction
+
+  function logic [31:0] SLLI(logic [4:0] rd, logic [4:0] rs1, logic [4:0] shamt);
+    return {7'h00, shamt, rs1, 3'b001, rd, OPCODE_COMPIMM}; 
   endfunction
 
   function logic [31:0] LW(logic [4:0] rd, logic [4:0] rs1, logic [11:0] imm);
