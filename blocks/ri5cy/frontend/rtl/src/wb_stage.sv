@@ -42,79 +42,32 @@ module wb_stage
 	// Flags de operações load e stores
 	logic 									load_flag;
 	logic 									store_flag; 
-
-	// Váriavel de controle para o LSU
-	logic [1:0]							lsu_ctrl;
-
-	// Dado lido na entrada pós processado
-	logic [WORD_WIDTH-1:0] 	xtended_load_data;
+	logic [WORD_WIDTH-1:0]	load_data;
 
 	assign load_flag  = |(load_type_i);
 	assign store_flag = |(store_type_i);
 
-	// Tradução dos sinais de controle decodificados para o controle da LSU
-	always_comb begin
-		if(load_flag) begin
-			case(load_type_i)
-				3'b001, 3'b101:
-					lsu_ctrl = 2'b01;
-				3'b010, 3'b110:
-					lsu_ctrl = 2'b10;
-				3'b100:
-					lsu_ctrl = 2'b11;
-				default:
-					lsu_ctrl = 2'b00;
-			endcase
-		end
-		else if(store_flag) begin
-			case(store_type_i)
-				2'b01:
-					lsu_ctrl = 2'b01;
-				2'b10:
-					lsu_ctrl = 2'b10;
-				2'b11:
-					lsu_ctrl = 2'b11;
-				default:
-					lsu_ctrl = 2'b00;
-			endcase
-		end
-		else
-			lsu_ctrl = 2'b00;
-	end
-
-	lsu_lite unidade_de_load_store
+	lsu unidade_de_load_store
 		(
-			.clk									(clk						),
-
-			.Controle_Funcao_i		(lsu_ctrl				),
-			.Escrita1_Leitura0_i	(store_flag			),
 			.data_addr_i					(wb_data_i			),	
 			.data_wdata_i					(store_data_i		),
+			.load_flag_i					(load_flag 			),
+			.load_type_i					(load_type_i 		),
+			.store_flag_i					(store_flag 		),
+			.store_type_i					(store_type_i		),
+			.load_data_o					(load_data 			),
 
 			.data_req_o						(data_req_o			),
-			.data_be_o						(data_be_o			),
 			.data_addr_o					(data_addr_o		),
 			.data_we_o						(data_we_o			),
+			.data_be_o						(data_be_o			),
 			.data_wdata_o					(data_wdata_o		),
-
 			.data_rdata_i					(data_rdata_i		),
 			.data_rvalid_i				(data_rvalid_i	),
 			.data_gnt_i						(data_gnt_i			)
 		);
 
-	// Extensão de sinal para operações de Load
-	always_comb begin
-		case(load_type_i)
-			3'b001:
-				xtended_load_data = (data_rdata_i[7]) ? {24'hFFFFFF, data_rdata_i[7:0]} : {24'h000000, data_rdata_i[7:0]};
-			3'b010:
-				xtended_load_data = (data_rdata_i[15]) ? {16'hFFFF, data_rdata_i[15:0]} : {16'h0000, data_rdata_i[15:0]};
-			default:
-				xtended_load_data = data_rdata_i;
-		endcase
-	end
-
-	assign reg_wdata_o = (load_flag) ? (xtended_load_data) : (wb_data_i);
+	assign reg_wdata_o = (load_flag) ? (load_data) : (wb_data_i);
 
 	assign load_flag_o = load_flag;
 
