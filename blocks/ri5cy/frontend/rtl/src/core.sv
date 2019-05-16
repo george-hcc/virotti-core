@@ -126,8 +126,10 @@ module core
 	logic		                  ex_to_wb_clear_w;
 	logic                  		fwrd_opA_type1_w;
 	logic                  		fwrd_opA_type2_w;
+	logic                  		fwrd_opA_type3_w;
 	logic                  		fwrd_opB_type1_w;
 	logic                  		fwrd_opB_type2_w;
+	logic                  		fwrd_opB_type3_w;
 	/************************************/
 
 	if_stage IF
@@ -243,8 +245,10 @@ module core
     	.fwrd_type2_data_i	(reg_wdata_WB_ID_w				),
     	.fwrd_opA_type1_i		(fwrd_opA_type1_w					),
     	.fwrd_opA_type2_i		(fwrd_opA_type2_w					),
+    	.fwrd_opA_type3_i		(fwrd_opA_type3_w					),
     	.fwrd_opB_type1_i		(fwrd_opB_type1_w					),
-    	.fwrd_opB_type2_i		(fwrd_opB_type2_w					)
+    	.fwrd_opB_type2_i		(fwrd_opB_type2_w					),
+    	.fwrd_opB_type3_i		(fwrd_opB_type3_w					)
 		);
 
 	ex_stage EX 
@@ -337,8 +341,10 @@ module core
     	.ex_to_wb_clear_o		(ex_to_wb_clear_w					),
     	.fwrd_opA_type1_o		(fwrd_opA_type1_w					),
     	.fwrd_opA_type2_o		(fwrd_opA_type2_w					),
+    	.fwrd_opA_type3_o		(fwrd_opA_type3_w					),
     	.fwrd_opB_type1_o		(fwrd_opB_type1_w					),
-    	.fwrd_opB_type2_o		(fwrd_opB_type2_w					)
+    	.fwrd_opB_type2_o		(fwrd_opB_type2_w					),
+    	.fwrd_opB_type3_o		(fwrd_opB_type3_w					)
 		);
 
 endmodule

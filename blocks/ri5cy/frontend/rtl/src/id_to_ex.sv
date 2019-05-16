@@ -53,12 +53,16 @@ module ID_to_EX
     input  logic [WORD_WIDTH-1:0]   fwrd_type2_data_i,    
     input  logic                    fwrd_opA_type1_i,
     input  logic                    fwrd_opA_type2_i,
+    input  logic                    fwrd_opA_type3_i,
     input  logic                    fwrd_opB_type1_i,
-    input  logic                    fwrd_opB_type2_i
+    input  logic                    fwrd_opB_type2_i,
+    input  logic                    fwrd_opB_type3_i
   );
 
-  logic [WORD_WIDTH-1:0]   rdata1_w;
-  logic [WORD_WIDTH-1:0]   rdata2_w;
+  logic [WORD_WIDTH-1:0]   rdata1_w1;
+  logic [WORD_WIDTH-1:0]   rdata2_w1;
+  logic [WORD_WIDTH-1:0]   rdata1_w2;
+  logic [WORD_WIDTH-1:0]   rdata2_w2;
 
   logic [WORD_WIDTH-1:0]   program_count_w;
   logic [WORD_WIDTH-1:0]   instruction_w;
@@ -77,30 +81,44 @@ module ID_to_EX
   // Mux do dado vindo do registrador 1, com controle de foward
   always_comb begin
     if(stall_ctrl)
-      rdata1_w = rdata1_o;
+      rdata1_w1 = rdata1_o;
     else if(fwrd_opA_type1_i)
-      rdata1_w = fwrd_type1_data_i;
+      rdata1_w1 = fwrd_type1_data_i;
     else if(fwrd_opA_type2_i)
-      rdata1_w = fwrd_type2_data_i;
+      rdata1_w1 = fwrd_type2_data_i;
     else
-      rdata1_w = rdata1_i;
+      rdata1_w1 = rdata1_i;
   end
 
   // Mux do dado vindo do registrador 2, com controle de foward
   always_comb begin
     if(stall_ctrl)
-      rdata2_w = rdata2_o;
+      rdata2_w1 = rdata2_o;
     else if(fwrd_opB_type1_i)
-      rdata2_w = fwrd_type1_data_i;
+      rdata2_w1 = fwrd_type1_data_i;
     else if(fwrd_opB_type2_i)
-      rdata2_w = fwrd_type2_data_i;
+      rdata2_w1 = fwrd_type2_data_i;
     else
-      rdata2_w = rdata2_i;
+      rdata2_w1 = rdata2_i;
+  end
+
+  always_comb begin
+    if(fwrd_opA_type3_i)
+      rdata1_o = fwrd_type2_data_i;
+    else
+      rdata1_o = rdata1_w2;
+  end
+
+  always_comb begin
+    if(fwrd_opB_type3_i)
+      rdata2_o = fwrd_type2_data_i;
+    else
+      rdata2_o = rdata2_w2;
   end
 
   always_ff @(posedge clk) begin
-    rdata1_o <= rdata1_w;
-    rdata2_o <= rdata2_w;
+    rdata1_w2 <= rdata1_w1;
+    rdata2_w2 <= rdata2_w1;
   end
 
   always_comb begin
