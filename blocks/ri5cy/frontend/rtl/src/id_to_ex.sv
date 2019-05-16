@@ -22,8 +22,8 @@ module ID_to_EX
     input  logic [WORD_WIDTH-1:0]   rdata1_i,
     input  logic [WORD_WIDTH-1:0]   rdata2_i,
     input  logic [ALU_OP_WIDTH-1:0] alu_op_ctrl_i,
-    input  logic                    load_type_ctrl_i,
-    input  logic                    store_type_ctrl_i,
+    input  logic [2:0]              load_type_ctrl_i,
+    input  logic [1:0]              store_type_ctrl_i,
     input  logic                    write_en_i,
     input  logic                    stype_ctrl_i,
     input  logic                    imm_alu_ctrl_i,
@@ -38,8 +38,8 @@ module ID_to_EX
     output logic [WORD_WIDTH-1:0]   rdata1_o,
     output logic [WORD_WIDTH-1:0]   rdata2_o,
     output logic [ALU_OP_WIDTH-1:0] alu_op_ctrl_o,
-    output logic                    load_type_ctrl_o,
-    output logic                    store_type_ctrl_o,
+    output logic [2:0]              load_type_ctrl_o,
+    output logic [1:0]              store_type_ctrl_o,
     output logic                    write_en_o,
     output logic                    stype_ctrl_o,
     output logic                    imm_alu_ctrl_o,
@@ -63,8 +63,8 @@ module ID_to_EX
   logic [WORD_WIDTH-1:0]   program_count_w;
   logic [WORD_WIDTH-1:0]   instruction_w;
   logic [ALU_OP_WIDTH-1:0] alu_op_ctrl_w;
-  logic                    load_type_ctrl_w;
-  logic                    store_type_ctrl_w;
+  logic [2:0]              load_type_ctrl_w;
+  logic [1:0]              store_type_ctrl_w;
   logic                    write_en_w;
   logic                    stype_ctrl_w;
   logic                    imm_alu_ctrl_w;

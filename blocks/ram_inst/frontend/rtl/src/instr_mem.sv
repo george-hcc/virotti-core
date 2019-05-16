@@ -134,12 +134,12 @@ module instr_mem
 	endtask
 
   // Inserção de algoritmo assembly na memória: Bubble Sort
-	localparam ARRAY_ADDR		=	XS1;
-	localparam ARRAY_LENGHT	=	XS2;
-	localparam PNTR_I				=	XS3;
-	localparam PNTR_J				=	XS4;
-	localparam ARRAY_J			=	XT1;
-	localparam ARRAY_JP1		=	XT2;
+	localparam ARRAY_ADDR		=	XS0;
+	localparam ARRAY_LENGHT	=	XS1;
+	localparam PNTR_I				=	XS2;
+	localparam PNTR_J				=	XS3;
+	localparam ARRAY_J			=	XT0;
+	localparam ARRAY_JP1		=	XT1;
 
 	task bubble_sort();
 		// Inicialização
