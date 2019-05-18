@@ -161,7 +161,7 @@ module controller
 				lui						= 1'b0;
 				zeroflag_inv	= 1'b0;
 			end
-			INSTR_BEQ, INSTR_BLT, INSTR_BLTU:
+			INSTR_BEQ, INSTR_BGE, INSTR_BGEU:
 			begin
 				write_en			= 1'b0;
 				stype					= 1'b0;
@@ -173,7 +173,7 @@ module controller
 				lui						= 1'b0;
 				zeroflag_inv	= 1'b0;
 			end
-			INSTR_BNE, INSTR_BGE, INSTR_BGEU:
+			INSTR_BNE, INSTR_BLT, INSTR_BLTU:
 			begin
 				write_en			= 1'b0;
 				stype					= 1'b0;
