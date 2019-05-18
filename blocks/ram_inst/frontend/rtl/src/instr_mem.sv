@@ -104,7 +104,7 @@ module instr_mem
     	if(instr_mem[32*i+:32] == 32'h0000_0000)
     		break;
     	else
-      	$display("- Mem Instr #%2h = %h", i*4, instr_mem[32*i+:32]);
+      	$display("- Mem Instr @%2h = %h", i*4, instr_mem[32*i+:32]);
     end
     $display("################################");
     $display("#FIM DE CARREGAMENTO DE MEMORIA#");
@@ -162,7 +162,7 @@ module instr_mem
 		instr_mem[13*WORD_WIDTH+:WORD_WIDTH]	=	SW(ARRAY_JP1, PNTR_J, 4*0);								// 34
 		// Bubble Sort cont.
 		instr_mem[14*WORD_WIDTH+:WORD_WIDTH]	=	ADDI(PNTR_J, PNTR_J, 4*1);								// 38
-		instr_mem[15*WORD_WIDTH+:WORD_WIDTH]	=	BLT(PNTR_J, PNTR_I, -4*7);								// 3c
+		instr_mem[15*WORD_WIDTH+:WORD_WIDTH]	=	BLT(PNTR_J, PNTR_I, -4*6);								// 3c
 		instr_mem[16*WORD_WIDTH+:WORD_WIDTH]	=	ADDI(PNTR_I, PNTR_I, -4*1);								// 40
 		instr_mem[17*WORD_WIDTH+:WORD_WIDTH]	=	BNE(PNTR_I, ARRAY_ADDR, -4*9);						// 44
 		instr_mem[18*WORD_WIDTH+:WORD_WIDTH]	=	JAL(XZERO, XRA);													// 48
