@@ -112,12 +112,7 @@ module alu
 			a_is_greater_equal = operand_a_i[31] ^ sign_comp;
 	end
 
-	always_comb begin
-		case(operator_i)
-			ALU_SLT, ALU_SLTU:	comp_result = ~(a_is_greater_equal);
-			default:						comp_result = 1'bx;
-		endcase
-	end
+	assign comp_result = {31'h00000000, ~(a_is_greater_equal)};
 
 	/*
 	#####################################
@@ -128,19 +123,19 @@ module alu
 	always_comb begin
 		case(operator_i)
 			ALU_ADD, ALU_SUB:
-								result_o = adder_result;
+				result_o = adder_result;
 			ALU_SLL, ALU_SRL, ALU_SRA:
-								result_o = shift_result;
+				result_o = shift_result;
 			ALU_SLT, ALU_SLTU:
-								result_o = comp_result;
+				result_o = comp_result;
 			ALU_AND: 	
-								result_o = operand_a & operand_b;
+				result_o = operand_a & operand_b;
 			ALU_OR:		
-								result_o = operand_a | operand_b;
+				result_o = operand_a | operand_b;
 			ALU_XOR:	
-								result_o = operand_a ^ operand_b;
-								
-			default: 	result_o = 'habc;
+				result_o = operand_a ^ operand_b;
+			default:
+				result_o = adder_result;
 		endcase
 	end
 
