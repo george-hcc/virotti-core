@@ -28,6 +28,13 @@ module data_mem
 	);
 
 	logic [7:0] data_mem [0:DATA_MEM_SIZE-1];
+	logic [31:0] simvision_mem [0:N_OF_DATA-1];
+
+	generate
+		genvar i;
+		for(i = 0; i <= N_OF_DATA; i++)
+			assign simvision_mem[i] = {data_mem[4*i+3], data_mem[4*i+2], data_mem[4*i+1], data_mem[4*i]}; 
+	endgenerate
 
 	assign data_gnd_o = data_req_i;
 	
@@ -55,8 +62,6 @@ module data_mem
 		else
 			data_rvalid_o <= 1'b0;
 	end
-
-	logic [31:0] teste [4];
 
 	initial begin
 		$readmemh("../../../../../ram_data/frontend/rtl/src/hex_mem/data_mem.h", data_mem);
