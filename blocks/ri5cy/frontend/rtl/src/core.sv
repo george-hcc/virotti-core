@@ -62,7 +62,7 @@ module core
 	/*********Saídas do ID_STAGE*********/
 	// Entradas do ID_EX
 	logic	[WORD_WIDTH-1:0]		rdata1_ID_EX_w1;
-	logic	[WORD_WIDTH-1:0]		rdata2_ID_EX_w1;
+	logic	[WORD_WIDTH-1:0]		rdata2_ID_WB_w1;
 	logic [ALU_OP_WIDTH-1:0]	alu_op_ID_EX_w1;
 	logic [2:0]								load_type_ID_WB_w1;
 	logic [1:0]								store_type_ID_WB_w1;
@@ -76,7 +76,7 @@ module core
 	logic 										zeroflag_ctrl_ID_EX_w1;
 	// Saídas do ID_EX
 	logic	[WORD_WIDTH-1:0]		rdata1_ID_EX_w2;
-	logic	[WORD_WIDTH-1:0]		rdata2_ID_EX_w2;
+	logic	[WORD_WIDTH-1:0]		rdata2_ID_WB_w2;
 	logic [ALU_OP_WIDTH-1:0]	alu_op_ID_EX_w2;
 	logic [2:0]								load_type_ID_WB_w2;
 	logic [1:0]								store_type_ID_WB_w2;
@@ -89,7 +89,7 @@ module core
 	logic 										lui_ctrl_ID_EX_w2;
 	logic 										zeroflag_ctrl_ID_EX_w2;
 	// Saídas do EX_WB
-	logic	[WORD_WIDTH-1:0]		rdata2_ID_EX_w3;
+	logic	[WORD_WIDTH-1:0]		rdata2_ID_WB_w3;
 	logic [2:0]								load_type_ID_WB_w3;
 	logic [1:0]								store_type_ID_WB_w3;
 	logic 										write_en_ID_WB_w3;
@@ -181,7 +181,7 @@ module core
 			.reg_wdata_i				(reg_wdata_WB_ID_w				),
 			.program_count_i  	(pc_IF_EX_w2							),
 			.reg_rdata1_o				(rdata1_ID_EX_w1					),
-			.reg_rdata2_o				(rdata2_ID_EX_w1					),
+			.reg_rdata2_o				(rdata2_ID_WB_w1					),
 			.pc_jump_addr_o   	(pc_jump_addr_ID_IF_w			),
 
 			.no_op_flag_i     	(no_op_IF_ID_w2						),
@@ -212,7 +212,7 @@ module core
 			.program_count_i		(pc_IF_EX_w2							),
 			.instruction_i 			(instr_IF_EX_w2						),
 			.rdata1_i 					(rdata1_ID_EX_w1					),
-			.rdata2_i 					(rdata2_ID_EX_w1					),
+			.rdata2_i 					(rdata2_ID_WB_w1					),
 			.alu_op_ctrl_i			(alu_op_ID_EX_w1					),
 			.load_type_ctrl_i		(load_type_ID_WB_w1				),
 			.store_type_ctrl_i	(store_type_ID_WB_w1			),
@@ -228,7 +228,7 @@ module core
 			.program_count_o		(pc_IF_EX_w3							),
 			.instruction_o 			(instr_IF_EX_w3						),			
 			.rdata1_o 					(rdata1_ID_EX_w2					),
-			.rdata2_o 					(rdata2_ID_EX_w2					),
+			.rdata2_o 					(rdata2_ID_WB_w2					),
 			.alu_op_ctrl_o			(alu_op_ID_EX_w2					),
 			.load_type_ctrl_o		(load_type_ID_WB_w2				),
 			.store_type_ctrl_o	(store_type_ID_WB_w2			),
@@ -254,7 +254,7 @@ module core
 	ex_stage EX 
 		(
 			.reg_rdata1_i				(rdata1_ID_EX_w2					),
-			.reg_rdata2_i				(rdata2_ID_EX_w2					),
+			.reg_rdata2_i				(rdata2_ID_WB_w2					),
 			.instruction_i   		(instr_IF_EX_w3						),
 			.program_count_i		(pc_IF_EX_w3							),
 			.wb_data_o 					(wb_data_EX_WB_w1					),
@@ -282,14 +282,14 @@ module core
 			.store_type_i				(store_type_ID_WB_w2			),
 			.write_en_i					(write_en_ID_WB_w2				),
 			.wb_data_i					(wb_data_EX_WB_w1					),
-			.store_data_i				(store_data_EX_WB_w1			),
+			.store_data_i				(rdata2_ID_WB_w2					),
 			.reg_waddr_i       	(reg_waddr_EX_WB_w1				),
 
 			.load_type_o				(load_type_ID_WB_w3				),
 			.store_type_o				(store_type_ID_WB_w3			),
 			.write_en_o					(write_en_ID_WB_w3				),
 			.wb_data_o					(wb_data_EX_WB_w2					),
-			.store_data_o				(store_data_EX_WB_w2			),
+			.store_data_o				(rdata2_ID_WB_w3					),
 			.reg_waddr_o       	(reg_waddr_EX_WB_w2				)
 		);
 
@@ -307,7 +307,7 @@ module core
 			.data_gnt_i					(data_gnt_i								),
 
 			.wb_data_i    			(wb_data_EX_WB_w2					),
-			.store_data_i 			(rdata2_ID_EX_w3					),
+			.store_data_i 			(rdata2_ID_WB_w3					),
 			.reg_wdata_o 				(reg_wdata_WB_ID_w				),			
 
 			.load_type_i 				(load_type_ID_WB_w3				),
