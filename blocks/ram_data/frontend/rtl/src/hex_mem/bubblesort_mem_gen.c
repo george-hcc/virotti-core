@@ -3,7 +3,7 @@
 
 #define MEM_SIZE 256
 #define SEED 10
-#define RAND_LIMIT 100
+#define RAND_LIMIT 1000000
 
 void put_4bytes(FILE *data_mem, char *word)
 {
@@ -24,7 +24,6 @@ int main()
   int teste = array_size_i; // BOTEI PQ NÃO FUNCIONA SEM
   sprintf(array_size_s, "%08x", teste);
   put_4bytes(data_mem, array_size_s);
-
 
   srand(SEED);
   for(int i = 1; i < MEM_SIZE; i++){

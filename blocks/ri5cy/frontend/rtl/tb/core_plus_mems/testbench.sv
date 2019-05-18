@@ -125,7 +125,7 @@ module testbench
 
   initial begin
     prepare_test();
-    for(int i = 0; i < 1000; i++)
+    repeat(100000)
       toggle_clk(1);
     $finish;
   end
